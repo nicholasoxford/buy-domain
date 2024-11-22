@@ -6,6 +6,7 @@ interface CloudflareEnv {
   TURNSTILE_SITE_KEY: string;
   ADMIN_PASSWORD: string;
   API_AUTH_TOKEN: string;
+  STRIPE_SECRET_KEY: string;
   TURNSTILE_SECRET_KEY: string;
   PUBLIC_TURNSTILE_SITE_KEY: string;
   ASSETS: Fetcher;
