@@ -18,6 +18,8 @@ assets = { directory = ".worker-next/assets", binding = "ASSETS" }
 [vars]
 BASE_URL = "https://domain-dash.noxford1.workers.dev"
 TURNSTILE_SITE_KEY = "0x4AAAAAAAylKuDyLZriK5lA"
+GITHUB_OWNER = "nicholasoxford"
+GITHUB_REPO = "buy-domain"
 
 [[kv_namespaces]]
 binding = "kvcache"

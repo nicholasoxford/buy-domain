@@ -1,7 +1,8 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { Github, Search, Command } from "lucide-react";
+import { Github, Search, Command, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 interface DocsLayoutProps {
   children: React.ReactNode;
@@ -42,71 +43,137 @@ const navigation: NavigationSection[] = [
       },
     ],
   },
-  {
-    title: "Guides",
-    links: [
-      { title: "Domain Management", href: "/docs/domains" },
-      { title: "Admin Dashboard", href: "/docs/admin" },
-      { title: "Offer System", href: "/docs/offers" },
-    ],
-  },
-  {
-    title: "Reference",
-    links: [
-      { title: "CLI Commands", href: "/docs/cli" },
-      { title: "API Reference", href: "/docs/api" },
-      { title: "Configuration", href: "/docs/configuration" },
-    ],
-  },
+  //   {
+  //     title: "Guides",
+  //     links: [
+  //       { title: "Domain Management", href: "/docs/domains" },
+  //       { title: "Admin Dashboard", href: "/docs/admin" },
+  //       { title: "Offer System", href: "/docs/offers" },
+  //     ],
+  //   },
+  //   {
+  //     title: "Reference",
+  //     links: [
+  //       { title: "CLI Commands", href: "/docs/cli" },
+  //       { title: "API Reference", href: "/docs/api" },
+  //       { title: "Configuration", href: "/docs/configuration" },
+  //     ],
+  //   },
 ];
 
 export default function DocsLayout({ children }: DocsLayoutProps) {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      {/* Header */}
+    <div className="min-h-screen bg-slate-900 w-dvw ">
+      {/* Header - Simplified for mobile */}
       <header className="border-b border-white/5 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="text-white font-bold text-xl">
+          <div className="flex h-14 sm:h-16 items-center justify-between">
+            <div className="flex items-center gap-4 sm:gap-8">
+              <Link
+                href="/"
+                className="text-white font-bold text-lg sm:text-xl"
+              >
                 Domain Dash
               </Link>
-
-              {/* Search */}
-              <div className="hidden md:block">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search documentation..."
-                    className="w-64 px-4 py-1.5 pl-10 bg-slate-800/50 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-xs text-slate-400 bg-slate-800 rounded border border-white/10 hidden md:block">
-                    ⌘K
-                  </kbd>
-                </div>
-              </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <Link
                 href="https://github.com/yourusername/domain-dash"
-                className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors"
                 target="_blank"
               >
                 <Github className="h-5 w-5" />
-                <span className="hidden sm:block">GitHub</span>
               </Link>
+
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-1.5 sm:p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
+                ) : (
+                  <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+                )}
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4">
-        <div className="flex gap-12 py-12">
-          {/* Sidebar Navigation */}
+      {/* Mobile Navigation - Improved layout */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-slate-900/95 backdrop-blur-sm p-4 sm:p-6 overflow-y-auto">
+            <nav className="mt-2 space-y-6">
+              {navigation.map((section) => (
+                <div key={section.title}>
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                    {section.title}
+                  </h3>
+                  <ul className="space-y-1">
+                    {section.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="block px-3 py-2 text-base text-slate-300 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {link.title}
+                        </Link>
+                        {link.sections && pathname === link.href && (
+                          <ul className="mt-1 ml-3 space-y-1 border-l border-white/10">
+                            {link.sections.map((section) => (
+                              <li key={section.href}>
+                                <a
+                                  href={section.href}
+                                  className="block px-3 py-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {section.title}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+
+            {/* Mobile Footer */}
+            <div className="mt-auto pt-6 border-t border-white/10">
+              <div className="flex flex-col gap-2 px-2">
+                <Link
+                  href="/docs/contributing"
+                  className="text-sm text-slate-400 hover:text-white"
+                >
+                  Contributing
+                </Link>
+                <Link
+                  href="/docs/changelog"
+                  className="text-sm text-slate-400 hover:text-white"
+                >
+                  Changelog
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="lg:container mx-auto">
+        <div className="flex flex-col lg:flex-row lg:gap-12 py-6 sm:py-12">
+          {/* Desktop Sidebar - unchanged */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <nav className="sticky top-24 space-y-8">
               {navigation.map((section) => (
@@ -144,9 +211,12 @@ export default function DocsLayout({ children }: DocsLayoutProps) {
                 </div>
               ))}
             </nav>
+          </aside>
 
-            {/* Pro Tip */}
-            <div className="mt-12 p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+          {/* Main Content Area */}
+          <div className="flex-1 max-w-3xl">
+            {/* Pro Tip - Hide on mobile */}
+            <div className="fixed bottom-8 right-8 w-72 p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 shadow-lg backdrop-blur-sm hidden md:block">
               <div className="flex items-center gap-2 mb-2">
                 <Command className="h-4 w-4 text-purple-400" />
                 <span className="text-sm font-medium text-purple-400">
@@ -161,42 +231,30 @@ export default function DocsLayout({ children }: DocsLayoutProps) {
                 twice to access the admin panel from anywhere.
               </p>
             </div>
-          </aside>
 
-          {/* Main Content */}
-          <main className="flex-1 max-w-3xl">
-            <div className="prose prose-invert">{children}</div>
+            {/* Main Content */}
+            <main className="flex-1 min-w-0">
+              <div className="prose prose-invert max-w-none">{children}</div>
 
-            {/* Feedback Section */}
-            <div className="mt-16 p-6 bg-slate-800/50 rounded-xl border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Was this page helpful?
-              </h3>
-              <div className="flex gap-2">
-                <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors">
-                  Yes
-                </button>
-                <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors">
-                  No
-                </button>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <footer className="mt-12 pt-8 border-t border-white/5">
-              <div className="flex justify-between items-center text-sm text-slate-400">
-                <div>Last updated: April 2024</div>
-                <div className="flex items-center gap-4">
-                  <Link href="/docs/contributing" className="hover:text-white">
-                    Contributing
-                  </Link>
-                  <Link href="/docs/changelog" className="hover:text-white">
-                    Changelog
-                  </Link>
+              {/* Footer */}
+              <footer className="mt-12 pt-8 border-t border-white/5">
+                <div className="flex justify-between items-center text-sm text-slate-400">
+                  <div>Last updated: April 2024</div>
+                  <div className="flex items-center gap-4">
+                    <Link
+                      href="/docs/contributing"
+                      className="hover:text-white"
+                    >
+                      Contributing
+                    </Link>
+                    <Link href="/docs/changelog" className="hover:text-white">
+                      Changelog
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </footer>
-          </main>
+              </footer>
+            </main>
+          </div>
         </div>
       </div>
     </div>

@@ -10,4 +10,7 @@ interface CloudflareEnv {
   TURNSTILE_SECRET_KEY: string;
   PUBLIC_TURNSTILE_SITE_KEY: string;
   ASSETS: Fetcher;
+  GITHUB_TOKEN: string;
+  GITHUB_OWNER: string;
+  GITHUB_REPO: string;
 }
