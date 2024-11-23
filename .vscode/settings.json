@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["kvcache"]
+  "cSpell.words": ["kvcache"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

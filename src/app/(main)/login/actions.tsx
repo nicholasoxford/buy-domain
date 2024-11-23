@@ -1,86 +1,41 @@
 "use server";
 
-import { getEnvVariables } from "@/utils/env";
-import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
+import { supabase } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export type AuthState = {
-  error: string | null;
-  success: boolean;
-};
+export async function login(formData: FormData) {
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
 
-export async function login(
-  prevState: AuthState,
-  formData: FormData
-): Promise<AuthState> {
-  const env = await getEnvVariables();
-  const cookieStore = cookies();
-
-  const supabase = createServerClient(
-    env.SUPABASE_URL,
-    env.SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          cookieStore.set(name, value, options);
-        },
-        remove(name: string, options: any) {
-          cookieStore.set(name, "", { ...options, maxAge: 0 });
-        },
-      },
-    }
-  );
-
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    return { error: "Email and password are required", success: false };
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    return { error: error.message, success: false };
+    redirect("/error");
   }
 
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
-export async function signup(
-  prevState: AuthState | undefined,
-  formData: FormData
-): Promise<AuthState> {
-  const env = await getEnvVariables();
-  const supabase = await createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY!);
+export async function signup(formData: FormData) {
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    return { error: "Email and password are required", success: false };
-  }
-
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters", success: false };
-  }
-
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    return { error: error.message, success: false };
+    redirect("/error");
   }
 
-  return { error: null, success: true };
+  revalidatePath("/", "layout");
+  redirect("/");
 }
