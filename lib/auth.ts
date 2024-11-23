@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { z } from "node_modules/zod/lib";
 import { redirect } from "next/navigation";
-import { getEnvVariables } from "@/utils/env";
 
 export async function handleLogout() {
   "use server";

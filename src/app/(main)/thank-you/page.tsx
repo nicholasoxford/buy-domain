@@ -1,8 +1,8 @@
 import { CheckCircle, Download, Github } from "lucide-react";
 import Link from "next/link";
 import { GithubForm } from "./github-form";
-import { stripeRequest } from "../../../lib/stripe";
 import { getEnvVariables } from "@/utils/env";
+import { stripeRequest } from "@/lib/stripe";
 
 export default async function ThankYou({
   searchParams,

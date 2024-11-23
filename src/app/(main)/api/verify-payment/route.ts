@@ -1,5 +1,5 @@
+import { stripeRequest } from "@/lib/stripe";
 import { getEnvVariables } from "@/utils/env";
-import { stripeRequest } from "../../../../lib/stripe";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
