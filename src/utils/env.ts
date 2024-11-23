@@ -8,6 +8,8 @@ export interface EnvVariables {
   SUPABASE_URL: string;
   SUPABASE_ANON_KEY: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
+  NEXT_PUBLIC_SUPABASE_URL: string;
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
 }
 
 export function getEnvVariables(): EnvVariables {
@@ -22,6 +24,12 @@ export function getEnvVariables(): EnvVariables {
     SUPABASE_ANON_KEY: parseEnvVariableOrThrow(env.SUPABASE_ANON_KEY),
     SUPABASE_SERVICE_ROLE_KEY: parseEnvVariableOrThrow(
       env.SUPABASE_SERVICE_ROLE_KEY
+    ),
+    NEXT_PUBLIC_SUPABASE_URL: parseEnvVariableOrThrow(
+      env.NEXT_PUBLIC_SUPABASE_URL
+    ),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: parseEnvVariableOrThrow(
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ),
   };
 }
