@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 
 export interface EnvVariables {
-  ADMIN_PASSWORD: string;
   STRIPE_SECRET_KEY: string;
   GITHUB_TOKEN: string;
   GITHUB_OWNER: string;
@@ -15,7 +14,6 @@ export function getEnvVariables(): EnvVariables {
   const env = process.env;
 
   return {
-    ADMIN_PASSWORD: parseEnvVariableOrThrow(env.ADMIN_PASSWORD),
     STRIPE_SECRET_KEY: parseEnvVariableOrThrow(env.STRIPE_SECRET_KEY),
     GITHUB_TOKEN: parseEnvVariableOrThrow(env.GITHUB_TOKEN),
     GITHUB_OWNER: parseEnvVariableOrThrow(env.GITHUB_OWNER),
