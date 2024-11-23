@@ -74,25 +74,6 @@ async function handleRequest(request: NextRequest) {
   }
 }
 
-const VERIFY_ENDPOINT =
-  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-
-// Update the verifyToken function
-async function verifyToken(token: string, env: EnvVariables) {
-  const res = await fetch(VERIFY_ENDPOINT, {
-    method: "POST",
-    body: `secret=${encodeURIComponent(
-      env.TURNSTILE_SECRET_KEY
-    )}&response=${encodeURIComponent(token)}`,
-    headers: {
-      "content-type": "application/x-www-form-urlencoded",
-    },
-  });
-
-  const data = (await res.json()) as { success: boolean };
-  return data.success;
-}
-
 export const GET = handleRequest;
 export const POST = handleRequest;
 export const DELETE = handleRequest;

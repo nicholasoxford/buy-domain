@@ -16,10 +16,6 @@ export async function stripeRequest<T>(
       "Stripe-Version": "2023-10-16",
     },
     body: data ? JSON.stringify(data) : undefined,
-    cf: {
-      cacheTtl: 0,
-      cacheEverything: false,
-    },
   });
 
   if (!response.ok) {

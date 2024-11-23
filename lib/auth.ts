@@ -28,36 +28,6 @@ export async function checkAuth() {
   return true;
 }
 
-// Server Action for password verification
-export async function verifyPassword(formData: FormData) {
-  "use server";
-
-  const password = formData.get("password");
-  const parsed = passwordSchema.safeParse({ password });
-
-  const env = getEnvVariables();
-  if (!parsed.success || password !== env.ADMIN_PASSWORD) {
-    return { error: "Invalid password" };
-  }
-
-  cookies().set("admin_auth", "true", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 3600, // 1 hour
-  });
-
-  cookies().set("admin_auth_time", Date.now().toString(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 3600,
-  });
-
-  // Redirect to the same page to show the dashboard
-  redirect("/admin");
-}
-
 export const passwordSchema = z.object({
   password: z.string().min(1),
 });

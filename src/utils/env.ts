@@ -3,10 +3,7 @@ import { headers } from "next/headers";
 export interface EnvVariables {
   TURNSTILE_SITE_KEY: string;
   ADMIN_PASSWORD: string;
-  API_AUTH_TOKEN: string;
   STRIPE_SECRET_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
-  PUBLIC_TURNSTILE_SITE_KEY: string;
   GITHUB_TOKEN: string;
   GITHUB_OWNER: string;
   GITHUB_REPO: string;
@@ -21,12 +18,7 @@ export function getEnvVariables(): EnvVariables {
   return {
     TURNSTILE_SITE_KEY: parseEnvVariableOrThrow(env.TURNSTILE_SITE_KEY),
     ADMIN_PASSWORD: parseEnvVariableOrThrow(env.ADMIN_PASSWORD),
-    API_AUTH_TOKEN: parseEnvVariableOrThrow(env.API_AUTH_TOKEN),
     STRIPE_SECRET_KEY: parseEnvVariableOrThrow(env.STRIPE_SECRET_KEY),
-    TURNSTILE_SECRET_KEY: parseEnvVariableOrThrow(env.TURNSTILE_SECRET_KEY),
-    PUBLIC_TURNSTILE_SITE_KEY: parseEnvVariableOrThrow(
-      env.PUBLIC_TURNSTILE_SITE_KEY
-    ),
     GITHUB_TOKEN: parseEnvVariableOrThrow(env.GITHUB_TOKEN),
     GITHUB_OWNER: parseEnvVariableOrThrow(env.GITHUB_OWNER),
     GITHUB_REPO: parseEnvVariableOrThrow(env.GITHUB_REPO),
