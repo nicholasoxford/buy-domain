@@ -1,14 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  Code,
-  Server,
-  CheckCircle,
-  Star,
-  Check,
-} from "lucide-react";
+import { ArrowRight, Code, Server, Check } from "lucide-react";
 import Link from "next/link";
 
 const FloatingOrb = ({ delay = 0 }) => (
