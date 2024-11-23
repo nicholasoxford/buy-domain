@@ -1,6 +1,7 @@
 "use server";
 
 import { supabase } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export type AuthState = {
@@ -19,15 +20,15 @@ export async function login(
     return { error: "Email and password are required", success: false };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error, data } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-
+  console.log({ data });
   if (error) {
     return { error: error.message, success: false };
   }
-
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
