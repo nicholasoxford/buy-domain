@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 
 export interface EnvVariables {
-  TURNSTILE_SITE_KEY: string;
   ADMIN_PASSWORD: string;
   STRIPE_SECRET_KEY: string;
   GITHUB_TOKEN: string;
@@ -16,7 +15,6 @@ export function getEnvVariables(): EnvVariables {
   const env = process.env;
 
   return {
-    TURNSTILE_SITE_KEY: parseEnvVariableOrThrow(env.TURNSTILE_SITE_KEY),
     ADMIN_PASSWORD: parseEnvVariableOrThrow(env.ADMIN_PASSWORD),
     STRIPE_SECRET_KEY: parseEnvVariableOrThrow(env.STRIPE_SECRET_KEY),
     GITHUB_TOKEN: parseEnvVariableOrThrow(env.GITHUB_TOKEN),
