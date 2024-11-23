@@ -204,8 +204,8 @@ export default function Documentation() {
           </div>
         </section>
 
-        <section id="cli-options" className="scroll-mt-24">
-          <h2>CLI Options</h2>
+        <section id="cli-options" className="scroll-mt-24 mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">CLI Options</h2>
           <p className="text-slate-300">
             Speed up deployment by providing configuration options directly
             through the command line:

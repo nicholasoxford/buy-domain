@@ -1,4 +1,4 @@
-import { stripeRequest } from "../../../lib/stripe";
+import { stripeRequest } from "../../../../lib/stripe";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { NavBar } from "@/components/nav-bar";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/utils/supabase";
@@ -28,10 +28,9 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <main>{children}</main>
-      </body>
-    </html>
+    <>
+      <NavBar initialUser={user} />
+      <div className="">{children}</div>
+    </>
   );
 }

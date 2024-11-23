@@ -20,6 +20,9 @@ BASE_URL = "https://domain-dash.noxford1.workers.dev"
 TURNSTILE_SITE_KEY = "0x4AAAAAAAylKuDyLZriK5lA"
 GITHUB_OWNER = "nicholasoxford"
 GITHUB_REPO = "buy-domain"
+SUPABASE_URL = "https://lvknqtcmkuddvikqmthu.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2a25xdGNta3VkZHZpa3FtdGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyOTYyNzYsImV4cCI6MjA0Nzg3MjI3Nn0.EEA1KMfupGHUT7nVCIIfWESRPO9HQ_DpuVS1fdNN6ak"
+SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2a25xdGNta3VkZHZpa3FtdGh1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMjI5NjI3NiwiZXhwIjoyMDQ3ODcyMjc2fQ.B9MUdjQ5QvcRqyJ6A58wffaqKCd1QgHKqzjAA7pTZjI"
 
 [[kv_namespaces]]
 binding = "kvcache"
