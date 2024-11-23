@@ -1,6 +1,6 @@
 "use client";
 
-import { DomainStat } from "@/lib/kv-storage";
+import { DomainStat } from "@/lib/utils";
 import { useState } from "react";
 
 // Add these types at the top

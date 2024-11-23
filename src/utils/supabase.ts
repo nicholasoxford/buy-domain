@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
+import { EnvVariables } from "./env";
 
 export const supabaseServer = (
   cookieStore: ReadonlyRequestCookies,
-  env: CloudflareEnv
+  env: EnvVariables
 ) => {
   let supabaseResponse = NextResponse.next({});
   const cookies = cookieStore.getAll();
@@ -30,7 +31,7 @@ export const handleSupabaseError = (error: any) => {
   throw new Error(error.message || "An error occurred with the database");
 };
 
-export const isAuthenticated = async (env: CloudflareEnv, pathname: string) => {
+export const isAuthenticated = async (env: EnvVariables, pathname: string) => {
   const cookieStore = await cookies();
   const supabase = supabaseServer(cookieStore, env);
   const {

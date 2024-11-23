@@ -1,9 +1,9 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getEnvVariables } from "@/utils/env";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { env } = await getCloudflareContext();
+    const env = getEnvVariables();
     const { username, sessionId } = (await request.json()) as {
       username: string;
       sessionId: string;

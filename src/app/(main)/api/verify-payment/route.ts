@@ -1,10 +1,10 @@
+import { getEnvVariables } from "@/utils/env";
 import { stripeRequest } from "../../../../lib/stripe";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { env } = await getCloudflareContext();
+    const env = await getEnvVariables();
     const { sessionId } = (await request.json()) as { sessionId: string };
 
     const session = await stripeRequest<{ payment_status: string }>(

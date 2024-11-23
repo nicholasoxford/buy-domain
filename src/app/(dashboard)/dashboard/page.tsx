@@ -1,22 +1,27 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { DomainOffersKV } from "@/lib/kv-storage";
 import { DomainSelector } from "@/components/DomainSelector";
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
 import { DomainStatsTable } from "@/components/DomainTable";
 import Link from "next/link";
-import { handleLogout } from "@/lib/auth";
 import { isAuthenticated } from "@/utils/supabase";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { getBaseUrlServerSide, getEnvVariables } from "@/utils/env";
+import {
+  getAllDomains,
+  getAllOffers,
+  getDomainOffers,
+  getDomainStats,
+  getTotalVisits,
+  getVisits,
+} from "@/lib/supabase/actions";
+import { supabase } from "@/lib/supabase/server";
 
 export default async function AdminPage({
   searchParams,
 }: {
   searchParams: { domain?: string };
 }) {
-  const { env } = await getCloudflareContext();
-
-  const domainOffersKV = new DomainOffersKV(env.kvcache);
+  const env = getEnvVariables();
+  const baseUrl = await getBaseUrlServerSide();
 
   const isAuthenticatedRes = await isAuthenticated(env, "/admin");
 
@@ -26,18 +31,22 @@ export default async function AdminPage({
 
   // Get all domains and offers
   const [allDomains, offers] = await Promise.all([
-    domainOffersKV.getAllDomains(),
+    getAllDomains(),
     searchParams.domain === "all"
-      ? domainOffersKV.getAllOffers()
-      : domainOffersKV
-          .getDomainOffers(searchParams.domain || env.BASE_URL)
-          .then((offers) =>
-            offers.map((offer) => ({
-              ...offer,
-              domain: searchParams.domain || env.BASE_URL,
-            }))
-          ),
+      ? getAllOffers()
+      : getDomainOffers(searchParams.domain || baseUrl).then((offers) =>
+          offers.map((offer) => ({
+            ...offer,
+            domain: searchParams.domain || baseUrl,
+          }))
+        ),
   ]);
+
+  // Get visits count based on domain selection
+  const visitsCount =
+    searchParams.domain === "all"
+      ? await getTotalVisits(allDomains)
+      : await getVisits(searchParams.domain || baseUrl);
 
   return (
     <div>
@@ -47,7 +56,7 @@ export default async function AdminPage({
       <div className="flex items-center gap-4 mb-6">
         <DomainSelector
           domains={allDomains}
-          currentDomain={searchParams.domain || env.BASE_URL}
+          currentDomain={searchParams.domain || baseUrl}
         />
         <Link
           href="/admin?domain=all"
@@ -104,11 +113,7 @@ export default async function AdminPage({
             Total Visits
           </h3>
           <p className="text-3xl font-bold text-white">
-            {searchParams.domain === "all"
-              ? await getTotalVisits(domainOffersKV, allDomains)
-              : await domainOffersKV.getVisits(
-                  searchParams.domain || env.BASE_URL
-                )}
+            {visitsCount.toLocaleString()}
           </p>
         </div>
       </div>
@@ -137,7 +142,9 @@ export default async function AdminPage({
                   className="hover:bg-slate-800/30 transition-colors"
                 >
                   <td className="px-6 py-4 text-sm text-slate-300">
-                    {new Date(offer.timestamp).toLocaleDateString()}
+                    {offer.timestamp
+                      ? new Date(offer.timestamp).toLocaleDateString()
+                      : ""}
                   </td>
                   <td className="px-6 py-4">
                     <Link
@@ -167,8 +174,8 @@ export default async function AdminPage({
                   </td>
                   <td className="px-6 py-4">
                     <DeleteOfferButton
-                      domain={offer.domain}
-                      timestamp={offer.timestamp}
+                      domain={offer.domain || ""}
+                      timestamp={offer.timestamp || ""}
                       onDelete={deleteOffer}
                     />
                   </td>
@@ -185,9 +192,7 @@ export default async function AdminPage({
           <h2 className="text-lg font-medium text-white">Domain Statistics</h2>
         </div>
         <div className="p-6">
-          <DomainStatsTable
-            initialStats={await domainOffersKV.getDomainStats()}
-          />
+          <DomainStatsTable initialStats={await getDomainStats()} />
         </div>
       </div>
     </div>
@@ -198,26 +203,20 @@ export default async function AdminPage({
 async function deleteOffer(domain: string, timestamp: string) {
   "use server";
 
-  const cookieStore = cookies();
-  const authCookie = cookieStore.get("admin_auth");
-
-  if (!authCookie?.value || authCookie.value !== "true") {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     throw new Error("Unauthorized");
   }
 
-  const { env } = await getCloudflareContext();
-  const domainOffersKV = new DomainOffersKV(env.kvcache);
+  const { error } = await supabase
+    .from("domain_offers")
+    .delete()
+    .eq("domain", domain)
+    .eq("created_at", timestamp);
 
-  await domainOffersKV.deleteSingleOffer(domain, timestamp);
-}
-
-// Add this helper function at the top of the file
-async function getTotalVisits(
-  domainOffersKV: DomainOffersKV,
-  domains: string[]
-) {
-  const visits = await Promise.all(
-    domains.map((domain) => domainOffersKV.getVisits(domain))
-  );
-  return visits.reduce((sum, count) => sum + count, 0);
+  if (error) {
+    throw new Error(`Failed to delete offer: ${error.message}`);
+  }
 }

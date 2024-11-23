@@ -1,11 +1,12 @@
-import Link from 'next/link'
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { DomainOffersKV } from "@/lib/kv-storage";
+import Link from "next/link";
+import {
+  getAllDomains,
+  getVisits,
+  getDomainOffers,
+} from "@/lib/supabase/actions";
 
 export default async function AllDomainsPage() {
-  const { env } = await getCloudflareContext();
-  const domainOffersKV = new DomainOffersKV(env.kvcache);
-  const allDomains = await domainOffersKV.getAllDomains();
+  const allDomains = await getAllDomains();
 
   return (
     <div>
@@ -22,19 +23,28 @@ export default async function AllDomainsPage() {
           </thead>
           <tbody className="divide-y divide-slate-700/50">
             {allDomains.map(async (domain) => {
-              const offers = await domainOffersKV.getDomainOffers(domain);
-              const visits = await domainOffersKV.getVisits(domain);
+              const offers = await getDomainOffers(domain);
+              const visits = await getVisits(domain);
               return (
-                <tr key={domain} className="hover:bg-slate-800/30 transition-colors">
+                <tr
+                  key={domain}
+                  className="hover:bg-slate-800/30 transition-colors"
+                >
                   <td className="px-6 py-4">
-                    <Link href={`https://${domain}`} className="text-purple-400 hover:text-purple-300">
+                    <Link
+                      href={`https://${domain}`}
+                      className="text-purple-400 hover:text-purple-300"
+                    >
                       {domain}
                     </Link>
                   </td>
                   <td className="px-6 py-4 text-slate-300">{offers.length}</td>
                   <td className="px-6 py-4 text-slate-300">{visits}</td>
                   <td className="px-6 py-4">
-                    <Link href={`/admin/domains/${domain}`} className="text-blue-400 hover:text-blue-300">
+                    <Link
+                      href={`/admin/domains/${domain}`}
+                      className="text-blue-400 hover:text-blue-300"
+                    >
                       Edit
                     </Link>
                   </td>
@@ -47,4 +57,3 @@ export default async function AllDomainsPage() {
     </div>
   );
 }
-

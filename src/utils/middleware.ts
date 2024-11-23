@@ -1,9 +1,9 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getEnvVariables } from "./env";
 
 export async function updateSession(request: NextRequest) {
-  const { env } = await getCloudflareContext();
+  const env = await getEnvVariables();
   let supabaseResponse = NextResponse.next({
     request,
   });

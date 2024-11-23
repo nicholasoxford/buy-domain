@@ -1,7 +1,4 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { supabaseServer } from "@/utils/supabase";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   Home,
   Globe,
@@ -10,16 +7,13 @@ import {
   Command,
   BookOpen,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase/server";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const { env } = await getCloudflareContext();
-  const supabase = supabaseServer(cookieStore, env);
-
   const {
     data: { user },
   } = await supabase.auth.getUser();

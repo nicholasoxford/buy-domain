@@ -1,8 +1,8 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { CheckCircle, Download, Github } from "lucide-react";
 import Link from "next/link";
 import { GithubForm } from "./github-form";
 import { stripeRequest } from "../../../lib/stripe";
+import { getEnvVariables } from "@/utils/env";
 
 export default async function ThankYou({
   searchParams,
@@ -13,7 +13,7 @@ export default async function ThankYou({
   let error = null;
 
   try {
-    const { env } = await getCloudflareContext();
+    const env = await getEnvVariables();
     const sessionId = searchParams.session_id;
 
     if (sessionId) {

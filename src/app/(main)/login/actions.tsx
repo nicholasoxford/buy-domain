@@ -1,6 +1,6 @@
 "use server";
 
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getEnvVariables } from "@/utils/env";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
@@ -15,7 +15,7 @@ export async function login(
   prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  const { env } = await getCloudflareContext();
+  const env = await getEnvVariables();
   const cookieStore = cookies();
 
   const supabase = createServerClient(
@@ -59,7 +59,7 @@ export async function signup(
   prevState: AuthState | undefined,
   formData: FormData
 ): Promise<AuthState> {
-  const { env } = await getCloudflareContext();
+  const env = await getEnvVariables();
   const supabase = await createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY!);
 
   const email = formData.get("email") as string;

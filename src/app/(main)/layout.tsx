@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { NavBar } from "@/components/nav-bar";
-import { cookies } from "next/headers";
-import { supabaseServer } from "@/utils/supabase";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+
+import { supabase } from "@/lib/supabase/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +18,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const { env } = await getCloudflareContext();
-  const supabase = supabaseServer(cookieStore, env);
-
   const {
     data: { user },
   } = await supabase.auth.getUser();

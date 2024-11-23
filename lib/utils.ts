@@ -16,6 +16,15 @@ const offersResponseSchema = z.object({
   offers: z.array(offerSchema),
 });
 
+export type DomainStat = {
+  domain: string;
+  visits: number;
+  lastOffer: Date | null;
+  avgOffer: number;
+  topOffer: number;
+  offerCount: number;
+};
+
 export async function getDomainOffers(domain: string): Promise<DomainOffer[]> {
   try {
     const response = await fetch(`/api/offers?domain=${domain}`, {

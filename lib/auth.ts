@@ -1,7 +1,7 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { cookies } from "next/headers";
 import { z } from "node_modules/zod/lib";
 import { redirect } from "next/navigation";
+import { getEnvVariables } from "@/utils/env";
 
 export async function handleLogout() {
   "use server";
@@ -35,9 +35,8 @@ export async function verifyPassword(formData: FormData) {
   const password = formData.get("password");
   const parsed = passwordSchema.safeParse({ password });
 
-  const ctx = await getCloudflareContext();
-  const adminPassword = ctx.env.ADMIN_PASSWORD;
-  if (!parsed.success || password !== adminPassword) {
+  const env = getEnvVariables();
+  if (!parsed.success || password !== env.ADMIN_PASSWORD) {
     return { error: "Invalid password" };
   }
 

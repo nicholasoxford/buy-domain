@@ -1,6 +1,11 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextRequest } from "next/server";
-import { DomainOffer, DomainOffersKV } from "@/lib/kv-storage";
+import {
+  EnvVariables,
+  getBaseUrlServerSide,
+  getEnvVariables,
+} from "@/utils/env";
+import { submitDomainOffer } from "@/lib/supabase/actions";
+import { DomainOffer } from "@/lib/utils";
 
 // CORS headers
 const corsHeaders = {
@@ -16,12 +21,11 @@ export async function OPTIONS() {
 
 async function handleRequest(request: NextRequest) {
   // Get KV namespace
-  const { env } = await getCloudflareContext();
-  const kv = env.kvcache;
-  const domainOffersKV = new DomainOffersKV(kv);
+  const env = getEnvVariables();
+  const baseUrl = await getBaseUrlServerSide();
 
   // Get domain from query param
-  const domain = env.BASE_URL;
+  const domain = baseUrl;
 
   if (request.method !== "POST") {
     return new Response("Method not allowed", {
@@ -31,31 +35,34 @@ async function handleRequest(request: NextRequest) {
   }
 
   try {
-    const { email, amount, description, token } =
+    const { email, amount, description } =
       (await request.json()) as DomainOffer;
 
-    if (!email || !amount || !token) {
+    if (!email || !amount) {
       return new Response("Email, amount, and token are required", {
         status: 400,
         headers: corsHeaders,
       });
     }
+    // Convert offer to number
+    const offerAmount =
+      typeof amount === "number" ? amount : parseInt(String(amount), 10);
 
-    // Verify the token
-    const isValid = await verifyToken(token, env);
-    if (!isValid) {
-      return new Response("Invalid token", {
-        status: 400,
-        headers: corsHeaders,
-      });
-    }
+    // // Verify the token
+    // const isValid = await verifyToken(token, env);
+    // if (!isValid) {
+    //   return new Response("Invalid token", {
+    //     status: 400,
+    //     headers: corsHeaders,
+    //   });
+    // }
 
-    const result = await domainOffersKV.submitDomainOffer(domain, {
+    // Then submit the offer
+    const result = await submitDomainOffer(domain, {
       email,
-      amount,
-      description,
+      amount: offerAmount,
+      description: description || `Offer from ${name}`,
     });
-
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -71,7 +78,7 @@ const VERIFY_ENDPOINT =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 // Update the verifyToken function
-async function verifyToken(token: string, env: CloudflareEnv) {
+async function verifyToken(token: string, env: EnvVariables) {
   const res = await fetch(VERIFY_ENDPOINT, {
     method: "POST",
     body: `secret=${encodeURIComponent(

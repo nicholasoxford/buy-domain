@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { EmailOtpType } from "@supabase/supabase-js";
+import { getEnvVariables } from "@/utils/env";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type");
   const next = searchParams.get("next") ?? "/";
 
-  const { env } = await getCloudflareContext();
+  const env = await getEnvVariables();
 
   // Create a response early so we can set cookies
   let response = NextResponse.redirect(new URL(next, request.url));
