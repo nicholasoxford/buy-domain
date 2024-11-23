@@ -11,7 +11,7 @@ import {
   getTotalVisits,
   getVisits,
 } from "@/lib/supabase/actions";
-import { supabase } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminPage({
   searchParams,
@@ -19,7 +19,6 @@ export default async function AdminPage({
   searchParams: { domain?: string };
 }) {
   const baseUrl = await getBaseUrlServerSide();
-
   // Get all domains and offers
   const [allDomains, offers] = await Promise.all([
     getAllDomains(),
@@ -194,6 +193,7 @@ export default async function AdminPage({
 async function deleteOffer(domain: string, timestamp: string) {
   "use server";
 
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

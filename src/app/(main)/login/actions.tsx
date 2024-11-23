@@ -1,6 +1,6 @@
 "use server";
 
-import { supabase } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -19,7 +19,7 @@ export async function login(
   if (!email || !password) {
     return { error: "Email and password are required", success: false };
   }
-
+  const supabase = await createClient();
   const { error, data } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -47,6 +47,7 @@ export async function signup(
     return { error: "Password must be at least 6 characters", success: false };
   }
 
+  const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,

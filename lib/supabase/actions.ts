@@ -1,10 +1,11 @@
 import { DomainOffer, DomainStat } from "../utils";
-import { supabase } from "./server";
+import { createClient } from "./server";
 
 export async function submitDomainOffer(
   domain: string,
   offer: Omit<DomainOffer, "timestamp">
 ) {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_offers")
     .insert({
@@ -31,6 +32,7 @@ export async function submitDomainOffer(
 }
 
 export async function getDomainOffers(domain: string) {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_offers")
     .select("*")
@@ -51,6 +53,7 @@ export async function getDomainOffers(domain: string) {
 }
 
 export async function deleteDomainOffers(domain: string) {
+  const supabase = await createClient();
   const { error } = await supabase
     .from("domain_offers")
     .delete()
@@ -68,6 +71,7 @@ export async function deleteDomainOffers(domain: string) {
 }
 
 export async function getAllDomains() {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domains")
     .select("domain")
@@ -81,6 +85,7 @@ export async function getAllDomains() {
 }
 
 export async function getAllOffers() {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_offers")
     .select("*, domains!inner(*)")
@@ -101,6 +106,7 @@ export async function getAllOffers() {
 }
 
 export async function deleteSingleOffer(domain: string, timestamp: string) {
+  const supabase = await createClient();
   const { error } = await supabase
     .from("domain_offers")
     .delete()
@@ -119,6 +125,7 @@ export async function deleteSingleOffer(domain: string, timestamp: string) {
 }
 
 export async function initializeDomain(domain: string) {
+  const supabase = await createClient();
   const { error } = await supabase.from("domains").upsert({ domain }).select();
 
   if (error) {
@@ -133,6 +140,7 @@ export async function initializeDomain(domain: string) {
 }
 
 export async function getDomainStats(): Promise<DomainStat[]> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_stats")
     .select("*")
@@ -155,6 +163,7 @@ export async function getDomainStats(): Promise<DomainStat[]> {
 }
 
 async function getOffersCount(domain: string): Promise<number> {
+  const supabase = await createClient();
   const { count, error } = await supabase
     .from("domain_offers")
     .select("*", { count: "exact" })
@@ -167,6 +176,7 @@ async function getOffersCount(domain: string): Promise<number> {
   return count || 0;
 }
 export async function trackPageView(domain: string, metadata?: any) {
+  const supabase = await createClient();
   const { error } = await supabase.from("page_views").insert({
     page_url: domain,
     metadata,
@@ -179,6 +189,7 @@ export async function trackPageView(domain: string, metadata?: any) {
 }
 
 export async function getVisits(domain: string): Promise<number> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_stats")
     .select("visits")
@@ -193,6 +204,7 @@ export async function getVisits(domain: string): Promise<number> {
 }
 
 export async function getTotalVisits(domains: string[]): Promise<number> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_stats")
     .select("visits")

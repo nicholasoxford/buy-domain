@@ -7,13 +7,13 @@ import {
   Command,
   BookOpen,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase/server";
-
+import { createClient } from "@/lib/supabase/server";
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
