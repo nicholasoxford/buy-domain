@@ -22,12 +22,15 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-slate-900 flex">
       {/* Sidebar */}
       <aside className="w-64 border-r border-slate-800 bg-slate-900/50 text-white p-4">
-        <div className="flex items-center gap-2 mb-8">
+        <Link
+          href="/"
+          className="flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity"
+        >
           <Command className="h-6 w-6 text-purple-400" />
           <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
             DomainDash
           </span>
-        </div>
+        </Link>
 
         <nav>
           <ul className="space-y-2">

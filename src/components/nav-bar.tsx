@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, Command, Github, ChevronDown } from "lucide-react";
 
 interface NavBarProps {
@@ -13,12 +13,19 @@ interface NavBarProps {
 
 export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(initialUser || null);
+  const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
+
+  // using an useEffect, setUser to the user from supabase
+  useEffect(() => {
+    if (initialUser) {
+      setUser(initialUser);
+    }
+  }, [initialUser]);
 
   const isActive = (path: string) => pathname === path;
   const isDocs = variant === "docs";
-
+  console.log({ NAVBAR_USER: user });
   return (
     <nav
       className={`sticky top-0 z-50 border-b ${

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getEnvVariables } from "./env";
 
 export async function updateSession(request: NextRequest) {
-  const env = await getEnvVariables();
+  const env = getEnvVariables();
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
+  console.log({ MIDDLEWARE_USER: user });
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
@@ -64,6 +64,6 @@ export async function updateSession(request: NextRequest) {
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
-
+  console.log("ABOUT TO RETURN SUPABASE RESPONSE");
   return supabaseResponse;
 }

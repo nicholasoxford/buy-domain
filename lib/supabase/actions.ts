@@ -193,14 +193,13 @@ export async function getVisits(domain: string): Promise<number> {
   const { data, error } = await supabase
     .from("domain_stats")
     .select("visits")
-    .eq("domain", domain)
-    .single();
+    .eq("domain", domain);
 
   if (error) {
     throw new Error(`Failed to get visits: ${error.message}`);
   }
 
-  return data?.visits ?? 0;
+  return data[0]?.visits ?? 0;
 }
 
 export async function getTotalVisits(domains: string[]): Promise<number> {
