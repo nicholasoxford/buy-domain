@@ -2,9 +2,7 @@ import { DomainSelector } from "@/components/DomainSelector";
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
 import { DomainStatsTable } from "@/components/DomainTable";
 import Link from "next/link";
-import { isAuthenticated } from "@/utils/supabase";
-import { redirect } from "next/navigation";
-import { getBaseUrlServerSide, getEnvVariables } from "@/utils/env";
+import { getBaseUrlServerSide } from "@/utils/env";
 import {
   getAllDomains,
   getAllOffers,
@@ -20,14 +18,7 @@ export default async function AdminPage({
 }: {
   searchParams: { domain?: string };
 }) {
-  const env = getEnvVariables();
   const baseUrl = await getBaseUrlServerSide();
-
-  const isAuthenticatedRes = await isAuthenticated(env, "/admin");
-
-  if (!isAuthenticatedRes) {
-    redirect("/login");
-  }
 
   // Get all domains and offers
   const [allDomains, offers] = await Promise.all([
