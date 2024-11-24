@@ -27,27 +27,32 @@ function getTierFromPriceId(
 
 async function handleSubscriptionChange(
   subscription: Stripe.Subscription,
-  customerDetails?: Stripe.Checkout.Session.CustomerDetails | null
+  customerDetails?: { email: string }
 ) {
   const supabase = await createClient();
-  console.log("RIGHT BEFORE USER LOOKUP");
+
+  // Get the customer email either from customerDetails or from the subscription's customer
+  let email = customerDetails?.email;
+  if (!email && typeof subscription.customer === "string") {
+    const customer = await stripe.customers.retrieve(subscription.customer);
+    email = (customer as Stripe.Customer).email || "";
+  }
+
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", customerDetails?.email || "")
+    .eq("email", email || "")
     .single();
 
-  console.log({ user: user?.id });
-  console.log({ priceId: subscription?.items.data[0]?.price?.id });
   const tier = getTierFromPriceId(subscription?.items.data[0]?.price?.id || "");
-  console.log({ tier });
+
   // Start a transaction to update both tables
   const updates = [
     // Update purchases table
     supabase.from("purchases").upsert(
       {
-        email: customerDetails?.email || "",
+        email: email || "",
         user_id: user?.id || null,
         product_type: "subscription",
         tier,
@@ -131,40 +136,40 @@ export async function POST(req: Request) {
 
     // Send response early to avoid timeout issues
     const response = NextResponse.json({ received: true }, { status: 200 });
-    console.log("Received event:", event.type);
+
     // Process the event asynchronously
     (async () => {
       try {
         switch (event.type) {
-          case "payment_intent.succeeded":
-            const paymentIntent = event.data.object as Stripe.PaymentIntent;
-            console.log("Payment successful for intent:", paymentIntent.id);
-            break;
-
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
-            console.log("Session mode:", session.mode);
+
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
-              console.log("RIGHT BEFORE SUBSCRIPTION RETRIEVE");
+              // We need to retrieve the subscription since it's not fully included in the session
               const subscription = await stripe.subscriptions.retrieve(
                 session.subscription as string
               );
-              console.log("RIGHT BEFORE SUBSCRIPTION CHANGE");
-              await handleSubscriptionChange(
-                subscription,
-                session.customer_details
-              );
+              await handleSubscriptionChange(subscription, {
+                email: session.customer_details?.email || "",
+              });
             }
             break;
 
           case "customer.subscription.created":
           case "customer.subscription.updated":
           case "customer.subscription.deleted":
+            // No need to retrieve the subscription - it's already in the event
             const subscription = event.data.object as Stripe.Subscription;
-            await handleSubscriptionChange(subscription);
+            // Get customer email from the customer object
+            const customer = await stripe.customers.retrieve(
+              subscription.customer as string
+            );
+            await handleSubscriptionChange(subscription, {
+              email: (customer as Stripe.Customer).email || "",
+            });
             break;
 
           default:
