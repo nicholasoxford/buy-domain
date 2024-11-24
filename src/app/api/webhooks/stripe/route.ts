@@ -70,7 +70,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 async function handleTemplatePayment(session: Stripe.PaymentIntent) {
   const supabase = await createClient();
   const customerId = session.customer as string;
-  if (!customerId) return;
+  console.log("Customer ID:", customerId);
 
   // Upsert purchase record for template
   const { error } = await supabase.from("purchases").upsert({
