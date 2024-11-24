@@ -137,10 +137,10 @@ export type Database = {
           id: string
           metadata: Json | null
           product_type: Database["public"]["Enums"]["product_type"]
-          status: string
+          status: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
-          tier: Database["public"]["Enums"]["subscription_tier"]
+          tier: Database["public"]["Enums"]["subscription_tier"] | null
           updated_at: string | null
           user_id: string | null
         }
@@ -151,10 +151,10 @@ export type Database = {
           id?: string
           metadata?: Json | null
           product_type: Database["public"]["Enums"]["product_type"]
-          status: string
+          status?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
-          tier: Database["public"]["Enums"]["subscription_tier"]
+          tier?: Database["public"]["Enums"]["subscription_tier"] | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -165,10 +165,10 @@ export type Database = {
           id?: string
           metadata?: Json | null
           product_type?: Database["public"]["Enums"]["product_type"]
-          status?: string
+          status?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
-          tier?: Database["public"]["Enums"]["subscription_tier"]
+          tier?: Database["public"]["Enums"]["subscription_tier"] | null
           updated_at?: string | null
           user_id?: string | null
         }

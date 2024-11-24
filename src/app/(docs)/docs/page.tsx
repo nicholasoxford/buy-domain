@@ -8,10 +8,9 @@ import {
   Download,
   Github,
   Sparkles,
-  Check,
 } from "lucide-react";
 import Link from "next/link";
-
+export const dynamic = "force-static";
 export default function Documentation() {
   const stripeUrl = "https://buy.stripe.com/test_dR63f48ve81hbyE144";
 

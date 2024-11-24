@@ -77,8 +77,6 @@ async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   const { error, data } = await supabase.from("purchases").upsert({
     email: session.customer_details?.email!,
     product_type: "template",
-    tier: "template",
-    status: "active",
     stripe_customer_id: customerId,
     expiration_date: new Date(
       Date.now() + 365 * 24 * 60 * 60 * 1000
