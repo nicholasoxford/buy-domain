@@ -90,12 +90,12 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
 
   // Try to find user by email
-  const { data: user, error: userError } = await supabase
+  const { data: users, error: userError } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", data.email)
-    .single();
+    .eq("email", data.email);
 
+  console.log("USERS: ", users);
   if (userError && userError.code !== "PGRST116") {
     // Ignore "no rows returned" error
     throw new Error(`Failed to lookup user: ${userError.message}`);
@@ -103,6 +103,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
     console.log("USER ERROR: ", userError);
     throw new Error(`Failed to lookup user: ${userError.message}`);
   }
+  const user = users?.[0];
   console.log("USER: ", user);
   // Start a transaction to update both tables
   const updates = [
