@@ -10,7 +10,7 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
   try {
-    const body = await req.text();
+    const text = await req.text(); // Get raw body as text
     const headersList = headers();
     const sig = headersList.get("stripe-signature");
 
@@ -21,14 +21,10 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("Received webhook with signature:", sig);
-    console.log("Webhook body:", body);
-    console.log("Endpoint secret:", endpointSecret.slice(0, 5) + "..."); // Log first few chars for debugging
-
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(text, sig, endpointSecret);
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
       return NextResponse.json(
@@ -57,10 +53,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-// Disable body parsing, we need the raw body for signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
