@@ -99,8 +99,11 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   if (userError && userError.code !== "PGRST116") {
     // Ignore "no rows returned" error
     throw new Error(`Failed to lookup user: ${userError.message}`);
+  } else if (userError) {
+    console.log("USER ERROR: ", userError);
+    throw new Error(`Failed to lookup user: ${userError.message}`);
   }
-
+  console.log("USER: ", user);
   // Start a transaction to update both tables
   const updates = [
     supabase.from("purchases").upsert(
@@ -129,11 +132,11 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
           .eq("id", user.id)
       : null,
   ].filter(Boolean);
-
+  console.log("RIGHT BEFORE EXECUTION");
   // Execute all updates
   const results = await Promise.all(updates);
-
-  // Check for errors and throw if any found
+  console.log("RESULTS: ", results);
+  // Check for errors and throw if an  found
   const errors = results
     .map(
       (result, index) =>
