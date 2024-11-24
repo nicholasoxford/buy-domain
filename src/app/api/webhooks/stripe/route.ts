@@ -41,9 +41,9 @@ export async function POST(req: Request) {
     (async () => {
       try {
         switch (event.type) {
-          case "checkout.session.completed":
-            const session = event.data.object as Stripe.Checkout.Session;
-            console.log("Payment successful for session:", session.id);
+          case "payment_intent.succeeded":
+            const paymentIntent = event.data.object as Stripe.PaymentIntent;
+            console.log("Payment successful for intent:", paymentIntent.id);
             // Handle your business logic here
             break;
 
