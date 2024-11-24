@@ -25,43 +25,40 @@ function getTierFromPriceId(
   return PRICE_TO_TIER[priceId] || "basic";
 }
 
-async function handleSubscriptionChange(
-  subscription: Stripe.Subscription,
-  customerDetails?: { email: string }
-) {
+type SubscriptionData = {
+  email: string;
+  customerId: string;
+  subscriptionId: string;
+  invoiceId: string;
+};
+
+async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
 
-  // Get the customer email either from customerDetails or from the subscription's customer
-  let email = customerDetails?.email;
-  if (!email && typeof subscription.customer === "string") {
-    const customer = await stripe.customers.retrieve(subscription.customer);
-    email = (customer as Stripe.Customer).email || "";
-  }
+  // Get the invoice to find the price ID
+  const invoice = await stripe.invoices.retrieve(data.invoiceId);
+  const priceId = invoice.lines.data[0]?.price?.id;
+  const tier = getTierFromPriceId(priceId || "");
 
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", email || "")
+    .eq("email", data.email)
     .single();
-
-  const tier = getTierFromPriceId(subscription?.items.data[0]?.price?.id || "");
 
   // Start a transaction to update both tables
   const updates = [
     // Update purchases table
     supabase.from("purchases").upsert(
       {
-        email: email || "",
+        email: data.email,
         user_id: user?.id || null,
         product_type: "subscription",
         tier,
-        status: subscription.status,
-        stripe_customer_id: (subscription.customer as string) ?? null,
-        stripe_subscription_id: subscription.id,
-        expiration_date: new Date(
-          subscription.current_period_end * 1000
-        ).toISOString(),
+        status: "active", // New subscriptions are always active
+        stripe_customer_id: data.customerId,
+        stripe_subscription_id: data.subscriptionId,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "stripe_subscription_id" }
@@ -73,7 +70,7 @@ async function handleSubscriptionChange(
           .from("profiles")
           .update({
             subscription_tier: tier,
-            subscription_status: subscription.status,
+            subscription_status: "active",
           })
           .eq("id", user.id)
       : null,
@@ -148,12 +145,13 @@ export async function POST(req: Request) {
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
-              // We need to retrieve the subscription since it's not fully included in the session
-              const subscription = await stripe.subscriptions.retrieve(
-                session.subscription as string
-              );
-              await handleSubscriptionChange(subscription, {
+              // We have everything we need from the session
+              await handleSubscriptionChange({
                 email: session.customer_details?.email || "",
+                customerId: session.customer as string,
+                subscriptionId: session.subscription as string,
+                // We'll get the price ID from the invoice
+                invoiceId: session.invoice as string,
               });
             }
             break;
@@ -167,8 +165,11 @@ export async function POST(req: Request) {
             const customer = await stripe.customers.retrieve(
               subscription.customer as string
             );
-            await handleSubscriptionChange(subscription, {
+            await handleSubscriptionChange({
               email: (customer as Stripe.Customer).email || "",
+              customerId: subscription.customer as string,
+              subscriptionId: subscription.id,
+              invoiceId: subscription.latest_invoice as string,
             });
             break;
 
