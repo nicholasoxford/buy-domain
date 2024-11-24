@@ -30,12 +30,7 @@ async function handleSubscriptionChange(
   customerDetails?: Stripe.Checkout.Session.CustomerDetails | null
 ) {
   const supabase = await createClient();
-  const customerId =
-    typeof subscription.customer === "string"
-      ? subscription.customer
-      : subscription.customer.id;
-  if (!customerId) return;
-  console.log();
+
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
@@ -52,12 +47,12 @@ async function handleSubscriptionChange(
     // Update purchases table
     supabase.from("purchases").upsert(
       {
-        email: customerId,
+        email: customerDetails?.email || "",
         user_id: user?.id || null,
         product_type: "subscription",
         tier,
         status: subscription.status,
-        stripe_customer_id: customerId,
+        stripe_customer_id: (subscription.customer as string) ?? null,
         stripe_subscription_id: subscription.id,
         expiration_date: new Date(
           subscription.current_period_end * 1000
