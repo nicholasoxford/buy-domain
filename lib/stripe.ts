@@ -90,17 +90,20 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
   const email = data.email.trim().toLowerCase();
 
+  console.log("Searching for email:", email);
+
+  // Simple exact match query with debug logging
   const { data: users, error: userError } = await supabase
     .from("profiles")
     .select("*")
-    .ilike("email", email);
+    .eq("email", email);
+
+  console.log("Query result:", { users, error: userError });
 
   if (userError) {
     console.error("Error looking up user:", userError);
     throw new Error(`Failed to lookup user: ${userError.message}`);
   }
-
-  console.log(`Found ${users?.length || 0} users for email ${email}`);
 
   const user = users?.[0];
   if (!user) {
