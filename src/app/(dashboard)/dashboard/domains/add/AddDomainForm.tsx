@@ -78,11 +78,66 @@ export function AddDomainForm() {
       </form>
 
       {/* Information Section */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-6">
         <h2 className="text-lg font-medium text-white mb-4">
           Before You Begin
         </h2>
-        {/* ... rest of the existing information section ... */}
+
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-purple-400 text-sm">1</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-slate-200 mb-1">
+                DNS Access Required
+              </h3>
+              <p className="text-sm text-slate-400">
+                You&apos;ll need access to your domain&apos;s DNS settings
+                through your domain registrar (like GoDaddy, Namecheap, or
+                Google Domains).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-purple-400 text-sm">2</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-slate-200 mb-1">
+                Preparation Steps
+              </h3>
+              <ul className="text-sm text-slate-400 space-y-1">
+                <li>• Remove any existing A or CNAME records for the domain</li>
+                <li>
+                  • Disconnect the domain from any existing Vercel projects
+                </li>
+                <li>• Ensure you have no conflicting DNS settings</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-purple-400 text-sm">3</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-slate-200 mb-1">
+                Propagation Time
+              </h3>
+              <p className="text-sm text-slate-400">
+                After updating DNS records:
+              </p>
+              <ul className="text-sm text-slate-400 mt-1 space-y-1">
+                <li>• Status may show &quot;Active&quot; within minutes</li>
+                <li>• Full propagation can take up to 48 hours</li>
+                <li>• Your domain might not be immediately accessible</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
