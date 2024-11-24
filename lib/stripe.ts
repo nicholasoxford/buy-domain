@@ -138,7 +138,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
             subscription_tier: "basic",
             subscription_status: "active",
           })
-          .eq("id", user.id)
+          .eq("email", email)
       : null,
   ].filter(Boolean);
   console.log("RIGHT BEFORE EXECUTION");
