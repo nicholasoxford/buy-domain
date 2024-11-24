@@ -88,19 +88,16 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-  console.log("RIGHT BEFORE USER LOOKUP.. EMAIL: ", data.email);
+
   // Try to find user by email
-  const { data: users, error: userError } = await supabase
+  const { data: user, error: userError } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", data.email.trim());
+    .eq("email", data.email)
+    .single();
 
-  console.log("USER RESULT: ", users);
-
-  const user = users?.[0];
-
-  if (userError) {
-    console.log("USER ERROR: ", userError);
+  if (userError && userError.code !== "PGRST116") {
+    // Ignore "no rows returned" error
     throw new Error(`Failed to lookup user: ${userError.message}`);
   }
 
@@ -117,7 +114,10 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
         stripe_subscription_id: data.subscriptionId,
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "stripe_subscription_id" }
+      {
+        // Specify which columns to match for the conflict
+        onConflict: "stripe_customer_id, stripe_subscription_id",
+      }
     ),
     user?.id
       ? supabase
