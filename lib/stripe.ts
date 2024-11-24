@@ -11,7 +11,7 @@ interface StripeRequestOptions {
 
 export async function handleCheckoutSession(session: Stripe.Checkout.Session) {
   console.log("Payment successful for session:", session.id);
-
+  console.log("Session mode:", session.mode);
   if (session.mode === "payment") {
     await handleTemplatePayment(session);
   } else if (session.mode === "subscription") {
@@ -88,19 +88,11 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-  const stripe = createStripeClient();
   console.log("RIGHT BEFORE INVOICE RETRIEVE");
   // Get the invoice to find the price ID
-  const invoice = await stripe.invoices
-    .retrieve(data.invoiceId)
-    .catch((err) => {
-      console.error("Error retrieving invoice:", err);
-      throw err;
-    });
-  console.log("RIGHT BEFORE PRICE ID RETRIEVE");
-  const priceId = invoice?.lines.data[0]?.price?.id;
+
   console.log("RIGHT BEFORE TIER DETERMINATION");
-  const tier = getTierFromPriceId(priceId || "");
+
   console.log("RIGHT BEFORE USER LOOKUP");
   // Try to find user by email
   const { data: user } = await supabase
@@ -117,7 +109,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
         email: data.email,
         user_id: user?.id || null,
         product_type: "subscription",
-        tier,
+        tier: "basic",
         status: "active", // New subscriptions are always active
         stripe_customer_id: data.customerId,
         stripe_subscription_id: data.subscriptionId,
@@ -131,7 +123,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
       ? supabase
           .from("profiles")
           .update({
-            subscription_tier: tier,
+            subscription_tier: "basic",
             subscription_status: "active",
           })
           .eq("id", user.id)
