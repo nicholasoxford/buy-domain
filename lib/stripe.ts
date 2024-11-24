@@ -89,10 +89,11 @@ export type SubscriptionData = {
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
   const email = data.email.trim();
+  console.log("EMAIL: ", email);
   // Try to find user by email
   const { data: users, error: userError } = await supabase
     .from("profiles")
-    .select("id")
+    .select("*")
     .eq("email", email);
 
   console.log("USERS: ", users);
