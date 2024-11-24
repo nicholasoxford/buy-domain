@@ -30,7 +30,7 @@ async function handleSubscriptionChange(
   customerDetails?: Stripe.Checkout.Session.CustomerDetails | null
 ) {
   const supabase = await createClient();
-
+  console.log("RIGHT BEFORE USER LOOKUP");
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
