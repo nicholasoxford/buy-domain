@@ -71,9 +71,9 @@ async function handleTemplatePayment(session: Stripe.PaymentIntent) {
   const supabase = await createClient();
   const customerId = session.customer as string;
   console.log("Customer ID:", customerId);
-
+  console.log({ session });
   // Upsert purchase record for template
-  const { error } = await supabase.from("purchases").upsert({
+  const { error, data } = await supabase.from("purchases").upsert({
     email: session.receipt_email!,
     product_type: "template",
     tier: "template",
@@ -88,6 +88,7 @@ async function handleTemplatePayment(session: Stripe.PaymentIntent) {
   if (error) {
     console.error("Error recording template purchase:", error);
   }
+  console.log("Template purchase recorded:", data);
 }
 
 export async function POST(req: Request) {
