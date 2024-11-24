@@ -90,11 +90,14 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
   console.log("RIGHT BEFORE USER LOOKUP.. EMAIL: ", data.email);
   // Try to find user by email
-  const { data: user, error: userError } = await supabase
+  const { data: users, error: userError } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", data.email)
-    .single();
+    .eq("email", data.email.trim());
+
+  console.log("USER RESULT: ", users);
+
+  const user = users?.[0];
 
   if (userError) {
     throw new Error(`Failed to lookup user: ${userError.message}`);
