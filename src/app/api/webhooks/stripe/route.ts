@@ -67,14 +67,14 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
 }
 
-async function handleTemplatePayment(session: Stripe.PaymentIntent) {
+async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   const supabase = await createClient();
   const customerId = session.customer as string;
-  console.log("Customer ID:", customerId);
-  console.log({ session });
+  if (!customerId) return;
+
   // Upsert purchase record for template
-  const { error, data } = await supabase.from("purchases").upsert({
-    email: session.receipt_email!,
+  const { error } = await supabase.from("purchases").upsert({
+    email: session.customer_email!,
     product_type: "template",
     tier: "template",
     status: "active",
@@ -88,7 +88,6 @@ async function handleTemplatePayment(session: Stripe.PaymentIntent) {
   if (error) {
     console.error("Error recording template purchase:", error);
   }
-  console.log("Template purchase recorded:", data);
 }
 
 export async function POST(req: Request) {
@@ -125,18 +124,20 @@ export async function POST(req: Request) {
           case "payment_intent.succeeded":
             const paymentIntent = event.data.object as Stripe.PaymentIntent;
             console.log("Payment successful for intent:", paymentIntent.id);
-            await handleTemplatePayment(paymentIntent);
             break;
 
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
 
-            const subscriptionCompleted = await stripe.subscriptions.retrieve(
-              session.subscription as string
-            );
-            await handleSubscriptionChange(subscriptionCompleted);
-
+            if (session.mode === "payment") {
+              await handleTemplatePayment(session);
+            } else if (session.mode === "subscription") {
+              const subscription = await stripe.subscriptions.retrieve(
+                session.subscription as string
+              );
+              await handleSubscriptionChange(subscription);
+            }
             break;
 
           case "customer.subscription.created":
