@@ -24,6 +24,7 @@ export async function POST(req: Request) {
     let event: Stripe.Event;
 
     try {
+      console.log({ endpointSecret });
       event = stripe.webhooks.constructEvent(text, sig, endpointSecret);
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
@@ -33,18 +34,28 @@ export async function POST(req: Request) {
       );
     }
 
-    // Handle the event
-    switch (event.type) {
-      case "checkout.session.completed":
-        const session = event.data.object as Stripe.Checkout.Session;
-        console.log("Payment successful for session:", session.id);
-        break;
+    // Send response early to avoid timeout issues
+    const response = NextResponse.json({ received: true }, { status: 200 });
 
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
+    // Process the event asynchronously
+    (async () => {
+      try {
+        switch (event.type) {
+          case "checkout.session.completed":
+            const session = event.data.object as Stripe.Checkout.Session;
+            console.log("Payment successful for session:", session.id);
+            // Handle your business logic here
+            break;
 
-    return NextResponse.json({ received: true }, { status: 200 });
+          default:
+            console.log(`Unhandled event type: ${event.type}`);
+        }
+      } catch (err: any) {
+        console.error("Async webhook processing error:", err.message);
+      }
+    })();
+
+    return response;
   } catch (err: any) {
     console.error("Webhook error:", err.message);
     return NextResponse.json(
