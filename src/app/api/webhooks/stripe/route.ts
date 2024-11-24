@@ -71,7 +71,7 @@ async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   const supabase = await createClient();
   const customerId = session.customer as string;
   console.log("Customer ID:", customerId);
-  if (!customerId) return;
+  console.log({ session });
 
   // Upsert purchase record for template
   const { error } = await supabase.from("purchases").upsert({
