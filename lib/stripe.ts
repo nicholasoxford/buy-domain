@@ -88,12 +88,12 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-
+  const email = data.email.trim();
   // Try to find user by email
   const { data: users, error: userError } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", data.email);
+    .eq("email", email);
 
   console.log("USERS: ", users);
   if (userError && userError.code !== "PGRST116") {
@@ -109,7 +109,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   const updates = [
     supabase.from("purchases").upsert(
       {
-        email: data.email,
+        email: email,
         user_id: user?.id || null,
         product_type: "subscription",
         tier: "basic",
