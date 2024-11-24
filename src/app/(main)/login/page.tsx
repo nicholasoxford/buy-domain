@@ -3,7 +3,7 @@
 import { useFormState } from "react-dom";
 import { useFormStatus } from "react-dom";
 import { login, signup, type AuthState } from "./actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
@@ -36,9 +36,15 @@ const initialState: AuthState = {
 };
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
+  const showSignup = searchParams.get("signup") === "true";
+
+  const [isLogin, setIsLogin] = useState(!showSignup);
+
+  useEffect(() => {
+    setIsLogin(!showSignup);
+  }, [showSignup]);
 
   const [state, formAction] = useFormState(
     isLogin ? login : signup,
