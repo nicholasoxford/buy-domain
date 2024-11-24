@@ -67,14 +67,14 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
 }
 
-async function handleTemplatePayment(session: Stripe.Checkout.Session) {
+async function handleTemplatePayment(session: Stripe.PaymentIntent) {
   const supabase = await createClient();
   const customerId = session.customer as string;
   if (!customerId) return;
 
   // Upsert purchase record for template
   const { error } = await supabase.from("purchases").upsert({
-    email: session.customer_email!,
+    email: session.receipt_email!,
     product_type: "template",
     tier: "template",
     status: "active",
@@ -124,20 +124,18 @@ export async function POST(req: Request) {
           case "payment_intent.succeeded":
             const paymentIntent = event.data.object as Stripe.PaymentIntent;
             console.log("Payment successful for intent:", paymentIntent.id);
+            await handleTemplatePayment(paymentIntent);
             break;
 
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
 
-            if (session.mode === "payment") {
-              await handleTemplatePayment(session);
-            } else if (session.mode === "subscription") {
-              const subscription = await stripe.subscriptions.retrieve(
-                session.subscription as string
-              );
-              await handleSubscriptionChange(subscription);
-            }
+            const subscriptionCompleted = await stripe.subscriptions.retrieve(
+              session.subscription as string
+            );
+            await handleSubscriptionChange(subscriptionCompleted);
+
             break;
 
           case "customer.subscription.created":
