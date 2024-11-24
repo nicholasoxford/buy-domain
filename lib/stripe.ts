@@ -88,7 +88,7 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-
+  console.log("RIGHT BEFORE USER LOOKUP.. EMAIL: ", data.email);
   // Try to find user by email
   const { data: user, error: userError } = await supabase
     .from("profiles")
