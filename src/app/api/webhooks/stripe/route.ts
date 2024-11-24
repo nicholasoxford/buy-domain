@@ -34,19 +34,21 @@ type SubscriptionData = {
 
 async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-
+  console.log("RIGHT BEFORE INVOICE RETRIEVE");
   // Get the invoice to find the price ID
   const invoice = await stripe.invoices.retrieve(data.invoiceId);
+  console.log("RIGHT BEFORE PRICE ID RETRIEVE");
   const priceId = invoice.lines.data[0]?.price?.id;
+  console.log("RIGHT BEFORE TIER DETERMINATION");
   const tier = getTierFromPriceId(priceId || "");
-
+  console.log("RIGHT BEFORE USER LOOKUP");
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
     .select("id")
     .eq("email", data.email)
     .single();
-
+  console.log("RIGHT BEFORE UPDATES");
   // Start a transaction to update both tables
   const updates = [
     // Update purchases table
@@ -75,10 +77,10 @@ async function handleSubscriptionChange(data: SubscriptionData) {
           .eq("id", user.id)
       : null,
   ].filter(Boolean);
-
+  console.log("RIGHT BEFORE EXECUTION");
   // Execute all updates
   const results = await Promise.all(updates);
-
+  console.log("RIGHT AFTER EXECUTION: ", results);
   // Check for errors
   results.forEach((result, index) => {
     if (result?.error) {
