@@ -8,9 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Domain Dash - Monetize Your Dormant Domains",
+  title: "Domain Bridge - Monetize Your Dormant Domains",
   description:
-    "Turn your unused domains into profit with Domain Dash. Choose from affordable templates or hassle-free hosting.",
+    "Turn your unused domains into profit with Domain Bridge. Choose from affordable templates or hassle-free hosting.",
 };
 
 export default async function RootLayout({
