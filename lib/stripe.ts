@@ -92,6 +92,10 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
 
   console.log("Searching for email:", email);
 
+  console.log("GET ALL PROFILES");
+
+  console.log(await supabase.from("profiles").select("*"));
+
   // Simple exact match query with debug logging
   const { data: users, error: userError } = await supabase
     .from("profiles")
