@@ -26,7 +26,13 @@ export default async function AdminPage() {
   ]);
 
   // Get visits count based on domain selection
-  const visitsCount = await getTotalVisits(allDomains);
+  const stats = await getDomainStats(user.id);
+
+  const totalVisits = stats.reduce((sum, stat) => sum + stat.visits, 0);
+  const totalOffers = stats.reduce((sum, stat) => sum + stat.offerCount, 0);
+  const highestOffer = Math.max(...stats.map((stat) => stat.topOffer));
+  const averageOffer =
+    stats.reduce((sum, stat) => sum + stat.avgOffer, 0) / stats.length;
 
   return (
     <div>
@@ -38,7 +44,7 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-slate-400">Total Offers</h3>
           </div>
-          <p className="text-3xl font-bold text-white">{offers.length}</p>
+          <p className="text-3xl font-bold text-white">{totalOffers}</p>
         </div>
 
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 hover:border-purple-500/30 transition-colors">
@@ -46,10 +52,7 @@ export default async function AdminPage() {
             Highest Offer
           </h3>
           <p className="text-3xl font-bold text-white">
-            $
-            {offers.length
-              ? Math.max(...offers.map((o) => o.amount)).toLocaleString()
-              : "0"}
+            ${highestOffer.toLocaleString()}
           </p>
         </div>
 
@@ -58,12 +61,7 @@ export default async function AdminPage() {
             Average Offer
           </h3>
           <p className="text-3xl font-bold text-white">
-            $
-            {offers.length
-              ? Math.round(
-                  offers.reduce((acc, o) => acc + o.amount, 0) / offers.length
-                ).toLocaleString()
-              : "0"}
+            ${averageOffer.toLocaleString()}
           </p>
         </div>
 
@@ -72,7 +70,7 @@ export default async function AdminPage() {
             Total Visits
           </h3>
           <p className="text-3xl font-bold text-white">
-            {visitsCount.toLocaleString()}
+            {totalVisits.toLocaleString()}
           </p>
         </div>
       </div>
@@ -151,7 +149,7 @@ export default async function AdminPage() {
           <h2 className="text-lg font-medium text-white">Domain Statistics</h2>
         </div>
         <div className="p-6">
-          <DomainStatsTable initialStats={await getDomainStats()} />
+          <DomainStatsTable initialStats={stats} />
         </div>
       </div>
     </div>
