@@ -5,16 +5,35 @@ import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { Menu, X, Command, Github, ChevronDown } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 
 interface NavBarProps {
   initialUser?: User | null;
+  initialProfile?: {
+    subscription_status?: string | null;
+    subscription_tier?: string | null;
+  } | null;
   variant?: "default" | "docs";
 }
 
-export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
+export function NavBar({
+  initialUser,
+  initialProfile,
+  variant = "default",
+}: NavBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
+
+  const isSubscribed =
+    initialProfile?.subscription_status === "active" ||
+    initialProfile?.subscription_status === "trialing";
+
+  const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+  if (user?.email) {
+    stripeUrl.searchParams.set("prefilled_email", user.email);
+  }
 
   // using an useEffect, setUser to the user from supabase
   useEffect(() => {
@@ -74,16 +93,21 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
 
           {/* Secondary Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="https://github.com/yourusername/domain-dash"
-              className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg group"
-              target="_blank"
-            >
-              <Github className="h-5 w-5 group-hover:scale-110 transition-transform" />
-            </Link>
-
             {user ? (
               <div className="flex items-center space-x-4">
+                {!isSubscribed && (
+                  <a
+                    href={stripeUrl.toString()}
+                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"
+                  >
+                    Upgrade
+                  </a>
+                )}
+                {isSubscribed && (
+                  <span className="px-2 py-1 text-xs font-medium text-purple-400 bg-purple-500/20 rounded-full">
+                    {initialProfile?.subscription_tier?.toUpperCase()}
+                  </span>
+                )}
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                   <div className="h-6 w-6 rounded-full bg-purple-500/20 flex items-center justify-center">
                     <span className="text-xs font-medium text-purple-400">

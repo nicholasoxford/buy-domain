@@ -24,12 +24,16 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("subscription_tier, subscription_status")
-    .eq("id", user.id)
-    .single();
+  console.log("USER: ", user.id);
 
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id);
+
+  console.log("PROFILES: ", profiles);
+  const profile = profiles?.[0];
+  console.log("PROFILE: ", profile);
   const isSubscribed =
     profile?.subscription_status === "active" ||
     profile?.subscription_status === "trialing";

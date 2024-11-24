@@ -22,9 +22,20 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  let profile = null;
+  if (user) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    profile = profiles;
+  }
+
   return (
     <>
-      <NavBar initialUser={user} />
+      <NavBar initialUser={user} initialProfile={profile} />
       <div className="">{children}</div>
     </>
   );
