@@ -37,8 +37,8 @@ export default async function AdminPage() {
             Add Your First Domain
           </h2>
           <p className="text-slate-400 mb-6">
-            Get started by adding a domain to your account. You'll be able to
-            track offers, visits, and manage your domain portfolio all in one
+            Get started by adding a domain to your account. You&apos;ll be able
+            to track offers, visits, and manage your domain portfolio all in one
             place.
           </p>
           <Link
