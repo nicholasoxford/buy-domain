@@ -1,11 +1,8 @@
 import { NextRequest } from "next/server";
-import {
-  EnvVariables,
-  getBaseUrlServerSide,
-  getEnvVariables,
-} from "@/utils/env";
+import { getEnvVariables } from "@/utils/env";
 import { submitDomainOffer } from "@/lib/supabase/actions";
 import { DomainOffer } from "@/lib/utils";
+import { getBaseUrlServerSide } from "@/utils/host";
 
 // CORS headers
 const corsHeaders = {

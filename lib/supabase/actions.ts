@@ -1,5 +1,6 @@
 import { DomainOffer, DomainStat } from "../utils";
 import { createClient } from "./server";
+import { addDomainToVercel, removeDomainFromVercel } from "../vercel/api";
 
 export async function submitDomainOffer(
   domain: string,
@@ -70,12 +71,19 @@ export async function deleteDomainOffers(domain: string) {
   };
 }
 
-export async function getAllDomains() {
+export async function getAllDomains(userId?: string) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("domains")
     .select("domain")
+    .not("domain", "like", "www.%")
     .order("domain");
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(`Failed to get domains: ${error.message}`);
@@ -88,9 +96,9 @@ export async function getAllOffers() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("domain_offers")
-    .select("*, domains!inner(*)")
+    .select("*")
     .order("created_at", { ascending: false });
-
+  console.log({ data });
   if (error) {
     throw new Error(`Failed to get all offers: ${error.message}`);
   }
@@ -139,14 +147,20 @@ export async function initializeDomain(domain: string) {
   };
 }
 
-export async function getDomainStats(): Promise<DomainStat[]> {
+export async function getDomainStats(userId?: string): Promise<DomainStat[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("domain_stats")
     .select("*")
     .order("offer_count", { ascending: false })
     .order("visits", { ascending: false })
     .order("domain");
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(`Failed to get domain stats: ${error.message}`);
@@ -175,10 +189,15 @@ async function getOffersCount(domain: string): Promise<number> {
 
   return count || 0;
 }
-export async function trackPageView(domain: string, metadata?: any) {
+export async function trackPageView(
+  domain: string,
+  userId?: string,
+  metadata?: any
+) {
   const supabase = await createClient();
   const { error } = await supabase.from("page_views").insert({
     page_url: domain,
+    user_id: userId,
     metadata,
     view_timestamp: new Date().toISOString(),
   });
@@ -214,4 +233,144 @@ export async function getTotalVisits(domains: string[]): Promise<number> {
   }
 
   return data.reduce((sum, { visits }) => sum + (visits ?? 0), 0);
+}
+
+export async function addDomain(domain: string, userId: string) {
+  // Clean and validate the domain
+  const cleanDomain = cleanDomainName(domain);
+  validateDomainName(cleanDomain);
+
+  const supabase = await createClient();
+
+  // Only store the base domain in the database
+  const { data: dbDomain, error: dbError } = await supabase
+    .from("domains")
+    .insert({
+      domain: cleanDomain,
+      user_id: userId,
+      verified: false,
+      created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (dbError) {
+    throw new Error(
+      `Action Error: Failed to add domain to database: ${dbError.message}`
+    );
+  }
+
+  try {
+    // Add both domains to Vercel (handled internally by addDomainToVercel)
+    const vercelResponse = await addDomainToVercel(
+      process.env.VERCEL_PROJECT_ID!,
+      cleanDomain
+    );
+
+    // Update database with Vercel project ID
+    const { error: updateError } = await supabase
+      .from("domains")
+      .update({
+        vercel_project_id: process.env.VERCEL_PROJECT_ID,
+        verified: vercelResponse.verified,
+      })
+      .eq("domain", cleanDomain);
+
+    if (updateError) {
+      throw new Error(`Failed to update domain: ${updateError.message}`);
+    }
+
+    return {
+      ...dbDomain,
+    };
+  } catch (error) {
+    // If Vercel fails, delete the domain from database
+    await supabase.from("domains").delete().eq("domain", cleanDomain);
+    throw error;
+  }
+}
+
+// Helper functions for domain validation
+function cleanDomainName(domain: string): string {
+  // Remove protocol and www
+  let cleanDomain = domain.toLowerCase().trim();
+  cleanDomain = cleanDomain.replace(/^https?:\/\//, "");
+  cleanDomain = cleanDomain.replace(/^www\./, "");
+
+  // Remove trailing slash and anything after it
+  cleanDomain = cleanDomain.split("/")[0] ?? "";
+
+  return cleanDomain;
+}
+
+function validateDomainName(domain: string): void {
+  // Basic domain validation regex
+  const domainRegex =
+    /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+
+  if (!domainRegex.test(domain)) {
+    throw new Error(
+      "Invalid domain name. Please enter a valid domain (e.g., example.com)"
+    );
+  }
+}
+
+export async function getDomainByName(domain: string) {
+  const supabase = await createClient();
+  const cleanDomain = cleanDomainName(domain);
+
+  const { data, error } = await supabase
+    .from("domains")
+    .select("*")
+    .eq("domain", cleanDomain)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to get domain: ${error.message}`);
+  }
+
+  return data;
+}
+
+export async function deleteDomain(domain: string, userId: string) {
+  const supabase = await createClient();
+
+  // First verify the user owns the domain
+  const { data: domainData, error: fetchError } = await supabase
+    .from("domains")
+    .select("user_id")
+    .eq("domain", domain)
+    .single();
+
+  if (fetchError) {
+    throw new Error(`Failed to fetch domain: ${fetchError.message}`);
+  }
+
+  if (domainData.user_id !== userId) {
+    throw new Error("Unauthorized: You don't own this domain");
+  }
+
+  try {
+    // First remove from Vercel
+    await removeDomainFromVercel(domain);
+
+    // Then delete from database
+    const { error: deleteError } = await supabase
+      .from("domains")
+      .delete()
+      .eq("domain", domain);
+
+    if (deleteError) {
+      throw new Error(`Failed to delete domain: ${deleteError.message}`);
+    }
+
+    // Also delete any associated offers
+    await supabase.from("domain_offers").delete().eq("domain", domain);
+
+    return {
+      message: "Domain deleted successfully",
+    };
+  } catch (error) {
+    throw error;
+  }
 }

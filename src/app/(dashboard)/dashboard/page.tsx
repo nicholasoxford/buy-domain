@@ -2,16 +2,14 @@ import { DomainSelector } from "@/components/DomainSelector";
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
 import { DomainStatsTable } from "@/components/DomainTable";
 import Link from "next/link";
-import { getBaseUrlServerSide } from "@/utils/env";
 import {
   getAllDomains,
   getAllOffers,
-  getDomainOffers,
   getDomainStats,
   getTotalVisits,
-  getVisits,
 } from "@/lib/supabase/actions";
 import { createClient } from "@/lib/supabase/server";
+import { getBaseUrlServerSide } from "@/utils/host";
 
 export default async function AdminPage({
   searchParams,
@@ -22,52 +20,23 @@ export default async function AdminPage({
   // Get all domains and offers
   const [allDomains, offers] = await Promise.all([
     getAllDomains(),
-    searchParams.domain === "all"
-      ? getAllOffers()
-      : getDomainOffers(searchParams.domain || baseUrl).then((offers) =>
-          offers.map((offer) => ({
-            ...offer,
-            domain: searchParams.domain || baseUrl,
-          }))
-        ),
+    getAllOffers(),
   ]);
 
+  console.log({ allDomains, offers });
+
   // Get visits count based on domain selection
-  const visitsCount =
-    searchParams.domain === "all"
-      ? await getTotalVisits(allDomains)
-      : await getVisits(searchParams.domain || baseUrl);
+  const visitsCount = await getTotalVisits(allDomains);
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">Overview</h1>
-
-      {/* Domain Selector and All Domains link */}
-      <div className="flex items-center gap-4 mb-6">
-        <DomainSelector
-          domains={allDomains}
-          currentDomain={searchParams.domain || baseUrl}
-        />
-        <Link
-          href="/admin?domain=all"
-          className={`px-3 py-1.5 text-sm rounded-md font-medium transition-all duration-200 ${
-            searchParams.domain === "all"
-              ? "bg-purple-500 text-white"
-              : "text-slate-300 hover:text-white hover:bg-slate-800"
-          }`}
-        >
-          All Domains
-        </Link>
-      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 hover:border-purple-500/30 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-slate-400">Total Offers</h3>
-            <span className="flex items-center text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-              <span className="mr-1">↑</span> 2 new
-            </span>
           </div>
           <p className="text-3xl font-bold text-white">{offers.length}</p>
         </div>

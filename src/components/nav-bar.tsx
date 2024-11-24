@@ -43,7 +43,7 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
             >
               <Command className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
               <span className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                DomainDash
+                Domain Bridge
               </span>
             </Link>
 

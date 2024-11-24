@@ -38,20 +38,24 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log({ MIDDLEWARE_USER: user });
+
+  const pathname = request.nextUrl.pathname;
+  console.log("USER: ", user?.email);
+  console.log("PATHNAME: ", pathname);
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/docs") &&
-    !request.nextUrl.pathname.startsWith("/")
+    !pathname.startsWith("/login") &&
+    !pathname.startsWith("/auth") &&
+    !pathname.startsWith("/docs") &&
+    !pathname.startsWith("/api/domains") &&
+    !pathname.startsWith("/")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-
+  console.log("SUPABASE RESPONSE: ", supabaseResponse.status);
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:
@@ -64,6 +68,5 @@ export async function updateSession(request: NextRequest) {
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
-  console.log("ABOUT TO RETURN SUPABASE RESPONSE");
   return supabaseResponse;
 }

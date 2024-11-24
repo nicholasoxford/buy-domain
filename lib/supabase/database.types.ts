@@ -59,16 +59,28 @@ export type Database = {
           created_at: string | null
           domain: string
           metadata: Json | null
+          user_id: string | null
+          vercel_project_id: string | null
+          verification_details: Json | null
+          verified: boolean | null
         }
         Insert: {
           created_at?: string | null
           domain: string
           metadata?: Json | null
+          user_id?: string | null
+          vercel_project_id?: string | null
+          verification_details?: Json | null
+          verified?: boolean | null
         }
         Update: {
           created_at?: string | null
           domain?: string
           metadata?: Json | null
+          user_id?: string | null
+          vercel_project_id?: string | null
+          verification_details?: Json | null
+          verified?: boolean | null
         }
         Relationships: []
       }

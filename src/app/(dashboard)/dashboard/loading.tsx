@@ -6,12 +6,6 @@ export default function AdminLoading() {
         <div className="h-8 w-32 bg-slate-800/50 rounded-lg animate-pulse" />
       </div>
 
-      {/* Domain Selector Skeleton */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="h-10 w-48 bg-slate-800/50 rounded-lg animate-pulse" />
-        <div className="h-10 w-24 bg-slate-800/50 rounded-lg animate-pulse" />
-      </div>
-
       {/* Stats Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {[...Array(4)].map((_, i) => (

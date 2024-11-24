@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { z } from "node_modules/zod/lib";
 import { redirect } from "next/navigation";
@@ -30,3 +31,37 @@ export async function checkAuth() {
 export const passwordSchema = z.object({
   password: z.string().min(1),
 });
+
+export type Session = {
+  user: {
+    id: string;
+    email?: string;
+    role?: string;
+  };
+};
+
+export async function auth(): Promise<Session | null> {
+  const supabase = await createClient();
+
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return null;
+    }
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  } catch (error) {
+    console.error("Auth error:", error);
+    return null;
+  }
+}

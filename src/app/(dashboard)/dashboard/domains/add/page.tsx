@@ -2,19 +2,61 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/hooks/useUser";
 
 export default function AddDomainPage() {
   const [domain, setDomain] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { user, loading: userLoading } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically make an API call to add the domain
-    // For now, we'll just simulate it
-    console.log(`Adding domain: ${domain}`);
-    // Redirect to the all domains page after adding
-    router.push("/admin/domains");
+    if (!user) {
+      setError("You must be logged in to add a domain");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    console.log("ADDING DOMAIN: ", domain);
+    try {
+      const response = await fetch("/api/domains", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ domain }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.error?.includes("already in use")) {
+          throw new Error(
+            "This domain is already assigned to another project and couldn't be reassigned. Please remove it from the other project first."
+          );
+        }
+        throw new Error(data.error || "Failed to add domain");
+      }
+
+      router.push(`/dashboard/domains/${domain}/verify`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add domain");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (userLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    router.push("/login");
+    return null;
+  }
 
   return (
     <div>
@@ -38,13 +80,16 @@ export default function AddDomainPage() {
             className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="example.com"
             required
+            disabled={loading}
           />
         </div>
+        {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
         <button
           type="submit"
-          className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+          className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50"
+          disabled={loading}
         >
-          Add Domain
+          {loading ? "Adding..." : "Add Domain"}
         </button>
       </form>
     </div>
