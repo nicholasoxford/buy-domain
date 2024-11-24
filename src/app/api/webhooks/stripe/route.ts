@@ -129,7 +129,7 @@ export async function POST(req: Request) {
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
-
+            console.log("Session mode:", session.mode);
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
