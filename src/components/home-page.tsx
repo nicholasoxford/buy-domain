@@ -125,14 +125,14 @@ export function HomePage({ user }: { user: User | null }) {
               href="/dashboard"
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-lg transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
             >
-              Deploy Your First Domain
+              {user ? "Visit Dashboard" : "Deploy Your First Domain"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link
               href="/docs"
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-lg transition-colors border border-white/10"
             >
-              See How It Works
+              {user ? "Documentation" : "See How It Works"}
             </Link>
           </div>
 

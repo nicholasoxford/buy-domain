@@ -8,6 +8,9 @@ import {
   BookOpen,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { redirect } from "next/navigation";
+
 export default async function AdminLayout({
   children,
 }: {
@@ -17,6 +20,24 @@ export default async function AdminLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_tier, subscription_status")
+    .eq("id", user.id)
+    .single();
+
+  const isSubscribed =
+    profile?.subscription_status === "active" ||
+    profile?.subscription_status === "trialing";
+
+  const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+  if (user.email) {
+    stripeUrl.searchParams.set("prefilled_email", user.email);
+  }
 
   return (
     <div className="min-h-screen bg-slate-900 flex">
@@ -72,6 +93,23 @@ export default async function AdminLayout({
             </li>
           </ul>
         </nav>
+
+        {!isSubscribed && (
+          <div className="mt-8 p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+            <h3 className="text-sm font-medium text-purple-400 mb-2">
+              Upgrade Your Account
+            </h3>
+            <p className="text-xs text-slate-300 mb-3">
+              Get access to premium features and increase your domain limits.
+            </p>
+            <a
+              href={stripeUrl.toString()}
+              className="block w-full text-center px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium transition-colors"
+            >
+              Upgrade Now
+            </a>
+          </div>
+        )}
       </aside>
 
       {/* Main content area */}
@@ -82,6 +120,12 @@ export default async function AdminLayout({
             <h1 className="text-lg font-medium text-white">Dashboard</h1>
 
             <div className="flex items-center gap-6">
+              {isSubscribed && (
+                <span className="px-2 py-1 text-xs font-medium text-purple-400 bg-purple-500/20 rounded-full">
+                  {profile?.subscription_tier?.toUpperCase()}
+                </span>
+              )}
+
               {/* Documentation Link */}
               <Link
                 href="/docs"

@@ -114,18 +114,30 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          subscription_status: string | null
+          subscription_tier:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
         }
         Insert: {
           email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          subscription_status?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
         }
         Update: {
           email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          subscription_status?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
         }
         Relationships: []
       }

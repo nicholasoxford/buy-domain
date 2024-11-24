@@ -25,46 +25,69 @@ function getTierFromPriceId(
   return PRICE_TO_TIER[priceId] || "basic";
 }
 
-async function handleSubscriptionChange(subscription: Stripe.Subscription) {
+async function handleSubscriptionChange(
+  subscription: Stripe.Subscription,
+  customerDetails?: Stripe.Checkout.Session.CustomerDetails | null
+) {
   const supabase = await createClient();
   const customerId =
     typeof subscription.customer === "string"
       ? subscription.customer
       : subscription.customer.id;
   if (!customerId) return;
-
+  console.log();
   // Try to find user by email
   const { data: user } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", customerId)
+    .eq("email", customerDetails?.email || "")
     .single();
 
+  console.log({ user: user?.id });
+  console.log({ priceId: subscription?.items.data[0]?.price?.id });
   const tier = getTierFromPriceId(subscription?.items.data[0]?.price?.id || "");
+  console.log({ tier });
+  // Start a transaction to update both tables
+  const updates = [
+    // Update purchases table
+    supabase.from("purchases").upsert(
+      {
+        email: customerId,
+        user_id: user?.id || null,
+        product_type: "subscription",
+        tier,
+        status: subscription.status,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscription.id,
+        expiration_date: new Date(
+          subscription.current_period_end * 1000
+        ).toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "stripe_subscription_id" }
+    ),
 
-  // Upsert purchase record
-  const { error } = await supabase.from("purchases").upsert(
-    {
-      email: customerId,
-      user_id: user?.id || null,
-      product_type: "subscription",
-      tier,
-      status: subscription.status,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: subscription.id,
-      expiration_date: new Date(
-        subscription.current_period_end * 1000
-      ).toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      onConflict: "stripe_subscription_id",
+    // Update profiles table if we have a user
+    user?.id
+      ? supabase
+          .from("profiles")
+          .update({
+            subscription_tier: tier,
+            subscription_status: subscription.status,
+          })
+          .eq("id", user.id)
+      : null,
+  ].filter(Boolean);
+
+  // Execute all updates
+  const results = await Promise.all(updates);
+
+  // Check for errors
+  results.forEach((result, index) => {
+    if (result?.error) {
+      console.error(`Error in update ${index}:`, result.error);
     }
-  );
-
-  if (error) {
-    console.error("Error updating subscription:", error);
-  }
+  });
 }
 
 async function handleTemplatePayment(session: Stripe.Checkout.Session) {
@@ -126,13 +149,17 @@ export async function POST(req: Request) {
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
+            console.log("Session mode:", session.mode);
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
               const subscription = await stripe.subscriptions.retrieve(
                 session.subscription as string
               );
-              await handleSubscriptionChange(subscription);
+              await handleSubscriptionChange(
+                subscription,
+                session.customer_details
+              );
             }
             break;
 
