@@ -3,6 +3,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Code, Server, Check } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  BUY_TEMPLATE_STRIPE_LINK,
+} from "@/utils/constants";
+import { User } from "@supabase/supabase-js";
 
 const FloatingOrb = ({ delay = 0 }) => (
   <motion.div
@@ -23,7 +30,50 @@ const FloatingOrb = ({ delay = 0 }) => (
   />
 );
 
-export function HomePage() {
+export function HomePage({ user }: { user: User | null }) {
+  const [showSelfHostedModal, setShowSelfHostedModal] = useState(false);
+  const [showManagedModal, setShowManagedModal] = useState(false);
+  const router = useRouter();
+
+  const handleBuyNowClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log("User:", user);
+    if (user) {
+      const stripeUrl = new URL(BUY_TEMPLATE_STRIPE_LINK);
+      if (user.email) {
+        console.log("User email:", user.email);
+        stripeUrl.searchParams.set("prefilled_email", user.email);
+        console.log("Final URL:", stripeUrl.toString());
+      }
+      window.location.href = stripeUrl.toString();
+    } else {
+      setShowSelfHostedModal(true);
+    }
+  };
+
+  const handleStartTrialClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+      if (user.email) {
+        stripeUrl.searchParams.set("prefilled_email", user.email);
+      }
+      window.location.href = stripeUrl.toString();
+    } else {
+      setShowManagedModal(true);
+    }
+  };
+
+  // check if user is logged in
+  // if so dont show the modals
+  useEffect(() => {
+    if (user) {
+      setShowSelfHostedModal(false);
+      setShowManagedModal(false);
+    }
+  }, [user]);
+
+  console.log({ showSelfHostedModal, showManagedModal });
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-slate-900 flex flex-col items-center justify-start antialiased">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-slate-900" />
@@ -85,7 +135,7 @@ export function HomePage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
             <Link
-              href="https://buy.stripe.com/test_dR63f48ve81hbyE144"
+              href="/dashboard"
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-lg transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
             >
               Deploy Your First Domain
@@ -157,11 +207,46 @@ export function HomePage() {
                 ))}
               </ul>
               <Link
-                href="https://buy.stripe.com/test_dR63f48ve81hbyE144"
+                href="#"
+                onClick={handleBuyNowClick}
                 className="block w-full text-center px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-colors"
               >
                 Buy Now
               </Link>
+
+              {showSelfHostedModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-slate-700/50">
+                    <h2 className="text-2xl font-bold text-white mb-4">
+                      Sign in to continue
+                    </h2>
+                    <div className="space-y-4">
+                      <button
+                        onClick={() =>
+                          router.push("/login?redirect=/buy-template")
+                        }
+                        className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium"
+                      >
+                        Sign in / Create account
+                      </button>
+                      <button
+                        onClick={() => {
+                          window.location.href = BUY_TEMPLATE_STRIPE_LINK;
+                        }}
+                        className="w-full px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium border border-white/10"
+                      >
+                        Continue as guest
+                      </button>
+                      <button
+                        onClick={() => setShowSelfHostedModal(false)}
+                        className="w-full px-6 py-3 text-slate-400 hover:text-white text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             <motion.div
@@ -210,11 +295,38 @@ export function HomePage() {
                 ))}
               </ul>
               <Link
-                href="/signup"
+                href="#"
+                onClick={handleStartTrialClick}
                 className="block w-full text-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300"
               >
                 Start Free Trial
               </Link>
+
+              {showManagedModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-slate-700/50">
+                    <h2 className="text-2xl font-bold text-white mb-4">
+                      Sign in to continue
+                    </h2>
+                    <div className="space-y-4">
+                      <button
+                        onClick={() =>
+                          router.push("/login?redirect=/buy-basic-subscription")
+                        }
+                        className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium"
+                      >
+                        Sign in / Create account
+                      </button>
+                      <button
+                        onClick={() => setShowManagedModal(false)}
+                        className="w-full px-6 py-3 text-slate-400 hover:text-white text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
 

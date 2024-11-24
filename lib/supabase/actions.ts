@@ -92,13 +92,29 @@ export async function getAllDomains(userId?: string) {
   return data.map((d) => d.domain);
 }
 
-export async function getAllOffers() {
+export async function getAllOffers(userId?: string) {
   const supabase = await createClient();
+  console.log({ userId });
+  // First get all domains owned by the user
+  const { data: userDomains, error: domainsError } = await supabase
+    .from("domains")
+    .select("domain")
+    .eq("user_id", userId ?? "");
+
+  if (domainsError) {
+    throw new Error(`Failed to get user domains: ${domainsError.message}`);
+  }
+
+  // Extract domain names into an array
+  const domainNames = userDomains.map((d) => d.domain);
+
+  // Get offers only for user's domains
   const { data, error } = await supabase
     .from("domain_offers")
     .select("*")
+    .in("domain", domainNames)
     .order("created_at", { ascending: false });
-  console.log({ data });
+
   if (error) {
     throw new Error(`Failed to get all offers: ${error.message}`);
   }

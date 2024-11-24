@@ -1,6 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  BUY_TEMPLATE_STRIPE_LINK,
+  BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+} from "@/utils/constants";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -15,6 +19,7 @@ export async function login(
 ): Promise<AuthState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const redirectTo = formData.get("redirect") as string;
 
   if (!email || !password) {
     return { error: "Email and password are required", success: false };
@@ -24,12 +29,21 @@ export async function login(
     email,
     password,
   });
-  console.log({ data });
   if (error) {
     return { error: error.message, success: false };
   }
+
+  let redirectUrl = redirectTo;
+
+  if (redirectTo === "/buy-template") {
+    redirectUrl = BUY_TEMPLATE_STRIPE_LINK;
+  }
+  if (redirectTo === "/buy-basic-subscription") {
+    redirectUrl = BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
+  }
+
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect(redirectUrl || "/");
 }
 
 export async function signup(
@@ -54,6 +68,7 @@ export async function signup(
   });
 
   if (error) {
+    console.log({ error });
     return { error: error.message, success: false };
   }
   revalidatePath("/", "layout");

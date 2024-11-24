@@ -25,7 +25,6 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
 
   const isActive = (path: string) => pathname === path;
   const isDocs = variant === "docs";
-  console.log({ NAVBAR_USER: user });
   return (
     <nav
       className={`sticky top-0 z-50 border-b ${
@@ -59,18 +58,17 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
               >
                 Docs
               </Link>
-              {user && (
-                <Link
-                  href="/dashboard"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                    isActive("/dashboard")
-                      ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  Dashboard
-                </Link>
-              )}
+
+              <Link
+                href="/dashboard"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  isActive("/dashboard")
+                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                Dashboard
+              </Link>
             </div>
           </div>
 
@@ -106,12 +104,20 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
                 </form>
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/login?signup=true"
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
 
@@ -233,13 +239,20 @@ export function NavBar({ initialUser, variant = "default" }: NavBarProps) {
                       </form>
                     </div>
                   ) : (
-                    <Link
-                      href="/login"
-                      className="block w-full px-3 py-2.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg text-center shadow-lg shadow-purple-500/20"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Sign In
-                    </Link>
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href="/login"
+                        className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/login?signup=true"
+                        className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>

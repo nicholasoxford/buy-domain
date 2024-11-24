@@ -1,4 +1,3 @@
-import { DomainSelector } from "@/components/DomainSelector";
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
 import { DomainStatsTable } from "@/components/DomainTable";
 import Link from "next/link";
@@ -9,21 +8,23 @@ import {
   getTotalVisits,
 } from "@/lib/supabase/actions";
 import { createClient } from "@/lib/supabase/server";
-import { getBaseUrlServerSide } from "@/utils/host";
+import { redirect } from "next/navigation";
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: { domain?: string };
-}) {
-  const baseUrl = await getBaseUrlServerSide();
+export default async function AdminPage() {
   // Get all domains and offers
-  const [allDomains, offers] = await Promise.all([
-    getAllDomains(),
-    getAllOffers(),
-  ]);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log({ user });
+  if (!user) {
+    redirect("/login");
+  }
 
-  console.log({ allDomains, offers });
+  const [allDomains, offers] = await Promise.all([
+    getAllDomains(user.id),
+    getAllOffers(user.id),
+  ]);
 
   // Get visits count based on domain selection
   const visitsCount = await getTotalVisits(allDomains);

@@ -22,7 +22,6 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log({ LAYOUT_USER: user });
   return (
     <>
       <NavBar initialUser={user} />

@@ -4,6 +4,8 @@ import { useFormState } from "react-dom";
 import { useFormStatus } from "react-dom";
 import { login, signup, type AuthState } from "./actions";
 import { useState } from "react";
+import { ArrowRight, Mail, Lock } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
@@ -12,9 +14,18 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
     <button
       type="submit"
       disabled={pending}
-      className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:bg-blue-300"
+      className="w-full px-6 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02]"
     >
-      {pending ? "Loading..." : children}
+      <span className="flex items-center justify-center">
+        {pending ? (
+          <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+        ) : (
+          <>
+            {children}
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </>
+        )}
+      </span>
     </button>
   );
 }
@@ -26,81 +37,140 @@ const initialState: AuthState = {
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
+
   const [state, formAction] = useFormState(
     isLogin ? login : signup,
     initialState
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            {isLogin ? "Sign in to your account" : "Create new account"}
-          </h2>
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center pt-16 sm:pt-24 p-4">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-purple-500/10 via-slate-900/0 to-slate-900/0" />
+      </div>
+
+      <div className="fixed top-8 left-8">
+        <div className="flex items-center gap-2 text-xl font-semibold text-white">
+          <div className="w-8 h-8 rounded bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+            DB
+          </div>
+          Domain Bridge
+        </div>
+      </div>
+
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
+            <div className="flex -space-x-2 mr-2">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 ring-2 ring-slate-900"
+                />
+              ))}
+            </div>
+            <span className="text-sm font-medium text-purple-200">
+              {isLogin ? "Welcome back!" : "Join 500+ Domain Investors"}
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white mb-3">
+            {isLogin ? "Sign in to your account" : "Create your account"}
+          </h1>
+          <p className="text-slate-400">
+            {isLogin
+              ? "Manage your domains and track offers"
+              : "Start managing your domain portfolio"}
+          </p>
         </div>
 
-        <form action={formAction} className="mt-8 space-y-6">
-          {state?.error && (
-            <div className="p-3 text-sm text-red-500 bg-red-100 rounded">
-              {state.error}
-            </div>
-          )}
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50 shadow-xl">
+          <form action={formAction} className="space-y-6">
+            <input type="hidden" name="redirect" value={redirectTo || ""} />
 
-          {!isLogin && state?.success && (
-            <div className="p-3 text-sm text-green-500 bg-green-100 rounded">
-              Verification email sent! Please check your inbox.
-            </div>
-          )}
+            {state?.error && (
+              <div className="p-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg">
+                {state.error}
+              </div>
+            )}
 
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
+            {!isLogin && state?.success && (
+              <div className="p-4 text-sm text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg">
+                Verification email sent! Please check your inbox.
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-slate-300 mb-2"
+                >
+                  Email address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-slate-300 mb-2"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete={isLogin ? "current-password" : "new-password"}
+                    required
+                    className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete={isLogin ? "current-password" : "new-password"}
-                required
-                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-          </div>
-
-          <div>
             <SubmitButton>
-              {isLogin ? "Sign in" : "Create account"}
+              {isLogin ? "Sign in to dashboard" : "Create account"}
             </SubmitButton>
-          </div>
-        </form>
+          </form>
 
-        <div className="text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-500 hover:text-blue-600"
-          >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
-          </button>
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-slate-400 hover:text-purple-400 transition-colors"
+            >
+              {isLogin
+                ? "Don't have an account? Create one"
+                : "Already have an account? Sign in"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center text-sm text-slate-400">
+          By continuing, you agree to our{" "}
+          <a href="#" className="text-purple-400 hover:text-purple-300">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="#" className="text-purple-400 hover:text-purple-300">
+            Privacy Policy
+          </a>
         </div>
       </div>
     </div>
