@@ -94,7 +94,6 @@ export async function getAllDomains(userId?: string) {
 
 export async function getAllOffers(userId?: string) {
   const supabase = await createClient();
-  console.log({ userId });
   // First get all domains owned by the user
   const { data: userDomains, error: domainsError } = await supabase
     .from("domains")

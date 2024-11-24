@@ -9,7 +9,6 @@ if (typeof window !== "undefined") {
 
 export async function addDomainToVercel(projectId: string, domain: string) {
   // First add the www subdomain as the main target
-  console.log({ projectId, domain });
   const wwwDomain = `www.${domain}`;
 
   const wwwResponse = await fetch(
@@ -82,12 +81,10 @@ export async function removeDomainFromVercel(domain: string) {
   if (!projectId) {
     throw new Error("VERCEL_PROJECT_ID is not configured");
   }
-  console.log("REMOVING DOMAIN: ", domain);
 
   // Try to remove the www subdomain
   try {
     const wwwDomain = `www.${domain}`;
-    console.log("REMOVING WWW DOMAIN: ", wwwDomain);
     await fetch(
       `${VERCEL_API_URL}/v9/projects/${projectId}/domains/${wwwDomain}`,
       {
@@ -98,7 +95,6 @@ export async function removeDomainFromVercel(domain: string) {
       }
     );
   } catch (error) {
-    console.error("Error removing www subdomain:", error);
     // Continue since main domain was removed successfully
   }
   // Remove the main domain

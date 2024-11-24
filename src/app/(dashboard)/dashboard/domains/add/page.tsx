@@ -20,7 +20,6 @@ export default function AddDomainPage() {
 
     setLoading(true);
     setError(null);
-    console.log("ADDING DOMAIN: ", domain);
     try {
       const response = await fetch("/api/domains", {
         method: "POST",

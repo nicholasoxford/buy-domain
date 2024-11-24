@@ -70,8 +70,6 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   const supabase = await createClient();
   const customerId = session.customer as string;
-  console.log("Customer ID:", customerId);
-  console.log({ session });
 
   // Upsert purchase record for template
   const { error, data } = await supabase.from("purchases").upsert({
@@ -87,7 +85,6 @@ async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   if (error) {
     console.error("Error recording template purchase:", error);
   }
-  console.log("Template purchase recorded:", data);
 }
 
 export async function POST(req: Request) {
@@ -129,7 +126,6 @@ export async function POST(req: Request) {
           case "checkout.session.completed":
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
-            console.log("Session mode:", session.mode);
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {

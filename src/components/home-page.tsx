@@ -37,13 +37,10 @@ export function HomePage({ user }: { user: User | null }) {
 
   const handleBuyNowClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("User:", user);
     if (user) {
       const stripeUrl = new URL(BUY_TEMPLATE_STRIPE_LINK);
       if (user.email) {
-        console.log("User email:", user.email);
         stripeUrl.searchParams.set("prefilled_email", user.email);
-        console.log("Final URL:", stripeUrl.toString());
       }
       window.location.href = stripeUrl.toString();
     } else {
@@ -64,16 +61,6 @@ export function HomePage({ user }: { user: User | null }) {
     }
   };
 
-  // check if user is logged in
-  // if so dont show the modals
-  useEffect(() => {
-    if (user) {
-      setShowSelfHostedModal(false);
-      setShowManagedModal(false);
-    }
-  }, [user]);
-
-  console.log({ showSelfHostedModal, showManagedModal });
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-slate-900 flex flex-col items-center justify-start antialiased">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-slate-900" />
