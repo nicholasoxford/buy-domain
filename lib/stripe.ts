@@ -100,6 +100,7 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
   const user = users?.[0];
 
   if (userError) {
+    console.log("USER ERROR: ", userError);
     throw new Error(`Failed to lookup user: ${userError.message}`);
   }
 
