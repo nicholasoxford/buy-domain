@@ -12,23 +12,20 @@ export async function POST(req: Request) {
     // Verify webhook signature and get event
     const { event } = await verifyStripeWebhook(req, stripe);
 
-    // Send response early to avoid timeout issues
-    const response = NextResponse.json({ received: true }, { status: 200 });
+    // Process the event immediately
+    await processStripeEvent(event, stripe);
 
-    // Process the event asynchronously
-    (async () => {
-      try {
-        await processStripeEvent(event, stripe);
-      } catch (err: any) {
-        console.error("Async webhook processing error:", err.message);
-      }
-    })();
-
-    return response;
+    return NextResponse.json({ received: true }, { status: 200 });
   } catch (err: any) {
-    console.error("Webhook error:", err.message);
+    // Log the full error for debugging
+    console.error("Webhook error:", err);
+
+    // Return a more specific error message
     return NextResponse.json(
-      { error: `Webhook error: ${err.message}` },
+      {
+        error: `Webhook error: ${err.message}`,
+        type: err.type || "unknown",
+      },
       { status: 400 }
     );
   }

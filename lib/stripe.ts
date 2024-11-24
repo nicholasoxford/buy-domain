@@ -88,37 +88,33 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-  console.log("RIGHT BEFORE INVOICE RETRIEVE");
-  // Get the invoice to find the price ID
 
-  console.log("RIGHT BEFORE TIER DETERMINATION");
-
-  console.log("RIGHT BEFORE USER LOOKUP");
   // Try to find user by email
-  const { data: user } = await supabase
+  const { data: user, error: userError } = await supabase
     .from("profiles")
     .select("id")
     .eq("email", data.email)
     .single();
-  console.log("RIGHT BEFORE UPDATES");
+
+  if (userError) {
+    throw new Error(`Failed to lookup user: ${userError.message}`);
+  }
+
   // Start a transaction to update both tables
   const updates = [
-    // Update purchases table
     supabase.from("purchases").upsert(
       {
         email: data.email,
         user_id: user?.id || null,
         product_type: "subscription",
         tier: "basic",
-        status: "active", // New subscriptions are always active
+        status: "active",
         stripe_customer_id: data.customerId,
         stripe_subscription_id: data.subscriptionId,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "stripe_subscription_id" }
     ),
-
-    // Update profiles table if we have a user
     user?.id
       ? supabase
           .from("profiles")
@@ -129,16 +125,21 @@ export async function handleSubscriptionChange(data: SubscriptionData) {
           .eq("id", user.id)
       : null,
   ].filter(Boolean);
-  console.log("RIGHT BEFORE EXECUTION");
+
   // Execute all updates
   const results = await Promise.all(updates);
-  console.log("RIGHT AFTER EXECUTION: ", results);
-  // Check for errors
-  results.forEach((result, index) => {
-    if (result?.error) {
-      console.error(`Error in update ${index}:`, result.error);
-    }
-  });
+
+  // Check for errors and throw if any found
+  const errors = results
+    .map(
+      (result, index) =>
+        result?.error && `Update ${index}: ${result.error.message}`
+    )
+    .filter(Boolean);
+
+  if (errors.length > 0) {
+    throw new Error(`Database updates failed: ${errors.join(", ")}`);
+  }
 }
 
 export async function verifyStripeWebhook(req: Request, stripe: Stripe) {
@@ -164,8 +165,7 @@ export async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   const supabase = await createClient();
   const customerId = session.customer as string;
 
-  // Upsert purchase record for template
-  const { error, data } = await supabase.from("purchases").upsert({
+  const { error } = await supabase.from("purchases").upsert({
     email: session.customer_details?.email!,
     product_type: "template",
     stripe_customer_id: customerId,
@@ -176,6 +176,6 @@ export async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   });
 
   if (error) {
-    console.error("Error recording template purchase:", error);
+    throw new Error(`Failed to record template purchase: ${error.message}`);
   }
 }
