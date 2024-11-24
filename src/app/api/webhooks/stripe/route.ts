@@ -148,9 +148,11 @@ export async function POST(req: Request) {
             if (session.mode === "payment") {
               await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
+              console.log("RIGHT BEFORE SUBSCRIPTION RETRIEVE");
               const subscription = await stripe.subscriptions.retrieve(
                 session.subscription as string
               );
+              console.log("RIGHT BEFORE SUBSCRIPTION CHANGE");
               await handleSubscriptionChange(
                 subscription,
                 session.customer_details
