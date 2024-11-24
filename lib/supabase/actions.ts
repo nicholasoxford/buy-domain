@@ -165,16 +165,16 @@ export async function initializeDomain(domain: string) {
 
 export async function getDomainStats(userId?: string): Promise<DomainStat[]> {
   const supabase = await createClient();
+
+  const userDomains = await getAllDomains(userId);
+
   let query = supabase
     .from("domain_stats")
     .select("*")
+    .in("domain", userDomains)
     .order("offer_count", { ascending: false })
     .order("visits", { ascending: false })
     .order("domain");
-
-  if (userId) {
-    query = query.eq("user_id", userId);
-  }
 
   const { data, error } = await query;
 
