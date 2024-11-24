@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { ADD_DOMAIN_BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 import { AddDomainForm } from "./AddDomainForm";
 
 export default async function AddDomainPage() {
@@ -50,7 +50,7 @@ export default async function AddDomainPage() {
             Subscribe to our service to start adding and managing your domains.
           </p>
           <a
-            href={`${BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK}?prefilled_email=${encodeURIComponent(
+            href={`${ADD_DOMAIN_BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK}?prefilled_email=${encodeURIComponent(
               user.email || ""
             )}`}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"

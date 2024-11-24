@@ -43,7 +43,7 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect(redirectUrl || "/");
+  redirect(redirectUrl || "/dashboard");
 }
 
 export async function signup(
@@ -72,6 +72,6 @@ export async function signup(
     return { error: error.message, success: false };
   }
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/check-email");
   return { error: null, success: true };
 }
