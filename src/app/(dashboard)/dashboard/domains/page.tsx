@@ -15,7 +15,7 @@ export default async function AllDomainsPage() {
     redirect("/login");
   }
 
-  const allDomains = await getAllDomains();
+  const allDomains = await getAllDomains(data.user.id);
 
   return (
     <div>
