@@ -88,25 +88,25 @@ export type SubscriptionData = {
 
 export async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
-  const email = data.email.trim();
-  console.log("EMAIL: ", email);
-  // Try to find user by email
+  const email = data.email.trim().toLowerCase();
+
   const { data: users, error: userError } = await supabase
     .from("profiles")
     .select("*")
-    .eq("email", email);
+    .ilike("email", email);
 
-  console.log("USERS: ", users);
-  if (userError && userError.code !== "PGRST116") {
-    // Ignore "no rows returned" error
-    throw new Error(`Failed to lookup user: ${userError.message}`);
-  } else if (userError) {
-    console.log("USER ERROR: ", userError);
+  if (userError) {
+    console.error("Error looking up user:", userError);
     throw new Error(`Failed to lookup user: ${userError.message}`);
   }
+
+  console.log(`Found ${users?.length || 0} users for email ${email}`);
+
   const user = users?.[0];
-  console.log("USER: ", user);
-  // Start a transaction to update both tables
+  if (!user) {
+    console.warn(`No user found for email: ${email}`);
+  }
+
   const updates = [
     supabase.from("purchases").upsert(
       {
