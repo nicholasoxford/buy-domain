@@ -42,16 +42,17 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 
   const tier = getTierFromPriceId(subscription?.items.data[0]?.price?.id || "");
 
-  // Upsert subscription record
-  const { error } = await supabase.from("subscriptions").upsert(
+  // Upsert purchase record
+  const { error } = await supabase.from("purchases").upsert(
     {
-      user_id: user?.id || null,
       email: customerId,
-      stripe_customer_id: subscription.customer as string,
-      stripe_subscription_id: subscription.id,
+      user_id: user?.id || null,
+      product_type: "subscription",
       tier,
       status: subscription.status,
-      current_period_end: new Date(
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      expiration_date: new Date(
         subscription.current_period_end * 1000
       ).toISOString(),
       updated_at: new Date().toISOString(),
@@ -63,6 +64,29 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 
   if (error) {
     console.error("Error updating subscription:", error);
+  }
+}
+
+async function handleTemplatePayment(session: Stripe.Checkout.Session) {
+  const supabase = await createClient();
+  const customerId = session.customer as string;
+  if (!customerId) return;
+
+  // Upsert purchase record for template
+  const { error } = await supabase.from("purchases").upsert({
+    email: session.customer_email!,
+    product_type: "template",
+    tier: "template",
+    status: "active",
+    stripe_customer_id: customerId,
+    expiration_date: new Date(
+      Date.now() + 365 * 24 * 60 * 60 * 1000
+    ).toISOString(), // 1 year
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error("Error recording template purchase:", error);
   }
 }
 
@@ -106,10 +130,8 @@ export async function POST(req: Request) {
             const session = event.data.object as Stripe.Checkout.Session;
             console.log("Payment successful for session:", session.id);
 
-            // Handle both one-time payments and subscriptions
             if (session.mode === "payment") {
-              // Handle one-time payment
-              console.log("One-time payment completed");
+              await handleTemplatePayment(session);
             } else if (session.mode === "subscription") {
               const subscription = await stripe.subscriptions.retrieve(
                 session.subscription as string

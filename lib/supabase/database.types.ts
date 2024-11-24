@@ -110,28 +110,33 @@ export type Database = {
       }
       profiles: {
         Row: {
+          email: string | null
           first_name: string | null
           id: string
           last_name: string | null
         }
         Insert: {
+          email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
         }
         Update: {
+          email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
         }
         Relationships: []
       }
-      subscriptions: {
+      purchases: {
         Row: {
           created_at: string | null
-          current_period_end: string | null
           email: string
+          expiration_date: string | null
           id: string
+          metadata: Json | null
+          product_type: Database["public"]["Enums"]["product_type"]
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -141,9 +146,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          current_period_end?: string | null
           email: string
+          expiration_date?: string | null
           id?: string
+          metadata?: Json | null
+          product_type: Database["public"]["Enums"]["product_type"]
           status: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -153,9 +160,11 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          current_period_end?: string | null
           email?: string
+          expiration_date?: string | null
           id?: string
+          metadata?: Json | null
+          product_type?: Database["public"]["Enums"]["product_type"]
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -183,6 +192,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      product_type: "subscription" | "template" | "other"
       subscription_tier: "basic" | "premium" | "professional" | "template"
     }
     CompositeTypes: {
