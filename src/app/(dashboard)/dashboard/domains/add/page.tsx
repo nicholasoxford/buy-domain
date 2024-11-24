@@ -1,96 +1,66 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { AddDomainForm } from "./AddDomainForm";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/lib/hooks/useUser";
-
-export default function AddDomainPage() {
-  const [domain, setDomain] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const { user, loading: userLoading } = useUser();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      setError("You must be logged in to add a domain");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/domains", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ domain }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.error?.includes("already in use")) {
-          throw new Error(
-            "This domain is already assigned to another project and couldn't be reassigned. Please remove it from the other project first."
-          );
-        }
-        throw new Error(data.error || "Failed to add domain");
-      }
-
-      router.push(`/dashboard/domains/${domain}/verify`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add domain");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (userLoading) {
-    return <div>Loading...</div>;
-  }
+export default async function AddDomainPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    router.push("/login");
-    return null;
+    redirect("/login");
   }
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Add New Domain</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6"
-      >
-        <div className="mb-4">
-          <label
-            htmlFor="domain"
-            className="block text-sm font-medium text-slate-300 mb-2"
+  // Check subscription status
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  const isSubscribed =
+    profile?.subscription_status === "active" ||
+    profile?.subscription_status === "trialing";
+
+  if (!isSubscribed) {
+    return (
+      <div className="h-[80vh] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6 rounded-xl border border-slate-800 bg-slate-900/50">
+          <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-purple-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-white mb-2">
+            Upgrade to Add Domains
+          </h2>
+          <p className="text-slate-400 mb-6">
+            Subscribe to our service to start adding and managing your domains.
+          </p>
+          <a
+            href={`${BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK}?prefilled_email=${encodeURIComponent(
+              user.email || ""
+            )}`}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"
           >
-            Domain Name
-          </label>
-          <input
-            type="text"
-            id="domain"
-            value={domain}
-            onChange={(e) => setDomain(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-            placeholder="example.com"
-            required
-            disabled={loading}
-          />
+            Upgrade Now
+          </a>
         </div>
-        {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
-        <button
-          type="submit"
-          className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Adding..." : "Add Domain"}
-        </button>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
+
+  return <AddDomainForm />;
 }
