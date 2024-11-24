@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { createClient } from "@/lib/supabase/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-11-20.acacia",
@@ -8,11 +9,67 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+// Helper to determine subscription tier from price
+function getTierFromPriceId(
+  priceId: string
+): "basic" | "premium" | "professional" | "template" {
+  const PRICE_TO_TIER: Record<
+    string,
+    "basic" | "premium" | "professional" | "template"
+  > = {
+    [process.env.STRIPE_BASIC_PRICE_ID!]: "basic", // $5/month
+    [process.env.STRIPE_PREMIUM_PRICE_ID!]: "premium", // $25/month
+    [process.env.STRIPE_PRO_PRICE_ID!]: "professional", // $40/month
+    [process.env.STRIPE_TEMPLATE_PRICE_ID!]: "template", // $10 one-time
+  };
+  return PRICE_TO_TIER[priceId] || "basic";
+}
+
+async function handleSubscriptionChange(subscription: Stripe.Subscription) {
+  const supabase = await createClient();
+  const customerId =
+    typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer.id;
+  if (!customerId) return;
+
+  // Try to find user by email
+  const { data: user } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("email", customerId)
+    .single();
+
+  const tier = getTierFromPriceId(subscription?.items.data[0]?.price?.id || "");
+
+  // Upsert subscription record
+  const { error } = await supabase.from("subscriptions").upsert(
+    {
+      user_id: user?.id || null,
+      email: customerId,
+      stripe_customer_id: subscription.customer as string,
+      stripe_subscription_id: subscription.id,
+      tier,
+      status: subscription.status,
+      current_period_end: new Date(
+        subscription.current_period_end * 1000
+      ).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      onConflict: "stripe_subscription_id",
+    }
+  );
+
+  if (error) {
+    console.error("Error updating subscription:", error);
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const text = await req.text(); // Get raw body as text
-    const headersList = headers();
-    const sig = headersList.get("stripe-signature");
+    const text = await req.text();
+    const sig = headers().get("stripe-signature");
 
     if (!sig) {
       return NextResponse.json(
@@ -35,7 +92,7 @@ export async function POST(req: Request) {
 
     // Send response early to avoid timeout issues
     const response = NextResponse.json({ received: true }, { status: 200 });
-
+    console.log("Received event:", event.type);
     // Process the event asynchronously
     (async () => {
       try {
@@ -43,7 +100,29 @@ export async function POST(req: Request) {
           case "payment_intent.succeeded":
             const paymentIntent = event.data.object as Stripe.PaymentIntent;
             console.log("Payment successful for intent:", paymentIntent.id);
-            // Handle your business logic here
+            break;
+
+          case "checkout.session.completed":
+            const session = event.data.object as Stripe.Checkout.Session;
+            console.log("Payment successful for session:", session.id);
+
+            // Handle both one-time payments and subscriptions
+            if (session.mode === "payment") {
+              // Handle one-time payment
+              console.log("One-time payment completed");
+            } else if (session.mode === "subscription") {
+              const subscription = await stripe.subscriptions.retrieve(
+                session.subscription as string
+              );
+              await handleSubscriptionChange(subscription);
+            }
+            break;
+
+          case "customer.subscription.created":
+          case "customer.subscription.updated":
+          case "customer.subscription.deleted":
+            const subscription = event.data.object as Stripe.Subscription;
+            await handleSubscriptionChange(subscription);
             break;
 
           default:
