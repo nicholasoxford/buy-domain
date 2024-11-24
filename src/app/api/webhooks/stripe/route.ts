@@ -36,9 +36,14 @@ async function handleSubscriptionChange(data: SubscriptionData) {
   const supabase = await createClient();
   console.log("RIGHT BEFORE INVOICE RETRIEVE");
   // Get the invoice to find the price ID
-  const invoice = await stripe.invoices.retrieve(data.invoiceId);
+  const invoice = await stripe.invoices
+    .retrieve(data.invoiceId)
+    .catch((err) => {
+      console.error("Error retrieving invoice:", err);
+      throw err;
+    });
   console.log("RIGHT BEFORE PRICE ID RETRIEVE");
-  const priceId = invoice.lines.data[0]?.price?.id;
+  const priceId = invoice?.lines.data[0]?.price?.id;
   console.log("RIGHT BEFORE TIER DETERMINATION");
   const tier = getTierFromPriceId(priceId || "");
   console.log("RIGHT BEFORE USER LOOKUP");
