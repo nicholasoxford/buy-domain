@@ -56,13 +56,14 @@ export function Testimonials() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative group"
+              className="relative group h-full"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl group-hover:opacity-100 opacity-0 transition-opacity" />
 
-              <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-purple-500/20 transition-all duration-300">
+              <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-purple-500/20 transition-all duration-300 flex flex-col h-full">
+                {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="relative h-16 w-16">
+                  <div className="relative h-16 w-16 flex-shrink-0">
                     <Image
                       src={testimonial.image}
                       alt={testimonial.name}
@@ -87,12 +88,14 @@ export function Testimonials() {
                   </div>
                 </div>
 
-                <blockquote className="text-slate-300 mb-6">
+                {/* Quote */}
+                <blockquote className="text-slate-300 mb-6 flex-1">
                   &quot;{testimonial.quote}&quot;
                 </blockquote>
 
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="h-5 w-5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                {/* Stats */}
+                <div className="flex items-center gap-2 text-sm mt-auto">
+                  <div className="h-5 w-5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
                     <svg
                       className="h-3 w-3 text-white"
                       fill="none"
