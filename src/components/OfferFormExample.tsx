@@ -6,8 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Globe, ArrowRight, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 // Move the FloatingOrb component here
 const FloatingOrb = ({ delay = 0 }) => (
@@ -38,23 +36,13 @@ const formSchema = z.object({
     .max(500, "Description must be less than 500 characters"),
 });
 
-export function OfferForm({
-  getSiteKey,
-  trackVisit,
-}: {
-  getSiteKey: () => Promise<{
-    BASE_URL: string;
-  }>;
-  trackVisit: () => Promise<void>;
-}) {
+export function OfferForm() {
   const [characterCount, setCharacterCount] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [escCount, setEscCount] = useState(0);
-  const [lastEscTime, setLastEscTime] = useState(0);
 
-  const router = useRouter();
-
-  const [siteBaseUrl, setSiteBaseUrl] = useState<string>("");
+  const [siteBaseUrl, setSiteBaseUrl] = useState<string>(
+    "https://domain-bridge.com"
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -65,17 +53,9 @@ export function OfferForm({
     message: "",
   });
 
-  const [currentDomain, setCurrentDomain] = useState<string>("");
-
-  useEffect(() => {
-    async function loadSiteKey() {
-      console.log("HELLO  I AM HERE 3");
-      const env = await getSiteKey();
-      setSiteBaseUrl(env.BASE_URL);
-      setCurrentDomain(env.BASE_URL);
-    }
-    loadSiteKey();
-  }, []);
+  const [currentDomain, setCurrentDomain] = useState<string>(
+    "https://domain-bridge.com"
+  );
 
   useEffect(() => {
     if (currentDomain && form.getValues("description")) {
@@ -87,29 +67,6 @@ export function OfferForm({
       form.setValue("description", updatedDescription);
     }
   }, [currentDomain]);
-
-  // Keep all your existing useEffect hooks here
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        const currentTime = Date.now();
-        if (currentTime - lastEscTime < 500) {
-          router.push("/admin");
-        } else {
-          setEscCount((prev) => prev + 1);
-        }
-        setLastEscTime(currentTime);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [router, lastEscTime]);
-
-  useEffect(() => {
-    // Track visit when component mounts
-    trackVisit().catch(console.error);
-  }, [trackVisit]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),

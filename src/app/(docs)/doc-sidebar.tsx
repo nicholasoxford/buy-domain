@@ -24,7 +24,9 @@ export function DocSidebar({
       {navigation.map((section) => (
         <div key={section.title}>
           <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
-            {section.title}
+            <Link href="/docs" className="hover:text-white transition-colors">
+              {section.title}
+            </Link>
           </h3>
           <ul className="space-y-2">
             {section.links.map((link) => (
