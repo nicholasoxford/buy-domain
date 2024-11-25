@@ -75,6 +75,17 @@ export function NavBar({
             {/* Primary Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               <Link
+                href="/self-host"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  isActive("/self-host")
+                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                Self-Host
+              </Link>
+
+              <Link
                 href="/docs"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive("/docs")
@@ -234,6 +245,18 @@ export function NavBar({
               <div className="px-4 py-6 space-y-6">
                 {/* Navigation Links */}
                 <div className="space-y-1">
+                  <Link
+                    href="/self-host"
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive("/self-host")
+                        ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                        : "text-white hover:bg-slate-800"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Self-Host
+                  </Link>
+
                   <Link
                     href="/docs"
                     className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
