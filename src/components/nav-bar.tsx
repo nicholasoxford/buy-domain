@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { Menu, X, Command, ChevronDown, LogOut, Settings } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
 import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { signOut } from "@/lib/supabase/server-actions";
 
 interface NavBarProps {
   initialUser?: User | null;
@@ -25,7 +25,7 @@ export function NavBar({
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
-
+  const router = useRouter();
   const isSubscribed =
     initialProfile?.subscription_status === "active" ||
     initialProfile?.subscription_status === "trialing";
@@ -41,6 +41,13 @@ export function NavBar({
       setUser(initialUser);
     }
   }, [initialUser]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsOpen(false);
+    // force a reload of the page
+    setUser(null);
+  };
 
   const isActive = (path: string) => pathname === path;
   const isDocs = variant === "docs";
@@ -150,13 +157,11 @@ export function NavBar({
                           <Settings className="h-4 w-4" />
                           Settings
                         </Link>
-                        <form action="/auth/signout" method="post">
+                        <form action={handleSignOut}>
                           <button
                             type="submit"
-                            className="w-full px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2"
-                            onClick={() => setIsOpen(false)}
+                            className="w-full px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 rounded-lg text-left"
                           >
-                            <LogOut className="h-4 w-4" />
                             Sign Out
                           </button>
                         </form>
@@ -289,11 +294,10 @@ export function NavBar({
                           </div>
                         </div>
                       </div>
-                      <form action="/auth/signout" method="post">
+                      <form action={handleSignOut}>
                         <button
                           type="submit"
                           className="w-full px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 rounded-lg text-left"
-                          onClick={() => setIsOpen(false)}
                         >
                           Sign Out
                         </button>

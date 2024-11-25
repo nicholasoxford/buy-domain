@@ -114,6 +114,11 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          notification_email: string | null
+          notification_frequency:
+            | Database["public"]["Enums"]["notification_frequency"]
+            | null
+          notification_minimum_amount: number | null
           subscription_status: string | null
           subscription_tier:
             | Database["public"]["Enums"]["subscription_tier"]
@@ -124,6 +129,11 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          notification_email?: string | null
+          notification_frequency?:
+            | Database["public"]["Enums"]["notification_frequency"]
+            | null
+          notification_minimum_amount?: number | null
           subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
@@ -134,6 +144,11 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          notification_email?: string | null
+          notification_frequency?:
+            | Database["public"]["Enums"]["notification_frequency"]
+            | null
+          notification_minimum_amount?: number | null
           subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
@@ -204,6 +219,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      notification_frequency: "daily" | "weekly" | "on_demand" | "never"
       product_type: "subscription" | "template" | "other"
       subscription_tier: "basic" | "premium" | "professional" | "template"
     }

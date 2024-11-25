@@ -437,3 +437,17 @@ export async function deleteDomain(domain: string, userId: string) {
     throw error;
   }
 }
+
+export async function getUserDomainCount(userId: string) {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("domains")
+    .select("*", { count: "exact" })
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(`Failed to get domain count: ${error.message}`);
+  }
+
+  return count || 0;
+}
