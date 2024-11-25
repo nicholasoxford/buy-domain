@@ -23,7 +23,7 @@ export const testimonials = [
   {
     name: "DJ",
     role: "Startup Founder",
-    image: "/dj.png",
+    image: "/DJ.png",
     quote:
       "Clean, professional, and incredibly effective. Our domain sales have increased by 300% since implementing this solution. The ROI is absolutely incredible.",
     stats: "$100k+ in sales",
