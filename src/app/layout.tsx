@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   title: "Domain Bridge - Monetize Your Dormant Domains",
   description:
     "Turn your unused domains into profit with Domain Bridge. Choose from affordable templates or hassle-free hosting.",
+  openGraph: {
+    title: "Domain Bridge - Monetize Your Dormant Domains",
+    description:
+      "Turn your unused domains into profit with Domain Bridge. Choose from affordable templates or hassle-free hosting.",
+    images: ["https://assets.bigskydevcon.com/domain-bridge.png"],
+  },
 };
 
 export default async function RootLayout({
