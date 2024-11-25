@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
 export async function addDomainToVercel(projectId: string, domain: string) {
   // First add the www subdomain as the main target
   const wwwDomain = `www.${domain}`;
-
+  console.log("Adding www domain to Vercel: ", wwwDomain);
   const wwwResponse = await fetch(
     `${VERCEL_API_URL}/v10/projects/${projectId}/domains`,
     {
@@ -31,6 +31,7 @@ export async function addDomainToVercel(projectId: string, domain: string) {
       `API Error: Failed to add www subdomain to Vercel: ${error}`
     );
   }
+  console.log("Www domain added to Vercel successfully");
 
   // Then add the base domain with redirect to www
   const response = await fetch(
@@ -57,7 +58,7 @@ export async function addDomainToVercel(projectId: string, domain: string) {
       `Domain is already in use and could not be reassigned: ${error.message}`
     );
   }
-
+  console.log("Domain added to Vercel successfully");
   return wwwResponse.json();
 }
 
