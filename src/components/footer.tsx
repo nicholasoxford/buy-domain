@@ -40,7 +40,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/docs/self-hosting"
+                  href="/docs/self-host"
                   className="text-sm text-slate-400 hover:text-white transition-colors"
                 >
                   Self-Hosting
