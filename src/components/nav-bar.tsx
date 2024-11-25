@@ -75,6 +75,17 @@ export function NavBar({
             {/* Primary Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               <Link
+                href="/managed"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  isActive("/managed")
+                    ? "bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                Managed Service
+              </Link>
+
+              <Link
                 href="/self-host"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive("/self-host")
@@ -86,6 +97,17 @@ export function NavBar({
               </Link>
 
               <Link
+                href="/example"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  isActive("/example")
+                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                Live Demo
+              </Link>
+
+              <Link
                 href="/docs"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive("/docs")
@@ -94,17 +116,6 @@ export function NavBar({
                 }`}
               >
                 Docs
-              </Link>
-
-              <Link
-                href="/example"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                  isActive("/example")
-                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
-                    : "text-slate-300 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                Example
               </Link>
 
               <Link
@@ -246,6 +257,18 @@ export function NavBar({
                 {/* Navigation Links */}
                 <div className="space-y-1">
                   <Link
+                    href="/managed"
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive("/managed")
+                        ? "bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20"
+                        : "text-white hover:bg-slate-800"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Managed Service
+                  </Link>
+
+                  <Link
                     href="/self-host"
                     className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
                       isActive("/self-host")
@@ -258,6 +281,18 @@ export function NavBar({
                   </Link>
 
                   <Link
+                    href="/example"
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive("/example")
+                        ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                        : "text-white hover:bg-slate-800"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Live Demo
+                  </Link>
+
+                  <Link
                     href="/docs"
                     className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
                       isActive("/docs")
@@ -267,18 +302,6 @@ export function NavBar({
                     onClick={() => setIsOpen(false)}
                   >
                     Docs
-                  </Link>
-
-                  <Link
-                    href="/example"
-                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
-                      isActive("/example")
-                        ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
-                        : "text-white hover:bg-slate-800"
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Example
                   </Link>
 
                   {user && (
