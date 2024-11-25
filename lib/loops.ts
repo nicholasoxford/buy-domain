@@ -9,6 +9,7 @@ export async function sendDomainAddedNotification(
   domain: string,
   email: string
 ) {
+  console.log("Sending domain added notification to: ", email);
   const resp = await loops.sendTransactionalEmail({
     transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
     email,

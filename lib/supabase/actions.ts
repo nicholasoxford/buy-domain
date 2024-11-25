@@ -337,7 +337,7 @@ export async function addDomain(domain: string, userId: string) {
       .select("email")
       .eq("id", userId)
       .single();
-
+    console.log("User data: ", userData);
     if (userError) {
       throw new Error(`Failed to fetch user: ${userError.message}`);
     }

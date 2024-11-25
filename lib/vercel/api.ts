@@ -66,7 +66,16 @@ export async function removeDomainFromVercel(domain: string) {
   if (!projectId) {
     throw new Error("VERCEL_PROJECT_ID is not configured");
   }
-
+  // Remove the main domain
+  const response = await fetch(
+    `${VERCEL_API_URL}/v9/projects/${projectId}/domains/${domain}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${process.env.VERCEL_ACCESS_TOKEN}`,
+      },
+    }
+  );
   // Try to remove the www subdomain
   try {
     const wwwDomain = `www.${domain}`;
@@ -82,16 +91,6 @@ export async function removeDomainFromVercel(domain: string) {
   } catch (error) {
     // Continue since main domain was removed successfully
   }
-  // Remove the main domain
-  const response = await fetch(
-    `${VERCEL_API_URL}/v9/projects/${projectId}/domains/${domain}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${process.env.VERCEL_ACCESS_TOKEN}`,
-      },
-    }
-  );
 
   if (!response.ok) {
     const error = response.statusText;
