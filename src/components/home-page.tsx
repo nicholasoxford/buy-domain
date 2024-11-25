@@ -323,7 +323,7 @@ export function HomePage({ user }: { user: User | null }) {
             </div>
 
             <Link
-              href="/docs/self-hosting"
+              href="/docs/self-host"
               className="group inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:from-purple-500 hover:to-pink-500 transition-all duration-200 shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30"
             >
               View Self-Hosting Guide
