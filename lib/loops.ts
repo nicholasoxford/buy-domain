@@ -17,13 +17,21 @@ export async function sendDomainAddedNotification(
     );
     const test = await loops.testApiKey();
     console.log({ test });
-    const resp = await loops.sendTransactionalEmail({
-      transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
-      email: email.trim(),
-      dataVariables: {
-        domain: domain.trim(),
-      },
-    });
+    const resp = await loops
+      .sendTransactionalEmail({
+        transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
+        email: email.trim(),
+        dataVariables: {
+          domain: domain.trim(),
+        },
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
+
+    if (!resp) {
+      throw new Error("Failed to send domain added notification");
+    }
     if (!resp.success && resp.type === "error") {
       console.log({ resp });
       throw new Error("Failed to send domain added notification");
