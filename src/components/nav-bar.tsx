@@ -4,15 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import {
-  Menu,
-  X,
-  Command,
-  Github,
-  ChevronDown,
-  LogOut,
-  Settings,
-} from "lucide-react";
+import { Menu, X, Command, ChevronDown, LogOut, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 
@@ -84,6 +76,17 @@ export function NavBar({
                 }`}
               >
                 Docs
+              </Link>
+
+              <Link
+                href="/example"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  isActive("/example")
+                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                Example
               </Link>
 
               <Link
@@ -238,6 +241,18 @@ export function NavBar({
                     Docs
                   </Link>
 
+                  <Link
+                    href="/example"
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive("/example")
+                        ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                        : "text-white hover:bg-slate-800"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Example
+                  </Link>
+
                   {user && (
                     <Link
                       href="/dashboard"
@@ -251,19 +266,6 @@ export function NavBar({
                       Dashboard
                     </Link>
                   )}
-                </div>
-
-                {/* GitHub Link */}
-                <div className="border-t border-slate-800 pt-6">
-                  <Link
-                    href="https://github.com/yourusername/domain-dash"
-                    className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 rounded-lg"
-                    target="_blank"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Github className="h-4 w-4" />
-                    GitHub Repository
-                  </Link>
                 </div>
 
                 {/* User Section */}
