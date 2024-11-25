@@ -1,3 +1,4 @@
+"use server";
 import { LoopsClient } from "loops";
 
 export async function sendDomainAddedNotification(
@@ -14,11 +15,13 @@ export async function sendDomainAddedNotification(
       " for domain: ",
       domain
     );
+    const test = await loops.testApiKey();
+    console.log({ test });
     const resp = await loops.sendTransactionalEmail({
       transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
-      email,
+      email: email.trim(),
       dataVariables: {
-        domain,
+        domain: domain.trim(),
       },
     });
     if (!resp.success && resp.type === "error") {
@@ -29,6 +32,7 @@ export async function sendDomainAddedNotification(
       throw new Error("Failed to send domain added notification");
     }
     console.log("Domain added notification sent successfully to: ", email);
+    return;
   } catch (error) {
     console.error("Error sending domain added notification: ", error);
   }
