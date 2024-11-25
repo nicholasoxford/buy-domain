@@ -19,8 +19,8 @@ export const navigation: NavigationSection[] = [
     title: "Documentation",
     links: [
       {
-        title: "Introduction",
-        href: "/docs",
+        title: "Self Hosting",
+        href: "/docs/self-host",
         sections: [
           { title: "Quick Start", href: "#quick-start" },
           { title: "Prerequisites", href: "#prerequisites" },
@@ -29,6 +29,17 @@ export const navigation: NavigationSection[] = [
           { title: "Multiple Domains", href: "#multiple-domains" },
           { title: "Post-Deployment", href: "#post-deployment" },
           { title: "Configuration", href: "#configuration" },
+        ],
+      },
+      {
+        title: "Managed Hosting",
+        href: "/docs/managed",
+        sections: [
+          { title: "Features", href: "#features" },
+          { title: "Getting Started", href: "#getting-started" },
+          { title: "Domain Setup", href: "#domain-setup" },
+          { title: "Pricing", href: "#pricing" },
+          { title: "FAQ", href: "#faq" },
         ],
       },
     ],
