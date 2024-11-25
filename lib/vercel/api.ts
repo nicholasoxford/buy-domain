@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-
 const VERCEL_API_URL = "https://api.vercel.com";
 
 // Add this to ensure these functions only run on the server

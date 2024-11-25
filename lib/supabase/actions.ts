@@ -1,6 +1,7 @@
 import { DomainOffer, DomainStat } from "../utils";
 import { createClient } from "./server";
 import { addDomainToVercel, removeDomainFromVercel } from "../vercel/api";
+import { sendDomainAddedNotification } from "../loops";
 
 export async function submitDomainOffer(
   domain: string,
@@ -330,6 +331,21 @@ export async function addDomain(domain: string, userId: string) {
       throw new Error(`Failed to update domain: ${updateError.message}`);
     }
 
+    // Get user data first
+    const { data: userData, error: userError } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", userId)
+      .single();
+
+    if (userError) {
+      throw new Error(`Failed to fetch user: ${userError.message}`);
+    }
+    if (userData?.email) {
+      // After successful domain creation
+      await sendDomainAddedNotification(userData.email, cleanDomain);
+    }
+
     return {
       ...dbDomain,
     };
@@ -345,7 +361,7 @@ export async function addDomain(domain: string, userId: string) {
       // Delete the new domain
       await supabase.from("domains").delete().eq("domain", cleanDomain);
     }
-    throw error;
+    throw error instanceof Error ? error : new Error("Unknown error occurred");
   }
 }
 
