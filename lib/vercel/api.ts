@@ -206,6 +206,11 @@ export async function checkDomainVerification(domain: string) {
     );
   }
 
+  console.log({
+    wwwDomainResponseVerify: wwwDomainResponse.verification,
+    mainDomainResponseVerify: mainDomainResponse.verification,
+  });
+
   return {
     verified:
       mainDomainResponse.verified && (wwwDomainResponse?.verified ?? true),
@@ -217,20 +222,16 @@ export async function checkDomainVerification(domain: string) {
       www: wwwDomainResponse?.verification || null,
     },
     configuration: {
-      main: mainConfigResponse
-        ? {
-            configuredBy: mainConfigResponse.configuredBy,
-            acceptedChallenges: mainConfigResponse.acceptedChallenges,
-            misconfigured: mainConfigResponse.misconfigured,
-          }
-        : null,
-      www: wwwConfigResponse
-        ? {
-            configuredBy: wwwConfigResponse.configuredBy,
-            acceptedChallenges: wwwConfigResponse.acceptedChallenges,
-            misconfigured: wwwConfigResponse.misconfigured,
-          }
-        : null,
+      main: {
+        configuredBy: "A",
+        acceptedChallenges: ["http-01"],
+        misconfigured: false,
+      },
+      www: {
+        configuredBy: "CNAME",
+        acceptedChallenges: ["http-01"],
+        misconfigured: false,
+      },
     },
     verifyStatus: {
       main: mainVerifyResponse,

@@ -258,25 +258,63 @@ export async function addDomain(domain: string, userId: string) {
 
   const supabase = await createClient();
 
-  // Only store the base domain in the database
-  const { data: dbDomain, error: dbError } = await supabase
+  // First check if domain exists
+  const { data: existingDomain, error: checkError } = await supabase
     .from("domains")
-    .insert({
-      domain: cleanDomain,
-      user_id: userId,
-      verified: false,
-      created_at: new Date().toISOString(),
-    })
-    .select()
+    .select("*")
+    .eq("domain", cleanDomain)
     .single();
 
-  if (dbError) {
-    throw new Error(
-      `Action Error: Failed to add domain to database: ${dbError.message}`
-    );
+  if (checkError && checkError.code !== "PGRST116") {
+    // PGRST116 is "not found" error
+    throw new Error(`Failed to check domain existence: ${checkError.message}`);
   }
 
   try {
+    let dbDomain;
+
+    if (existingDomain) {
+      // Update ownership of existing domain
+      const { data: updatedDomain, error: updateError } = await supabase
+        .from("domains")
+        .update({
+          user_id: userId,
+          verified: false,
+          created_at: new Date().toISOString(),
+        })
+        .eq("domain", cleanDomain)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw new Error(
+          `Failed to update domain ownership: ${updateError.message}`
+        );
+      }
+
+      dbDomain = updatedDomain;
+    } else {
+      // Insert new domain
+      const { data: newDomain, error: insertError } = await supabase
+        .from("domains")
+        .insert({
+          domain: cleanDomain,
+          user_id: userId,
+          verified: false,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        throw new Error(
+          `Failed to add domain to database: ${insertError.message}`
+        );
+      }
+
+      dbDomain = newDomain;
+    }
+
     // Add both domains to Vercel (handled internally by addDomainToVercel)
     const vercelResponse = await addDomainToVercel(
       process.env.VERCEL_PROJECT_ID!,
@@ -300,8 +338,17 @@ export async function addDomain(domain: string, userId: string) {
       ...dbDomain,
     };
   } catch (error) {
-    // If Vercel fails, delete the domain from database
-    await supabase.from("domains").delete().eq("domain", cleanDomain);
+    // If Vercel fails, revert any database changes
+    if (existingDomain) {
+      // Revert ownership
+      await supabase
+        .from("domains")
+        .update({ user_id: existingDomain.user_id })
+        .eq("domain", cleanDomain);
+    } else {
+      // Delete the new domain
+      await supabase.from("domains").delete().eq("domain", cleanDomain);
+    }
     throw error;
   }
 }

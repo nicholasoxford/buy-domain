@@ -25,27 +25,54 @@ export function DomainVerification({ domain }: { domain: string }) {
   const [countdown, setCountdown] = useState(5);
   const router = useRouter();
 
-  const dnsRecords: DNSRecord[] = [
-    {
-      type: "A",
-      name: "@",
-      value: "76.76.21.21",
-      notes: [
-        "@ represents your base domain",
-        "Points your base domain to Vercel's servers",
-        "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
-      ],
-    },
-    {
-      type: "CNAME",
-      name: "www",
-      value: "cname.vercel-dns.com",
-      notes: [
-        "Points your www subdomain to Vercel",
-        "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
-      ],
-    },
-  ];
+  const getRequiredDNSRecords = (): DNSRecord[] => {
+    const records = [
+      {
+        type: "A",
+        name: "@",
+        value: "76.76.21.21",
+        notes: [
+          "@ represents your base domain",
+          "Points your base domain to Vercel's servers",
+          "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
+        ],
+        required: true,
+      },
+      {
+        type: "CNAME",
+        name: "www",
+        value: "cname.vercel-dns.com",
+        notes: [
+          "Points your www subdomain to Vercel",
+          "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
+        ],
+        required: true,
+      },
+    ];
+
+    // Add TXT records if verification is needed
+    if (state.verificationDetails?.verification?.main?.[0]) {
+      records.push({
+        type: "TXT",
+        name: state.verificationDetails.verification.main[0].domain,
+        value: state.verificationDetails.verification.main[0].value,
+        notes: ["Required for domain verification"],
+        required: true,
+      });
+    }
+
+    if (state.verificationDetails?.verification?.www?.[0]) {
+      records.push({
+        type: "TXT",
+        name: state.verificationDetails.verification.www[0].domain,
+        value: state.verificationDetails.verification.www[0].value,
+        notes: ["Required for www subdomain verification"],
+        required: true,
+      });
+    }
+
+    return records;
+  };
 
   const checkVerification = async () => {
     try {
@@ -157,18 +184,28 @@ export function DomainVerification({ domain }: { domain: string }) {
         <div className="flex items-center gap-2">
           <div
             className={`h-2.5 w-2.5 rounded-full ${
-              isVerified && isConfigured ? "bg-green-500" : "bg-yellow-500"
+              record.type === "A" || record.type === "CNAME"
+                ? isConfigured
+                  ? "bg-green-500"
+                  : "bg-yellow-500"
+                : "bg-yellow-500"
             }`}
           />
           <span className="text-sm font-medium text-slate-300">Status:</span>
           <div
             className={`px-2 py-0.5 rounded text-xs ${
-              isVerified && isConfigured
-                ? "bg-green-500/10 text-green-400 border border-green-500/20"
+              record.type === "A" || record.type === "CNAME"
+                ? isConfigured
+                  ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                  : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
                 : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
             }`}
           >
-            {isVerified && isConfigured ? "Active" : "Pending"}
+            {record.type === "A" || record.type === "CNAME"
+              ? isConfigured
+                ? "Active"
+                : "Pending"
+              : "Pending Verification"}
           </div>
         </div>
       </div>
@@ -180,12 +217,16 @@ export function DomainVerification({ domain }: { domain: string }) {
         </div>
         <div>
           <div className="text-xs text-slate-400 mb-1">Name</div>
-          <div className="font-mono text-purple-400">{record.name}</div>
+          <div className="font-mono text-purple-400 break-all">
+            {record.name}
+          </div>
         </div>
         <div>
           <div className="text-xs text-slate-400 mb-1">Value</div>
           <div className="flex items-center gap-2">
-            <div className="font-mono text-slate-300">{record.value}</div>
+            <div className="font-mono text-slate-300 break-all overflow-hidden">
+              {record.value}
+            </div>
             <CopyButton value={record.value} />
           </div>
         </div>
@@ -217,10 +258,13 @@ export function DomainVerification({ domain }: { domain: string }) {
   );
 
   const isFullyVerified =
-    state.verificationDetails?.verifyStatus?.main?.verified &&
-    state.verificationDetails?.verifyStatus?.www?.verified &&
-    !state.verificationDetails?.configuration?.main?.misconfigured &&
-    !state.verificationDetails?.configuration?.www?.misconfigured;
+    state.verificationDetails &&
+    (!state.verificationDetails.verifyStatus?.main?.error ||
+      state.verificationDetails.verifyStatus?.main?.verified) &&
+    (!state.verificationDetails.verifyStatus?.www?.error ||
+      state.verificationDetails.verifyStatus?.www?.verified) &&
+    !state.verificationDetails.configuration?.main?.misconfigured &&
+    !state.verificationDetails.configuration?.www?.misconfigured;
 
   return (
     <div className="space-y-6">
@@ -250,7 +294,7 @@ export function DomainVerification({ domain }: { domain: string }) {
         </div>
 
         <div className="space-y-4">
-          {dnsRecords.map((record) => {
+          {getRequiredDNSRecords().map((record) => {
             const isBase = record.name === "@";
             const data = isBase
               ? state.verificationDetails?.verifyStatus?.main
@@ -259,11 +303,17 @@ export function DomainVerification({ domain }: { domain: string }) {
               ? state.verificationDetails?.configuration?.main
               : state.verificationDetails?.configuration?.www;
 
-            return renderDNSRecord(
-              record,
-              config && !config.misconfigured,
-              data?.verified
-            );
+            const isConfigured =
+              record.type === "A" || record.type === "CNAME"
+                ? config && !config.misconfigured
+                : false;
+
+            const isVerified =
+              record.type === "TXT"
+                ? !data?.error
+                : data?.verified || !data?.error;
+
+            return renderDNSRecord(record, isConfigured, isVerified);
           })}
 
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-300">
