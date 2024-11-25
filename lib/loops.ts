@@ -23,7 +23,11 @@ export async function sendDomainAddedNotification(
         domain,
       },
     });
-    if (!resp.success) {
+    if (!resp.success && resp.type === "error") {
+      console.log({ resp });
+      throw new Error("Failed to send domain added notification");
+    } else if (!resp.success && resp.type === "nestedError") {
+      console.dir({ resp }, { depth: null });
       throw new Error("Failed to send domain added notification");
     }
     console.log("Domain added notification sent successfully to: ", email);
