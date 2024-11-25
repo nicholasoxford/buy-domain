@@ -152,7 +152,7 @@ export function HomePage({ user }: { user: User | null }) {
 
           <DomainInquiriesSection />
 
-          <motion.div className="text-center bg-gradient-to-b from-slate-800/50 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20">
+          <div className="text-center bg-gradient-to-b from-slate-800/50 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20">
             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
               Streamlined Domain Inquiries
             </h2>
@@ -221,13 +221,8 @@ export function HomePage({ user }: { user: User | null }) {
                 <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-          </motion.div>
-          <motion.div
-            className="text-center bg-gradient-to-b from-slate-800/50 via-indigo-900/20 to-slate-900/50 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          </div>
+          <div className="text-center bg-gradient-to-b from-slate-800/50 via-indigo-900/20 to-slate-900/50 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
               <span className="animate-pulse w-2 h-2 rounded-full bg-indigo-400" />
               <span className="text-sm font-medium text-indigo-300">
@@ -273,9 +268,9 @@ export function HomePage({ user }: { user: User | null }) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div className="text-center bg-gradient-to-b from-slate-800/50 to-purple-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-8">
+          <div className="text-center bg-gradient-to-b from-slate-800/50 to-purple-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
               Self-Host Your Own Instance
             </h2>
@@ -334,7 +329,7 @@ export function HomePage({ user }: { user: User | null }) {
               View Self-Hosting Guide
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
