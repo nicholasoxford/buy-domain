@@ -206,11 +206,6 @@ export async function checkDomainVerification(domain: string) {
     );
   }
 
-  console.log({
-    wwwConfigResponse,
-    mainConfigResponse,
-  });
-
   return {
     verified:
       mainDomainResponse.verified && (wwwDomainResponse?.verified ?? true),
