@@ -4,7 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { Menu, X, Command, Github, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  Command,
+  Github,
+  ChevronDown,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 
@@ -108,24 +116,51 @@ export function NavBar({
                     {initialProfile?.subscription_tier?.toUpperCase()}
                   </span>
                 )}
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                  <div className="h-6 w-6 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-xs font-medium text-purple-400">
-                      {user?.email?.[0]?.toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="text-sm text-slate-300">
-                    {user.email?.split("@")[0]}
-                  </span>
-                </div>
-                <form action="/auth/signout" method="post">
+                <div className="relative">
                   <button
-                    type="submit"
-                    className="px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-150 flex items-center gap-1"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                   >
-                    Sign Out
+                    <div className="h-6 w-6 rounded-full bg-purple-500/20 flex items-center justify-center">
+                      <span className="text-xs font-medium text-purple-400">
+                        {user?.email?.[0]?.toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-sm text-slate-300">
+                      {user.email?.split("@")[0]}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-slate-400" />
                   </button>
-                </form>
+
+                  {isOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsOpen(false)}
+                      />
+                      <div className="absolute right-0 mt-2 w-48 py-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl z-50">
+                        <Link
+                          href="/dashboard/settings"
+                          className="w-full px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <Settings className="h-4 w-4" />
+                          Settings
+                        </Link>
+                        <form action="/auth/signout" method="post">
+                          <button
+                            type="submit"
+                            className="w-full px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <LogOut className="h-4 w-4" />
+                            Sign Out
+                          </button>
+                        </form>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-3">

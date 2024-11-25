@@ -1,7 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Code, Server, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  Code,
+  Server,
+  Check,
+  Clock,
+  Users,
+  Shield,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -29,6 +38,49 @@ const FloatingOrb = ({ delay = 0 }) => (
     className="absolute w-32 h-32 sm:w-64 sm:h-64 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl"
   />
 );
+
+const OFFER_END_DATE = new Date("2024-11-30T23:59:59");
+
+const CountdownTimer = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = OFFER_END_DATE.getTime() - new Date().getTime();
+      if (difference > 0) {
+        return {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        };
+      }
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    };
+
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <Clock className="h-4 w-4 text-pink-400 animate-pulse" />
+      <span className="text-pink-200">
+        Offer ends: {timeLeft.days}d {String(timeLeft.hours).padStart(2, "0")}h
+        {String(timeLeft.minutes).padStart(2, "0")}m{" "}
+        {String(timeLeft.seconds).padStart(2, "0")}s
+      </span>
+    </div>
+  );
+};
 
 export function HomePage({ user }: { user: User | null }) {
   const [showSelfHostedModal, setShowSelfHostedModal] = useState(false);
@@ -161,20 +213,37 @@ export function HomePage({ user }: { user: User | null }) {
               whileHover={{ scale: 1.02 }}
               className="relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
             >
-              <div className="flex items-center gap-4 mb-8">
+              <div className="absolute -top-3 left-8">
+                <span className="px-4 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm rounded-full font-medium shadow-xl flex items-center gap-2">
+                  <span className="animate-pulse">●</span> Limited Time Offer
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-purple-500/10 rounded-xl">
                   <Code className="h-7 w-7 text-purple-400" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white">Self-Hosted</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-purple-300">
-                      $10
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-medium text-slate-400 line-through">
+                      $20
                     </span>
+                    <motion.span
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 0.3, repeat: 2, repeatDelay: 5 }}
+                      className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"
+                    >
+                      $10
+                    </motion.span>
                     <span className="text-purple-300">one-time</span>
                   </div>
                 </div>
               </div>
+
+              <CountdownTimer />
+
               <ul className="space-y-4 mb-8">
                 {[
                   "Deploy to unlimited domains",
@@ -193,13 +262,28 @@ export function HomePage({ user }: { user: User | null }) {
                   </li>
                 ))}
               </ul>
-              <Link
-                href="#"
-                onClick={handleBuyNowClick}
-                className="block w-full text-center px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-colors"
+
+              <div className="mb-6 flex items-center gap-2 text-sm text-slate-300">
+                <Shield className="h-4 w-4 text-purple-400" />
+                <span>30-day money-back guarantee</span>
+              </div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Buy Now
-              </Link>
+                <Link
+                  href="#"
+                  onClick={handleBuyNowClick}
+                  className="block w-full text-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+                >
+                  Buy Now & Save 50%
+                </Link>
+              </motion.div>
+
+              <p className="mt-4 text-center text-sm text-slate-400">
+                Instant delivery • Lifetime updates • No subscription
+              </p>
 
               {showSelfHostedModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -240,12 +324,13 @@ export function HomePage({ user }: { user: User | null }) {
               whileHover={{ scale: 1.02 }}
               className="relative bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300"
             >
-              <div className="absolute -top-3 right-8">
+              <div className="absolute -top-3 left-8">
                 <span className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm rounded-full font-medium shadow-xl">
                   Most Popular
                 </span>
               </div>
-              <div className="flex items-center gap-4 mb-8">
+
+              <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-purple-500/10 rounded-xl">
                   <Server className="h-7 w-7 text-purple-400" />
                 </div>
@@ -253,16 +338,25 @@ export function HomePage({ user }: { user: User | null }) {
                   <h2 className="text-2xl font-bold text-white">
                     Managed Service
                   </h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-purple-300">
+                  <div className="flex items-baseline gap-2">
+                    <motion.span
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 0.3, repeat: 2, repeatDelay: 5 }}
+                      className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"
+                    >
                       $5
-                    </span>
+                    </motion.span>
                     <span className="text-purple-300">
                       /month for 5 domains
                     </span>
                   </div>
+                  <div className="text-sm text-purple-300 mt-1 ml-[2px]">
+                    Additional domains just $1/month each
+                  </div>
                 </div>
               </div>
+
               <ul className="space-y-4 mb-8">
                 {[
                   "Everything in Self-Hosted +",
@@ -281,13 +375,28 @@ export function HomePage({ user }: { user: User | null }) {
                   </li>
                 ))}
               </ul>
-              <Link
-                href="#"
-                onClick={handleStartTrialClick}
-                className="block w-full text-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300"
+
+              <div className="mb-6 flex items-center gap-2 text-sm text-slate-300">
+                <Shield className="h-4 w-4 text-purple-400" />
+                <span>7-day free trial, cancel anytime</span>
+              </div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Start Free Trial
-              </Link>
+                <Link
+                  href="#"
+                  onClick={handleStartTrialClick}
+                  className="block w-full text-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+                >
+                  Start 7-Day Free Trial
+                </Link>
+              </motion.div>
+
+              <p className="mt-4 text-center text-sm text-slate-400">
+                Cancel anytime • Instant setup
+              </p>
 
               {showManagedModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
