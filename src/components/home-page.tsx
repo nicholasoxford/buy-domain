@@ -18,6 +18,7 @@ import {
   BUY_TEMPLATE_STRIPE_LINK,
 } from "@/utils/constants";
 import { User } from "@supabase/supabase-js";
+import { Testimonials } from "@/components/testimonials";
 
 const FloatingOrb = ({ delay = 0 }) => (
   <motion.div
@@ -211,40 +212,42 @@ export function HomePage({ user }: { user: User | null }) {
             {/* Starter Plan */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="relative bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
+              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Code className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Starter</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold text-purple-400">
-                      $5
-                    </span>
-                    <span className="text-purple-300 text-sm">/month</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Code className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Starter</h2>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold text-purple-400">
+                        $5
+                      </span>
+                      <span className="text-purple-300 text-sm">/month</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <ul className="space-y-2 mb-6">
-                {[
-                  "Up to 10 domains",
-                  "Instant notifications",
-                  "Basic analytics",
-                  "SSL certificates included",
-                  "Community support",
-                ].map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-sm text-slate-300"
-                  >
-                    <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-2 mb-6">
+                  {[
+                    "Up to 10 domains",
+                    "Instant notifications",
+                    "Basic analytics",
+                    "SSL certificates included",
+                    "Community support",
+                  ].map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm text-slate-300"
+                    >
+                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <button
                 onClick={() => (window.location.href = "/dashboard")}
@@ -257,7 +260,7 @@ export function HomePage({ user }: { user: User | null }) {
             {/* Pro Plan */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="relative bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300"
+              className="relative flex flex-col bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300"
             >
               <div className="absolute -top-3 left-6">
                 <span className="px-3 py-1 bg-purple-500 text-white text-sm rounded-full font-medium shadow-lg">
@@ -265,39 +268,41 @@ export function HomePage({ user }: { user: User | null }) {
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Server className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Pro</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold text-purple-400">
-                      $20
-                    </span>
-                    <span className="text-purple-300 text-sm">/month</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Server className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Pro</h2>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold text-purple-400">
+                        $20
+                      </span>
+                      <span className="text-purple-300 text-sm">/month</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <ul className="space-y-2 mb-6">
-                {[
-                  "Up to 100 domains",
-                  "Priority notifications",
-                  "Advanced analytics",
-                  "Custom DNS settings",
-                  "Priority support",
-                  "API access",
-                ].map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-sm text-slate-300"
-                  >
-                    <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-2 mb-6">
+                  {[
+                    "Up to 100 domains",
+                    "Priority notifications",
+                    "Advanced analytics",
+                    "Custom DNS settings",
+                    "Priority support",
+                    "API access",
+                  ].map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm text-slate-300"
+                    >
+                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <button
                 onClick={() => (window.location.href = "/dashboard")}
@@ -310,7 +315,7 @@ export function HomePage({ user }: { user: User | null }) {
             {/* Enterprise Plan */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="relative bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
+              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
             >
               <div className="absolute -top-3 left-6">
                 <span className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full font-medium shadow-lg">
@@ -318,39 +323,41 @@ export function HomePage({ user }: { user: User | null }) {
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Building2 className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Enterprise</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold text-purple-400">
-                      10%
-                    </span>
-                    <span className="text-purple-300 text-sm">of sales</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Building2 className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Enterprise</h2>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold text-purple-400">
+                        10%
+                      </span>
+                      <span className="text-purple-300 text-sm">of sales</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <ul className="space-y-2 mb-6">
-                {[
-                  "Unlimited domains",
-                  "Premium analytics",
-                  "Custom integrations",
-                  "Dedicated support",
-                  "Success manager",
-                  "Custom features",
-                ].map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-sm text-slate-300"
-                  >
-                    <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-2 mb-6">
+                  {[
+                    "Unlimited domains",
+                    "Premium analytics",
+                    "Custom integrations",
+                    "Dedicated support",
+                    "Success manager",
+                    "Custom features",
+                  ].map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm text-slate-300"
+                    >
+                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <Link
                 href="mailto:sales@example.com"
@@ -363,7 +370,7 @@ export function HomePage({ user }: { user: User | null }) {
             {/* Self-Hosted Template */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="relative bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
+              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
             >
               <div className="absolute -top-3 left-6">
                 <span className="px-3 py-1 bg-emerald-500 text-white text-sm rounded-full font-medium shadow-lg">
@@ -371,46 +378,50 @@ export function HomePage({ user }: { user: User | null }) {
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Code className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Self-Hosted</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-medium text-slate-400 line-through">
-                      $20
-                    </span>
-                    <span className="text-2xl font-bold text-purple-400">
-                      $10
-                    </span>
-                    <span className="text-purple-300 text-sm">one-time</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Code className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">
+                      Self-Hosted
+                    </h2>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-sm font-medium text-slate-400 line-through">
+                        $20
+                      </span>
+                      <span className="text-2xl font-bold text-purple-400">
+                        $10
+                      </span>
+                      <span className="text-purple-300 text-sm">one-time</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="text-xs text-slate-400 mb-4">
-                Offer ends: 6d 05h 16m 06s
-              </div>
+                <div className="text-xs text-slate-400 mb-4">
+                  Offer ends: 6d 05h 16m 06s
+                </div>
 
-              <ul className="space-y-2 mb-6">
-                {[
-                  "Deploy to unlimited domains",
-                  "Spam-protected offer forms",
-                  "Unified admin dashboard",
-                  "Bulk deployment via CLI",
-                  "Lifetime updates",
-                  "Developer friendly",
-                ].map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-sm text-slate-300"
-                  >
-                    <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-2 mb-6">
+                  {[
+                    "Deploy to unlimited domains",
+                    "Spam-protected offer forms",
+                    "Unified admin dashboard",
+                    "Bulk deployment via CLI",
+                    "Lifetime updates",
+                    "Developer friendly",
+                  ].map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm text-slate-300"
+                    >
+                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <button
                 onClick={() => (window.location.href = "/docs")}
@@ -418,14 +429,10 @@ export function HomePage({ user }: { user: User | null }) {
               >
                 Buy Template
               </button>
-
-              <div className="mt-2 text-center text-xs text-slate-400">
-                Instant delivery • Lifetime updates • No subscription
-              </div>
             </motion.div>
           </motion.div>
           <motion.div
-            className="text-center max-w-4xl mx-auto mb-20"
+            className="text-center max-w-4xl mx-auto mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
@@ -542,6 +549,7 @@ export function HomePage({ user }: { user: User | null }) {
               </Link>
             </div>
           </motion.div>
+          <Testimonials />
 
           <motion.div
             className="text-center bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20"
