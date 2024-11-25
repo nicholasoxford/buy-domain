@@ -1,6 +1,7 @@
 import { DomainOffer, DomainStat } from "../utils";
 import { createClient } from "./server";
 import { addDomainToVercel, removeDomainFromVercel } from "../vercel/api";
+import { sendDomainAddedNotification } from "../loops";
 
 export async function submitDomainOffer(
   domain: string,
@@ -251,48 +252,103 @@ export async function getTotalVisits(domains: string[]): Promise<number> {
   return data.reduce((sum, { visits }) => sum + (visits ?? 0), 0);
 }
 
-export async function addDomain(domain: string, userId: string) {
-  // Clean and validate the domain
-  const cleanDomain = cleanDomainName(domain);
-  validateDomainName(cleanDomain);
-
+async function claimUnownedDomain(domain: string, userId: string) {
   const supabase = await createClient();
 
-  // First check if domain exists
-  const { data: existingDomain, error: checkError } = await supabase
-    .from("domains")
-    .select("*")
-    .eq("domain", cleanDomain)
-    .single();
+  // Get user email in parallel with domain check
+  const [
+    { data: existingDomain, error: checkError },
+    { data: user, error: userError },
+  ] = await Promise.all([
+    supabase
+      .from("domains")
+      .select("*")
+      .eq("domain", domain)
+      .is("user_id", null)
+      .single(),
+    supabase.from("profiles").select("email").eq("id", userId).single(),
+  ]);
+
+  if (userError) {
+    throw new Error(`Failed to fetch user data: ${userError.message}`);
+  }
 
   if (checkError && checkError.code !== "PGRST116") {
-    // PGRST116 is "not found" error
     throw new Error(`Failed to check domain existence: ${checkError.message}`);
   }
 
+  // Update ownership if domain exists and is unowned
+  if (existingDomain) {
+    const { data: updatedDomain, error: updateError } = await supabase
+      .from("domains")
+      .update({
+        user_id: userId,
+        verified: false,
+        created_at: new Date().toISOString(),
+      })
+      .eq("domain", domain)
+      .select()
+      .single();
+
+    if (updateError) {
+      throw new Error(
+        `Failed to claim domain ownership: ${updateError.message}`
+      );
+    }
+
+    return { domain: updatedDomain, userEmail: user.email };
+  }
+
+  return { domain: null, userEmail: user.email };
+}
+
+export async function addDomain(domain: string, userId: string) {
   try {
+    // Clean and validate the domain
+    const cleanDomain = cleanDomainName(domain);
+    validateDomainName(cleanDomain);
+
+    const supabase = await createClient();
+
+    // Get both domain and user data in parallel
+    const [
+      { data: existingDomain, error: checkError },
+      { data: user, error: userError },
+    ] = await Promise.all([
+      supabase.from("domains").select("*").eq("domain", cleanDomain).single(),
+      supabase.from("profiles").select("email").eq("id", userId).single(),
+    ]);
+
+    if (userError) {
+      throw new Error(`Failed to fetch user data: ${userError.message}`);
+    }
+
+    if (checkError && checkError.code !== "PGRST116") {
+      throw new Error(
+        `Failed to check domain existence: ${checkError.message}`
+      );
+    }
+
     let dbDomain;
+    const userEmail = user.email;
 
     if (existingDomain) {
-      // Update ownership of existing domain
-      const { data: updatedDomain, error: updateError } = await supabase
-        .from("domains")
-        .update({
-          user_id: userId,
-          verified: false,
-          created_at: new Date().toISOString(),
-        })
-        .eq("domain", cleanDomain)
-        .select()
-        .single();
-
-      if (updateError) {
-        throw new Error(
-          `Failed to update domain ownership: ${updateError.message}`
-        );
+      // If domain exists and has an owner, throw error
+      if (existingDomain.user_id) {
+        throw new Error("Domain is already owned by another user");
       }
 
-      dbDomain = updatedDomain;
+      // Try to claim the unowned domain
+      const { domain: claimedDomain } = await claimUnownedDomain(
+        cleanDomain,
+        userId
+      );
+      if (!claimedDomain) {
+        throw new Error(
+          "Failed to claim domain - it may have been claimed by another user"
+        );
+      }
+      dbDomain = claimedDomain;
     } else {
       // Insert new domain
       const { data: newDomain, error: insertError } = await supabase
@@ -307,6 +363,11 @@ export async function addDomain(domain: string, userId: string) {
         .single();
 
       if (insertError) {
+        if (insertError.code === "23505") {
+          throw new Error(
+            "Domain was just registered by another user. Please try again."
+          );
+        }
         throw new Error(
           `Failed to add domain to database: ${insertError.message}`
         );
@@ -315,41 +376,43 @@ export async function addDomain(domain: string, userId: string) {
       dbDomain = newDomain;
     }
 
-    // Add both domains to Vercel (handled internally by addDomainToVercel)
-    const vercelResponse = await addDomainToVercel(
-      process.env.VERCEL_PROJECT_ID!,
-      cleanDomain
-    );
+    try {
+      // Add domain to Vercel and update DB in parallel
+      const [vercelResult, { error: updateError }] = await Promise.all([
+        addDomainToVercel(process.env.VERCEL_PROJECT_ID!, cleanDomain),
+        supabase
+          .from("domains")
+          .update({
+            vercel_project_id: process.env.VERCEL_PROJECT_ID,
+          })
+          .eq("domain", cleanDomain),
+      ]);
 
-    // Update database with Vercel project ID
-    const { error: updateError } = await supabase
-      .from("domains")
-      .update({
-        vercel_project_id: process.env.VERCEL_PROJECT_ID,
-        verified: vercelResponse.verified,
-      })
-      .eq("domain", cleanDomain);
+      if (updateError) {
+        throw new Error(
+          `Failed to update domain with Vercel ID: ${updateError.message}`
+        );
+      }
+      if (userEmail) {
+        // Send notification after successful Vercel integration
+        await sendDomainAddedNotification(cleanDomain, userEmail);
+      }
+    } catch (error) {
+      // If Vercel integration fails, clean up the domain record
+      await supabase.from("domains").delete().eq("domain", cleanDomain);
 
-    if (updateError) {
-      throw new Error(`Failed to update domain: ${updateError.message}`);
+      if (error instanceof Error) {
+        throw new Error(`Vercel integration failed: ${error.message}`);
+      }
+      throw error;
     }
 
     return {
       ...dbDomain,
+      message: "Domain added successfully",
     };
   } catch (error) {
-    // If Vercel fails, revert any database changes
-    if (existingDomain) {
-      // Revert ownership
-      await supabase
-        .from("domains")
-        .update({ user_id: existingDomain.user_id })
-        .eq("domain", cleanDomain);
-    } else {
-      // Delete the new domain
-      await supabase.from("domains").delete().eq("domain", cleanDomain);
-    }
-    throw error;
+    throw error instanceof Error ? error : new Error("Unknown error occurred");
   }
 }
 

@@ -53,22 +53,8 @@ export async function addDomainToVercel(projectId: string, domain: string) {
     const error = await response.json();
 
     // Handle domain conflict case
-    if (response.status === 409) {
-      try {
-        await removeDomainFromVercel(domain);
-        await removeDomainFromVercel(wwwDomain);
-
-        // Try adding the domains again
-        return await addDomainToVercel(projectId, domain);
-      } catch (removeError: any) {
-        throw new Error(
-          `Domain is already in use and could not be reassigned: ${removeError.message}`
-        );
-      }
-    }
-
     throw new Error(
-      `API Error: Failed to add domain to Vercel: ${error.message}`
+      `Domain is already in use and could not be reassigned: ${error.message}`
     );
   }
 
