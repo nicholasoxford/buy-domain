@@ -207,8 +207,8 @@ export async function checkDomainVerification(domain: string) {
   }
 
   console.log({
-    wwwDomainResponseVerify: wwwDomainResponse.verification,
-    mainDomainResponseVerify: mainDomainResponse.verification,
+    wwwConfigResponse,
+    mainConfigResponse,
   });
 
   return {
@@ -223,14 +223,24 @@ export async function checkDomainVerification(domain: string) {
     },
     configuration: {
       main: {
-        configuredBy: "A",
-        acceptedChallenges: ["http-01"],
-        misconfigured: false,
+        configuredBy: mainConfigResponse?.configuredBy || null,
+        nameservers: mainConfigResponse?.nameservers || [],
+        serviceType: mainConfigResponse?.serviceType || "external",
+        cnames: mainConfigResponse?.cnames || [],
+        aValues: mainConfigResponse?.aValues || [],
+        conflicts: mainConfigResponse?.conflicts || [],
+        acceptedChallenges: mainConfigResponse?.acceptedChallenges || [],
+        misconfigured: mainConfigResponse?.misconfigured || false,
       },
       www: {
-        configuredBy: "CNAME",
-        acceptedChallenges: ["http-01"],
-        misconfigured: false,
+        configuredBy: wwwConfigResponse?.configuredBy || null,
+        nameservers: wwwConfigResponse?.nameservers || [],
+        serviceType: wwwConfigResponse?.serviceType || "external",
+        cnames: wwwConfigResponse?.cnames || [],
+        aValues: wwwConfigResponse?.aValues || [],
+        conflicts: wwwConfigResponse?.conflicts || [],
+        acceptedChallenges: wwwConfigResponse?.acceptedChallenges || [],
+        misconfigured: wwwConfigResponse?.misconfigured || false,
       },
     },
     verifyStatus: {
