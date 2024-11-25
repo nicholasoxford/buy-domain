@@ -1,24 +1,13 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowRight,
-  Code,
-  Server,
-  Check,
-  Clock,
-  Shield,
-  Building2,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
-  BUY_TEMPLATE_STRIPE_LINK,
-} from "@/utils/constants";
+import Image from "next/image";
+
 import { User } from "@supabase/supabase-js";
-import { Testimonials } from "@/components/testimonials";
+import { testimonials, Testimonials } from "@/components/testimonials";
+import { Pricing } from "./pricing";
 
 const FloatingOrb = ({ delay = 0 }) => (
   <motion.div
@@ -39,80 +28,7 @@ const FloatingOrb = ({ delay = 0 }) => (
   />
 );
 
-const OFFER_END_DATE = new Date("2024-11-30T23:59:59");
-
-const CountdownTimer = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = OFFER_END_DATE.getTime() - new Date().getTime();
-      if (difference > 0) {
-        return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        };
-      }
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-    };
-
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="flex items-center gap-2 text-sm">
-      <Clock className="h-4 w-4 text-pink-400 animate-pulse" />
-      <span className="text-pink-200">
-        Offer ends: {timeLeft.days}d {String(timeLeft.hours).padStart(2, "0")}h
-        {String(timeLeft.minutes).padStart(2, "0")}m{" "}
-        {String(timeLeft.seconds).padStart(2, "0")}s
-      </span>
-    </div>
-  );
-};
-
 export function HomePage({ user }: { user: User | null }) {
-  const [showSelfHostedModal, setShowSelfHostedModal] = useState(false);
-  const [showManagedModal, setShowManagedModal] = useState(false);
-  const router = useRouter();
-
-  const handleBuyNowClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (user) {
-      const stripeUrl = new URL(BUY_TEMPLATE_STRIPE_LINK);
-      if (user.email) {
-        stripeUrl.searchParams.set("prefilled_email", user.email);
-      }
-      window.location.href = stripeUrl.toString();
-    } else {
-      setShowSelfHostedModal(true);
-    }
-  };
-
-  const handleStartTrialClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (user) {
-      const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
-      if (user.email) {
-        stripeUrl.searchParams.set("prefilled_email", user.email);
-      }
-      window.location.href = stripeUrl.toString();
-    } else {
-      setShowManagedModal(true);
-    }
-  };
-
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-slate-900 flex flex-col items-center justify-start antialiased">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-slate-900" />
@@ -146,11 +62,19 @@ export function HomePage({ user }: { user: User | null }) {
           <div className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
               <div className="flex -space-x-2">
-                {[1, 2, 3].map((i) => (
+                {testimonials.map((person) => (
                   <div
-                    key={i}
-                    className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 ring-2 ring-slate-900"
-                  />
+                    key={person.name}
+                    className="relative w-6 h-6 rounded-full shadow-sm"
+                  >
+                    <Image
+                      src={person.image}
+                      alt={person.name}
+                      fill
+                      className="rounded-full object-cover"
+                      sizes="24px"
+                    />
+                  </div>
                 ))}
               </div>
               <span className="text-sm font-semibold text-purple-200">
@@ -203,236 +127,28 @@ export function HomePage({ user }: { user: User | null }) {
             </div>
           </div>
 
+          <Pricing user={user} />
+          <div className="relative group mb-4">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
+            <Link
+              href="/example"
+              className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all duration-200"
+            >
+              <div className="flex flex-col items-start">
+                <span className="text-lg font-semibold text-white">
+                  Try It Yourself
+                </span>
+                <span className="text-sm text-slate-400">
+                  See our interactive offer form in action
+                </span>
+              </div>
+              <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+          <Testimonials />
+
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {/* Starter Plan */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Code className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Starter</h2>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-bold text-purple-400">
-                        $5
-                      </span>
-                      <span className="text-purple-300 text-sm">/month</span>
-                    </div>
-                  </div>
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {[
-                    "Up to 10 domains",
-                    "Instant notifications",
-                    "Basic analytics",
-                    "SSL certificates included",
-                    "Community support",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm text-slate-300"
-                    >
-                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button
-                onClick={() => (window.location.href = "/dashboard")}
-                className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors duration-200"
-              >
-                Start Free Trial
-              </button>
-            </motion.div>
-
-            {/* Pro Plan */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="relative flex flex-col bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300"
-            >
-              <div className="absolute -top-3 left-6">
-                <span className="px-3 py-1 bg-purple-500 text-white text-sm rounded-full font-medium shadow-lg">
-                  Most Popular
-                </span>
-              </div>
-
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Server className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Pro</h2>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-bold text-purple-400">
-                        $20
-                      </span>
-                      <span className="text-purple-300 text-sm">/month</span>
-                    </div>
-                  </div>
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {[
-                    "Up to 100 domains",
-                    "Priority notifications",
-                    "Advanced analytics",
-                    "Custom DNS settings",
-                    "Priority support",
-                    "API access",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm text-slate-300"
-                    >
-                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button
-                onClick={() => (window.location.href = "/dashboard")}
-                className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg font-medium transition-all duration-200"
-              >
-                Start Free Trial
-              </button>
-            </motion.div>
-
-            {/* Enterprise Plan */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
-            >
-              <div className="absolute -top-3 left-6">
-                <span className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full font-medium shadow-lg">
-                  Revenue Share
-                </span>
-              </div>
-
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Building2 className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Enterprise</h2>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-bold text-purple-400">
-                        10%
-                      </span>
-                      <span className="text-purple-300 text-sm">of sales</span>
-                    </div>
-                  </div>
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {[
-                    "Unlimited domains",
-                    "Premium analytics",
-                    "Custom integrations",
-                    "Dedicated support",
-                    "Success manager",
-                    "Custom features",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm text-slate-300"
-                    >
-                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <Link
-                href="mailto:sales@example.com"
-                className="block w-full text-center py-2 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg font-medium transition-all duration-200"
-              >
-                Contact Sales
-              </Link>
-            </motion.div>
-
-            {/* Self-Hosted Template */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="relative flex flex-col bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
-            >
-              <div className="absolute -top-3 left-6">
-                <span className="px-3 py-1 bg-emerald-500 text-white text-sm rounded-full font-medium shadow-lg">
-                  Limited Time Offer
-                </span>
-              </div>
-
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Code className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">
-                      Self-Hosted
-                    </h2>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-sm font-medium text-slate-400 line-through">
-                        $20
-                      </span>
-                      <span className="text-2xl font-bold text-purple-400">
-                        $10
-                      </span>
-                      <span className="text-purple-300 text-sm">one-time</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-xs text-slate-400 mb-4">
-                  Offer ends: 6d 05h 16m 06s
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {[
-                    "Deploy to unlimited domains",
-                    "Spam-protected offer forms",
-                    "Unified admin dashboard",
-                    "Bulk deployment via CLI",
-                    "Lifetime updates",
-                    "Developer friendly",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm text-slate-300"
-                    >
-                      <Check className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button
-                onClick={() => (window.location.href = "/docs")}
-                className="w-full py-2 px-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all duration-200"
-              >
-                Buy Template
-              </button>
-            </motion.div>
-          </motion.div>
-          <motion.div
-            className="text-center max-w-4xl mx-auto mb-10"
+            className="text-center  mx-auto mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
@@ -530,26 +246,7 @@ export function HomePage({ user }: { user: User | null }) {
                 </ul>
               </div>
             </div>
-
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
-              <Link
-                href="/example"
-                className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all duration-200"
-              >
-                <div className="flex flex-col items-start">
-                  <span className="text-lg font-semibold text-white">
-                    Try It Yourself
-                  </span>
-                  <span className="text-sm text-slate-400">
-                    See our interactive offer form in action
-                  </span>
-                </div>
-                <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
           </motion.div>
-          <Testimonials />
 
           <motion.div
             className="text-center bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20"

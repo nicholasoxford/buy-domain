@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-const testimonials = [
+export const testimonials = [
   {
     name: "Nemo",
     role: "Domain Investor",
