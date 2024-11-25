@@ -213,12 +213,6 @@ export function HomePage({ user }: { user: User | null }) {
               whileHover={{ scale: 1.02 }}
               className="relative bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-purple-500/20 transition-all duration-300"
             >
-              <div className="absolute -top-3 left-6">
-                <span className="px-3 py-1 bg-emerald-500 text-white text-sm rounded-full font-medium shadow-lg">
-                  Limited Time Offer
-                </span>
-              </div>
-
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 bg-purple-500/10 rounded-lg">
                   <Code className="h-5 w-5 text-purple-400" />
@@ -226,9 +220,6 @@ export function HomePage({ user }: { user: User | null }) {
                 <div>
                   <h2 className="text-xl font-bold text-white">Starter</h2>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-medium text-slate-400 line-through">
-                      $10
-                    </span>
                     <span className="text-2xl font-bold text-purple-400">
                       $5
                     </span>
