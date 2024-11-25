@@ -6,7 +6,8 @@ import { login, signup, type AuthState } from "./actions";
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-
+import { testimonials } from "@/components/testimonials";
+import Image from "next/image";
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
 
@@ -14,7 +15,7 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
     <button
       type="submit"
       disabled={pending}
-      className="w-full px-6 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02]"
+      className="w-full px-6 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] text-lg"
     >
       <span className="flex items-center justify-center">
         {pending ? (
@@ -70,11 +71,19 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
             <div className="flex -space-x-2 mr-2">
-              {[1, 2, 3].map((i) => (
+              {testimonials.map((person) => (
                 <div
-                  key={i}
-                  className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 ring-2 ring-slate-900"
-                />
+                  key={person.name}
+                  className="relative w-6 h-6 rounded-full shadow-sm"
+                >
+                  <Image
+                    src={person.image}
+                    alt={person.name}
+                    fill
+                    className="rounded-full object-cover"
+                    sizes="24px"
+                  />
+                </div>
               ))}
             </div>
             <span className="text-sm font-medium text-purple-200">
@@ -161,9 +170,16 @@ export default function LoginPage() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm text-slate-400 hover:text-purple-400 transition-colors"
             >
-              {isLogin
-                ? "Don't have an account? Create one"
-                : "Already have an account? Sign in"}
+              {isLogin ? (
+                <>
+                  <span>Don&apos;t have an account?</span>
+                  <span className=" ml-2 font-medium text-purple-400">
+                    Create one
+                  </span>
+                </>
+              ) : (
+                "Already have an account? Sign in"
+              )}
             </button>
           </div>
         </div>
