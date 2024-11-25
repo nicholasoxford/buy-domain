@@ -8,6 +8,8 @@ import Image from "next/image";
 import { User } from "@supabase/supabase-js";
 import { testimonials, Testimonials } from "@/components/testimonials";
 import { Pricing } from "./pricing";
+import { DomainInquiriesSection } from "@/components/domain-inquiries-section";
+import { Code, Server, Lock } from "lucide-react";
 
 const FloatingOrb = ({ delay = 0 }) => (
   <motion.div
@@ -147,160 +149,70 @@ export function HomePage({ user }: { user: User | null }) {
           </div>
           <Testimonials />
 
-          <motion.div
-            className="text-center  mx-auto mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
-              Turn Domain Inquiries Into Sales
-            </h2>
-
-            <p className="text-lg text-slate-300 mb-12">
-              Our powerful dashboard gives you everything you need to close more
-              domain sales, faster. From instant offer notifications to detailed
-              analytics, we&apos;ve got you covered.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
-              {/* Market Stats */}
-              <div className="relative group bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300 text-left">
-                <div className="absolute -top-3 left-8">
-                  <span className="px-4 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm rounded-full font-medium shadow-xl">
-                    Market Data
-                  </span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-6">
-                  Domain Market Insights
-                </h3>
-                <div className="space-y-6">
-                  <div>
-                    <div className="text-3xl font-bold text-purple-400 mb-1">
-                      $4,000
-                    </div>
-                    <div className="text-sm text-slate-300">
-                      Median .com sale price
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-purple-400 mb-1">
-                      $10,000
-                    </div>
-                    <div className="text-sm text-slate-300">
-                      Median .ai sale price
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-purple-400 mb-1">
-                      1-3%
-                    </div>
-                    <div className="text-sm text-slate-300">
-                      Average yearly sell-through rate
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 pt-6 border-t border-white/10">
-                  <div className="text-sm text-slate-400">
-                    Data sourced from Escrow.com&apos;s 2023 report
-                  </div>
-                </div>
-              </div>
-
-              {/* Our Solution */}
-              <div className="relative group bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/30 transition-all duration-300 text-left">
-                <div className="absolute -top-3 left-8">
-                  <span className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm rounded-full font-medium shadow-xl">
-                    Our Solution
-                  </span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-6">
-                  Maximize Your Sales
-                </h3>
-                <ul className="space-y-4">
-                  {[
-                    "Professional offer forms that convert",
-                    "Instant notifications for every offer",
-                    "Advanced analytics to optimize pricing",
-                    "Automated follow-ups to close deals",
-                  ].map((feature) => (
-                    <li key={feature} className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="h-5 w-5 text-purple-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
-                      <span className="text-slate-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.div>
+          <DomainInquiriesSection />
 
           <motion.div
-            className="text-center bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20"
+            className="text-center bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-12">
-              Deploy in Under 60 Seconds
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
+              Self-Host Your Own Instance
             </h2>
-            <div className="grid md:grid-cols-3 gap-4 sm:gap-8 mb-8 sm:mb-12 text-left">
+
+            <p className="text-lg text-slate-300 mb-12 max-w-3xl mx-auto">
+              Take full control of your domain sales infrastructure. Our
+              self-hosted solution gives you complete ownership and
+              customization capabilities.
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
               {[
                 {
-                  step: "01",
-                  title: "Install & Login",
-                  code: "npm install\nnpx wrangler login",
+                  icon: Code,
+                  title: "Open Source",
+                  description:
+                    "Access the complete source code and customize it to your needs",
                 },
                 {
-                  step: "02",
-                  title: "Configure",
-                  code: "npm run create-domain",
+                  icon: Server,
+                  title: "Your Infrastructure",
+                  description:
+                    "Deploy on your own servers with your preferred cloud provider",
                 },
                 {
-                  step: "03",
-                  title: "Deploy",
-                  code: "npx domain-dash deploy",
+                  icon: Lock,
+                  title: "Data Ownership",
+                  description:
+                    "Keep full control of your data and user information",
                 },
-              ].map(({ step, title, code }) => (
+              ].map(({ icon: Icon, title, description }) => (
                 <motion.div
-                  key={step}
+                  key={title}
                   className="relative group"
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl group-hover:opacity-100 opacity-0 transition-opacity" />
-                  <div className="relative bg-black/40 rounded-2xl p-6 border border-white/5 group-hover:border-purple-500/20 transition-colors">
-                    <p className="text-lg font-mono text-purple-400 mb-3">
-                      {step}
-                    </p>
-                    <h3 className="font-semibold text-white text-xl mb-4">
+                  <div className="relative bg-black/40 rounded-2xl p-6 border border-white/5 group-hover:border-purple-500/20 transition-colors h-full">
+                    <div className="p-3 bg-purple-500/10 rounded-xl w-fit mb-4">
+                      <Icon className="h-6 w-6 text-purple-400" />
+                    </div>
+                    <h3 className="font-semibold text-white text-xl mb-2">
                       {title}
                     </h3>
-                    <pre className="text-sm text-slate-300 bg-black/50 p-4 rounded-xl font-mono overflow-x-auto">
-                      <code>{code}</code>
-                    </pre>
+                    <p className="text-sm text-slate-300">{description}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
+
             <Link
-              href="/docs"
+              href="/docs/self-hosting"
               className="group inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:from-purple-500 hover:to-pink-500 transition-all duration-200 shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30"
             >
-              View Full Documentation
+              View Self-Hosting Guide
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
