@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { NavBar } from "@/components/nav-bar";
+import { Footer } from "@/components/footer";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -34,9 +35,10 @@ export default async function RootLayout({
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <NavBar initialUser={user} initialProfile={profile} />
-      <div className="">{children}</div>
-    </>
+      <main className="flex-1">{children}</main>
+      <Footer />
+    </div>
   );
 }

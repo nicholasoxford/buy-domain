@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Github, MessageCircle, Twitter } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -10,6 +10,7 @@ import { testimonials, Testimonials } from "@/components/testimonials";
 import { Pricing } from "./pricing";
 import { DomainInquiriesSection } from "@/components/domain-inquiries-section";
 import { Code, Server, Lock } from "lucide-react";
+import { MessagesSquare, Zap, LineChart } from "lucide-react";
 
 const FloatingOrb = ({ delay = 0 }) => (
   <motion.div
@@ -151,12 +152,7 @@ export function HomePage({ user }: { user: User | null }) {
 
           <DomainInquiriesSection />
 
-          <motion.div
-            className="text-center bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
+          <motion.div className="text-center bg-gradient-to-b from-slate-800/50 to-purple-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
               Self-Host Your Own Instance
             </h2>
@@ -194,10 +190,10 @@ export function HomePage({ user }: { user: User | null }) {
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl group-hover:opacity-100 opacity-0 transition-opacity" />
-                  <div className="relative bg-black/40 rounded-2xl p-6 border border-white/5 group-hover:border-purple-500/20 transition-colors h-full">
-                    <div className="p-3 bg-purple-500/10 rounded-xl w-fit mb-4">
-                      <Icon className="h-6 w-6 text-purple-400" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative bg-slate-900/60 rounded-2xl p-6 border border-purple-500/10 group-hover:border-purple-500/20 transition-colors h-full">
+                    <div className="bg-purple-500/10 rounded-xl w-full h-12 flex items-center justify-center mb-4 ring-1 ring-purple-500/20">
+                      <Icon className="h-5 w-5 text-purple-400" />
                     </div>
                     <h3 className="font-semibold text-white text-xl mb-2">
                       {title}
@@ -215,6 +211,128 @@ export function HomePage({ user }: { user: User | null }) {
               View Self-Hosting Guide
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
+          </motion.div>
+          <motion.div
+            className="text-center bg-gradient-to-b from-slate-800/50 via-indigo-900/20 to-slate-900/50 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
+              <span className="animate-pulse w-2 h-2 rounded-full bg-indigo-400" />
+              <span className="text-sm font-medium text-indigo-300">
+                Coming Soon
+              </span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
+              Domain Bridge Marketplace
+            </h2>
+
+            <p className="text-lg text-slate-300 mb-12 max-w-3xl mx-auto">
+              A curated marketplace for premium domains. Connect directly with
+              serious buyers and sellers in our upcoming ecosystem.
+            </p>
+
+            <div className="relative max-w-3xl mx-auto">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl blur-xl" />
+              <div className="relative bg-black/40 rounded-2xl p-6 border border-white/10">
+                <div className="grid grid-cols-3 gap-6 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-1">
+                      500+
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      Premium Domains
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-1">
+                      $2M+
+                    </div>
+                    <div className="text-sm text-slate-400">Total Value</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-1">
+                      50+
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      Verified Sellers
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div className="text-center bg-gradient-to-b from-slate-800/50 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20">
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
+              Streamlined Domain Inquiries
+            </h2>
+
+            <p className="text-lg text-slate-300 mb-12 max-w-3xl mx-auto">
+              Convert more visitors into buyers with our professional inquiry
+              system. Automated responses, follow-ups, and analytics help you
+              close deals faster.
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              {[
+                {
+                  icon: MessagesSquare,
+                  title: "Instant Responses",
+                  description:
+                    "Auto-reply to every inquiry within seconds, keeping potential buyers engaged",
+                },
+                {
+                  icon: Zap,
+                  title: "Smart Follow-ups",
+                  description:
+                    "Automated email sequences nurture leads and increase conversion rates",
+                },
+                {
+                  icon: LineChart,
+                  title: "Offer Analytics",
+                  description:
+                    "Track engagement, analyze patterns, and optimize your pricing strategy",
+                },
+              ].map(({ icon: Icon, title, description }) => (
+                <motion.div
+                  key={title}
+                  className="relative group"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative bg-slate-900/60 rounded-2xl p-6 border border-pink-500/10 group-hover:border-pink-500/20 transition-colors h-full">
+                    <div className="bg-purple-500/10 rounded-xl w-full h-12 flex items-center justify-center mb-4 ring-1 ring-purple-500/20">
+                      <Icon className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <h3 className="font-semibold text-white text-xl mb-2">
+                      {title}
+                    </h3>
+                    <p className="text-sm text-slate-300">{description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="relative group mb-4">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
+              <Link
+                href="/example"
+                className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-pink-500/50 transition-all duration-200"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-lg font-semibold text-white">
+                    Try It Yourself
+                  </span>
+                  <span className="text-sm text-slate-400">
+                    See our interactive offer form in action
+                  </span>
+                </div>
+                <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>
