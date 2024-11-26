@@ -31,7 +31,7 @@ async function handleRequest(request: NextRequest) {
   }
 
   try {
-    const { email, amount, description, domain } =
+    const { email, amount, description, domain, name } =
       (await request.json()) as DomainOffer;
 
     if (!email || !amount) {
@@ -59,6 +59,7 @@ async function handleRequest(request: NextRequest) {
       amount: offerAmount,
       description: description || `Offer from ${name}`,
       domain,
+      name,
     });
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

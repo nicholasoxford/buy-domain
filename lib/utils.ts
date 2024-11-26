@@ -3,11 +3,11 @@ import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 const offerSchema = z.object({
-  email: z.string(),
   amount: z.number(),
   description: z.string(),
-  timestamp: z.string(),
+  email: z.string(),
   domain: z.string(),
+  name: z.string(),
 });
 
 export type DomainOffer = z.infer<typeof offerSchema>;
