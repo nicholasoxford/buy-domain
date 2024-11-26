@@ -50,7 +50,7 @@ async function handleRequest(request: NextRequest) {
 
     // clean up the domain to remove http:// or https:// and www.
     const cleanedDomain = cleanDomainName(domain);
-
+    console.log("CLEANED DOMAIN", cleanedDomain);
     // Then submit the offer
     const result = await submitDomainOffer(domain, {
       email,
