@@ -48,12 +48,15 @@ async function handleRequest(request: NextRequest) {
     //   });
     // }
 
+    // clean up the domain
+    const cleanedDomain = domain.replace(/^https?:\/\//, "");
+
     // Then submit the offer
     const result = await submitDomainOffer(domain, {
       email,
       amount: offerAmount,
       description: description || `Offer from ${name}`,
-      domain,
+      domain: cleanedDomain,
       name,
     });
     return new Response(JSON.stringify(result), {
