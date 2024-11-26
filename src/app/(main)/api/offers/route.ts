@@ -48,8 +48,10 @@ async function handleRequest(request: NextRequest) {
     //   });
     // }
 
-    // clean up the domain
-    const cleanedDomain = domain.replace(/^https?:\/\//, "");
+    // clean up the domain to remove http:// or https:// and www.
+    const cleanedDomain = domain
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "");
 
     // Then submit the offer
     const result = await submitDomainOffer(domain, {
