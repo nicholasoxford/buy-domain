@@ -22,7 +22,6 @@ async function handleRequest(request: NextRequest) {
   const baseUrl = await getBaseUrlServerSide();
 
   // Get domain from query param
-  const domain = baseUrl;
 
   if (request.method !== "POST") {
     return new Response("Method not allowed", {
@@ -32,7 +31,7 @@ async function handleRequest(request: NextRequest) {
   }
 
   try {
-    const { email, amount, description } =
+    const { email, amount, description, domain } =
       (await request.json()) as DomainOffer;
 
     if (!email || !amount) {
@@ -59,6 +58,7 @@ async function handleRequest(request: NextRequest) {
       email,
       amount: offerAmount,
       description: description || `Offer from ${name}`,
+      domain,
     });
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

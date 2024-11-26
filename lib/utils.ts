@@ -7,6 +7,7 @@ const offerSchema = z.object({
   amount: z.number(),
   description: z.string(),
   timestamp: z.string(),
+  domain: z.string(),
 });
 
 export type DomainOffer = z.infer<typeof offerSchema>;
