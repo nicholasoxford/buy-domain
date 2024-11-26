@@ -478,7 +478,7 @@ export async function getUserDomainCount(userId: string) {
 
 export async function getUserByDomain(domain: string) {
   const supabase = await createClient();
-
+  console.log("SEARCHING FOR DOMAIN: ", domain);
   // First get the domain to find the user_id
   const { data: domainsData, error: domainError } = await supabase
     .from("domains")
