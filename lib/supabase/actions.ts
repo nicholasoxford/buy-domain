@@ -480,11 +480,13 @@ export async function getUserByDomain(domain: string) {
   const supabase = await createClient();
 
   // First get the domain to find the user_id
-  const { data: domainData, error: domainError } = await supabase
+  const { data: domainsData, error: domainError } = await supabase
     .from("domains")
     .select("user_id")
-    .eq("domain", domain)
-    .single();
+    .eq("domain", domain);
+
+  console.log("DOMAIN DATA", domainsData);
+  const domainData = domainsData?.[0];
 
   if (domainError) {
     throw new Error(`Failed to get domain: ${domainError.message}`);
