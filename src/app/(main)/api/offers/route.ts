@@ -60,7 +60,7 @@ async function handleRequest(request: NextRequest) {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response("Invalid request body", {
+    return new Response("Invalid request body: " + error, {
       status: 400,
       headers: corsHeaders,
     });
