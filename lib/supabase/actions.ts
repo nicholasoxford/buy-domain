@@ -479,25 +479,31 @@ export async function getUserDomainCount(userId: string) {
 export async function getUserByDomain(domain: string) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  // First get the domain to find the user_id
+  const { data: domainData, error: domainError } = await supabase
     .from("domains")
-    .select(
-      `
-      user_id,
-      profiles:profiles(*)
-    `
-    )
+    .select("user_id")
     .eq("domain", domain)
     .single();
 
-  if (error) {
-    throw new Error(`Failed to get domain owner: ${error.message}`);
+  if (domainError) {
+    throw new Error(`Failed to get domain: ${domainError.message}`);
   }
 
-  if (!data?.profiles) {
+  if (!domainData?.user_id) {
     throw new Error("Domain not found or has no owner");
   }
-  // Return the user profile
-  const profile = data.profiles[0];
+
+  // Then get the profile using the user_id
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", domainData.user_id)
+    .single();
+
+  if (profileError) {
+    throw new Error(`Failed to get user profile: ${profileError.message}`);
+  }
+
   return profile;
 }
