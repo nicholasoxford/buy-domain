@@ -56,6 +56,7 @@ export async function sendDomainOfferNotification(
   const loops = new LoopsClient(LOOPS_API_KEY);
 
   try {
+    console.log("Sending domain offer notification to: ", email);
     const resp = await loops.sendTransactionalEmail({
       transactionalId: "cm3xwppo100r1p6zxjnuk37t9",
       email: email.trim(),

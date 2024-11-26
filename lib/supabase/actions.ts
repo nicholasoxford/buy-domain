@@ -25,7 +25,7 @@ export async function submitDomainOffer(
 
   // Send notification to owner
   const owner = await getUserByDomain(domain);
-
+  console.log("OWNER", owner);
   if (owner?.email) {
     await sendDomainOfferNotification(domain, owner.email, offer);
   }

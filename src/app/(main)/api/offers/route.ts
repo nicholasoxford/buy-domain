@@ -38,7 +38,7 @@ async function handleRequest(request: NextRequest) {
     // Convert offer to number
     const offerAmount =
       typeof amount === "number" ? amount : parseInt(String(amount), 10);
-
+    console.log("AFTER AMOUNT");
     // // Verify the token
     // const isValid = await verifyToken(token, env);
     // if (!isValid) {
