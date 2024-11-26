@@ -378,7 +378,7 @@ export async function addDomain(domain: string, userId: string) {
 }
 
 // Helper functions for domain validation
-function cleanDomainName(domain: string): string {
+export function cleanDomainName(domain: string): string {
   // Remove protocol and www
   let cleanDomain = domain.toLowerCase().trim();
   cleanDomain = cleanDomain.replace(/^https?:\/\//, "");
@@ -478,7 +478,7 @@ export async function getUserDomainCount(userId: string) {
 
 export async function getUserByDomain(domain: string) {
   const supabase = await createClient();
-  console.log("SEARCHING FOR DOMAIN: ", domain);
+  console.log("SEARCHING FOR DOMAIN:", domain);
   // First get the domain to find the user_id
   const { data: domainsData, error: domainError } = await supabase
     .from("domains")

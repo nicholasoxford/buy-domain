@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { submitDomainOffer } from "@/lib/supabase/actions";
+import { cleanDomainName, submitDomainOffer } from "@/lib/supabase/actions";
 import { DomainOffer } from "@/lib/utils";
 
 // CORS headers
@@ -49,9 +49,7 @@ async function handleRequest(request: NextRequest) {
     // }
 
     // clean up the domain to remove http:// or https:// and www.
-    const cleanedDomain = domain
-      .replace(/^https?:\/\//, "")
-      .replace(/^www\./, "");
+    const cleanedDomain = cleanDomainName(domain);
 
     // Then submit the offer
     const result = await submitDomainOffer(domain, {
