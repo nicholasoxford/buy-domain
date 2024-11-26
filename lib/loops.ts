@@ -1,4 +1,5 @@
 "use server";
+import { DomainOffer } from "./utils";
 import { LoopsClient } from "loops";
 
 export async function sendDomainAddedNotification(
@@ -43,5 +44,44 @@ export async function sendDomainAddedNotification(
     return;
   } catch (error) {
     console.error("Error sending domain added notification: ", error);
+  }
+}
+
+export async function sendDomainOfferNotification(
+  domain: string,
+  email: string,
+  offer: Omit<DomainOffer, "timestamp">
+) {
+  const LOOPS_API_KEY = process.env.LOOPS_API_KEY ?? "";
+  const loops = new LoopsClient(LOOPS_API_KEY);
+
+  try {
+    const resp = await loops.sendTransactionalEmail({
+      transactionalId: "cm3xwppo100r1p6zxjnuk37t9",
+      email: email.trim(),
+      dataVariables: {
+        domain: domain.trim(),
+        offerAmount: offer.amount,
+        buyerEmail: offer.email,
+        message: offer.description || "",
+        dashboardDomainUrl: `https://www.domain-bridge.com/dashboard/domains/${domain}`,
+      },
+    });
+
+    if (!resp) {
+      throw new Error("Failed to send domain offer notification");
+    }
+    if (!resp.success && resp.type === "error") {
+      console.log({ resp });
+      throw new Error("Failed to send domain offer notification");
+    } else if (!resp.success && resp.type === "nestedError") {
+      console.dir({ resp }, { depth: null });
+      throw new Error("Failed to send domain offer notification");
+    }
+
+    console.log("Domain offer notification sent successfully to:", email);
+    return;
+  } catch (error) {
+    console.error("Error sending domain offer notification:", error);
   }
 }

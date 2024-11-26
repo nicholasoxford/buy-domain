@@ -87,16 +87,16 @@ export function HomePage({ user }: { user: User | null }) {
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-center mx-auto max-w-4xl bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white leading-[1.1] tracking-tight mb-6">
-            Transform Dormant Domains Into
+            Start For Free, Scale
             <span className="block text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">
-              Profitable Assets
+              When You&apos;re Ready
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-300 text-center max-w-2xl mx-auto mb-8 leading-relaxed">
-            Deploy beautiful &ldquo;Domain For Sale&rdquo; pages in seconds. Get
-            instant notifications when offers arrive. Track performance across
-            your entire portfolio.
+            Get started with one domain for free. Deploy beautiful &ldquo;Domain
+            For Sale&rdquo; pages, receive weekly updates, and track your last
+            20 offers. Upgrade anytime as you grow.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
@@ -117,16 +117,16 @@ export function HomePage({ user }: { user: User | null }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto mb-20">
             <div className="flex flex-col items-center p-6 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-3xl font-bold text-white mb-1">10,000+</div>
-              <div className="text-sm text-slate-400">Offers Tracked</div>
+              <div className="text-3xl font-bold text-white mb-1">$0</div>
+              <div className="text-sm text-slate-400">To Get Started</div>
             </div>
             <div className="flex flex-col items-center p-6 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-3xl font-bold text-white mb-1">500+</div>
-              <div className="text-sm text-slate-400">Active Domains</div>
+              <div className="text-3xl font-bold text-white mb-1">1 Domain</div>
+              <div className="text-sm text-slate-400">Free Forever</div>
             </div>
             <div className="flex flex-col items-center p-6 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-3xl font-bold text-white mb-1">4.9/5</div>
-              <div className="text-sm text-slate-400">Customer Rating</div>
+              <div className="text-3xl font-bold text-white mb-1">20</div>
+              <div className="text-sm text-slate-400">Offer History</div>
             </div>
           </div>
 

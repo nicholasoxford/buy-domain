@@ -1,7 +1,10 @@
 import { DomainOffer, DomainStat } from "../utils";
 import { createClient } from "./server";
 import { addDomainToVercel, removeDomainFromVercel } from "../vercel/api";
-import { sendDomainAddedNotification } from "../loops";
+import {
+  sendDomainAddedNotification,
+  sendDomainOfferNotification,
+} from "../loops";
 import { revalidatePath } from "next/cache";
 
 export async function submitDomainOffer(
@@ -19,6 +22,13 @@ export async function submitDomainOffer(
     })
     .select()
     .single();
+
+  // Send notification to owner
+  const owner = await getUserByDomain(domain);
+
+  if (owner?.email) {
+    await sendDomainOfferNotification(domain, owner.email, offer);
+  }
 
   if (error) {
     throw new Error(`Failed to submit offer: ${error.message}`);
@@ -464,4 +474,30 @@ export async function getUserDomainCount(userId: string) {
   }
 
   return count || 0;
+}
+
+export async function getUserByDomain(domain: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("domains")
+    .select(
+      `
+      user_id,
+      profiles:profiles(*)
+    `
+    )
+    .eq("domain", domain)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to get domain owner: ${error.message}`);
+  }
+
+  if (!data?.profiles) {
+    throw new Error("Domain not found or has no owner");
+  }
+  // Return the user profile
+  const profile = data.profiles[0];
+  return profile;
 }
