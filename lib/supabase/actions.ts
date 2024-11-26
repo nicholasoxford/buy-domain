@@ -2,6 +2,7 @@ import { DomainOffer, DomainStat } from "../utils";
 import { createClient } from "./server";
 import { addDomainToVercel, removeDomainFromVercel } from "../vercel/api";
 import { sendDomainAddedNotification } from "../loops";
+import { revalidatePath } from "next/cache";
 
 export async function submitDomainOffer(
   domain: string,
@@ -345,7 +346,8 @@ export async function addDomain(domain: string, userId: string) {
       // After successful domain creation
       await sendDomainAddedNotification(userData.email, cleanDomain);
     }
-
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/domains");
     return {
       ...dbDomain,
     };

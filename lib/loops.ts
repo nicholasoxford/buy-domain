@@ -29,19 +29,53 @@ export async function sendDomainAddedNotification(
         console.log({ err });
       });
 
-    if (!resp) {
-      throw new Error("Failed to send domain added notification");
-    }
-    if (!resp.success && resp.type === "error") {
+    if (resp && !resp.success && resp.type === "error") {
       console.log({ resp });
       throw new Error("Failed to send domain added notification");
-    } else if (!resp.success && resp.type === "nestedError") {
+    } else if (resp && !resp.success && resp.type === "nestedError") {
       console.dir({ resp }, { depth: null });
       throw new Error("Failed to send domain added notification");
     }
+
+    // If Loops client fails, try direct API call
+    if (!resp || !resp.success) {
+      const options = {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOOPS_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
+          addToAudience: true,
+          dataVariables: {
+            domain: domain.trim(),
+          },
+        }),
+      };
+
+      const fetchResp = await fetch(
+        "https://app.loops.so/api/v1/transactional",
+        options
+      );
+      const fetchData = await fetchResp.json();
+
+      if (!fetchResp.ok) {
+        throw new Error("Both notification attempts failed");
+      }
+
+      console.log(
+        "Domain added notification sent successfully via fetch to: ",
+        email
+      );
+      return;
+    }
+
     console.log("Domain added notification sent successfully to: ", email);
     return;
   } catch (error) {
     console.error("Error sending domain added notification: ", error);
+    throw error;
   }
 }

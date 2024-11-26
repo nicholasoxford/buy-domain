@@ -52,7 +52,7 @@ export default async function AddDomainPage() {
             Upgrade to Add Domains
           </h2>
           <p className="text-slate-400 mb-6">
-            Subscribe to our service to start adding and managing your domains.
+            Subscribe to our service to start adding and managing more domains.
           </p>
           <a
             href={`${ADD_DOMAIN_BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK}?prefilled_email=${encodeURIComponent(
