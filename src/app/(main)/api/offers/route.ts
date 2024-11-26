@@ -52,7 +52,7 @@ async function handleRequest(request: NextRequest) {
     const cleanedDomain = cleanDomainName(domain);
     console.log("CLEANED DOMAIN", cleanedDomain);
     // Then submit the offer
-    const result = await submitDomainOffer(domain, {
+    const result = await submitDomainOffer(cleanedDomain, {
       email,
       amount: offerAmount,
       description: description || `Offer from ${name}`,
