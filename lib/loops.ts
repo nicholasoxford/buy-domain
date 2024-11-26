@@ -62,6 +62,7 @@ export async function sendDomainAddedNotification(
       const fetchData = await fetchResp.json();
 
       if (!fetchResp.ok) {
+        console.log({ fetchData });
         throw new Error("Both notification attempts failed");
       }
 
