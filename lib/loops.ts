@@ -17,6 +17,7 @@ export async function sendDomainAddedNotification(
     );
     const test = await loops.testApiKey();
     console.log({ test });
+    console.log({ email, emailTrim: email.trim() });
     const resp = await loops
       .sendTransactionalEmail({
         transactionalId: "cm3wis2ev00o3epr4uf1yrq5g",
