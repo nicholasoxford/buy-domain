@@ -1,8 +1,6 @@
 import { NextRequest } from "next/server";
-import { getEnvVariables } from "@/utils/env";
 import { submitDomainOffer } from "@/lib/supabase/actions";
 import { DomainOffer } from "@/lib/utils";
-import { getBaseUrlServerSide } from "@/utils/host";
 
 // CORS headers
 const corsHeaders = {
@@ -17,10 +15,6 @@ export async function OPTIONS() {
 }
 
 async function handleRequest(request: NextRequest) {
-  // Get KV namespace
-  const env = getEnvVariables();
-  const baseUrl = await getBaseUrlServerSide();
-
   // Get domain from query param
 
   if (request.method !== "POST") {
@@ -31,9 +25,10 @@ async function handleRequest(request: NextRequest) {
   }
 
   try {
+    console.log("RIGHT BEFORE JSON");
     const { email, amount, description, domain, name } =
       (await request.json()) as DomainOffer;
-
+    console.log("AFTER JSON");
     if (!email || !amount) {
       return new Response("Email, amount, and token are required", {
         status: 400,

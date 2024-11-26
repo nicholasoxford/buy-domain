@@ -5,8 +5,8 @@ import { z } from "zod";
 const offerSchema = z.object({
   amount: z.number(),
   description: z.string(),
-  email: z.string(),
   domain: z.string(),
+  email: z.string(),
   name: z.string(),
 });
 
