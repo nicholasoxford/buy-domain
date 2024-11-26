@@ -344,7 +344,7 @@ export async function addDomain(domain: string, userId: string) {
     }
     if (userData?.email) {
       // After successful domain creation
-      await sendDomainAddedNotification(userData.email, cleanDomain);
+      await sendDomainAddedNotification(cleanDomain, userData.email);
     }
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/domains");
