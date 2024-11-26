@@ -1,18 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export function AddDomainForm() {
   const [domain, setDomain] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [domainCount, setDomainCount] = useState<number | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/domains/count")
+      .then((res) => res.json())
+      .then((data) => setDomainCount(data.count))
+      .catch(console.error);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (domainCount && domainCount >= 1) {
+      setError(
+        "You can only add one domain on the free tier. Please upgrade to add more domains."
+      );
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/domains", {
