@@ -22,7 +22,7 @@ export async function submitDomainOffer(
     })
     .select()
     .single();
-
+  console.log("DATA", data);
   // Send notification to owner
   const owner = await getUserByDomain(domain);
   console.log("OWNER", owner);
