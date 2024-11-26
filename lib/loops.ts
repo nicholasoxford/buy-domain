@@ -47,11 +47,15 @@ export async function sendDomainAddedNotification(
   }
 }
 
-export async function sendDomainOfferNotification(
-  domain: string,
-  email: string,
-  offer: Omit<DomainOffer, "timestamp">
-) {
+export async function sendDomainOfferNotification({
+  domain,
+  email,
+  offer,
+}: {
+  domain: string;
+  email: string;
+  offer: Omit<DomainOffer, "timestamp">;
+}) {
   const LOOPS_API_KEY = process.env.LOOPS_API_KEY ?? "";
   const loops = new LoopsClient(LOOPS_API_KEY);
 

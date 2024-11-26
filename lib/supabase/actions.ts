@@ -24,11 +24,9 @@ export async function submitDomainOffer(
     .single();
   console.log("DATA", data);
   // Send notification to owner
-  console.log("GETTING OWNER for domain: ", domain);
   const owner = await getUserByDomain(domain);
-  console.log("OWNER", owner);
   if (owner?.email) {
-    await sendDomainOfferNotification(domain, owner.email, offer);
+    await sendDomainOfferNotification({ domain, email: owner.email, offer });
   }
 
   if (error) {
