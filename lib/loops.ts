@@ -11,9 +11,9 @@ export async function sendDomainAddedNotification(
   try {
     console.log(
       "Sending domain added notification to: ",
-      email,
+      email.trim(),
       " for domain: ",
-      domain
+      domain.trim()
     );
     const test = await loops.testApiKey();
     console.log({ test });
