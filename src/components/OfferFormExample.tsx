@@ -105,11 +105,11 @@ export function OfferForm() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-900 flex items-center justify-center p-4 antialiased">
+    <div className="relative overflow-hidden bg-slate-900 rounded-2xl">
       {/* Background gradient */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900 via-slate-900 to-slate-900" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900 via-slate-900 to-slate-900" />
 
-      <div className="fixed inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
         <FloatingOrb delay={0} />
         <FloatingOrb delay={2} />
         <FloatingOrb delay={4} />
@@ -117,7 +117,7 @@ export function OfferForm() {
 
       {/* Animated gradient overlay */}
       <motion.div
-        className="fixed inset-0 opacity-50"
+        className="absolute inset-0 opacity-50"
         animate={{
           background: [
             "radial-gradient(600px at 0% 0%, purple 0%, transparent 80%)",
@@ -134,18 +134,8 @@ export function OfferForm() {
         }}
       />
 
-      {/* Form container with parallax effect */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 30,
-          opacity: { duration: 0.5 },
-        }}
-        className="relative w-full max-w-md"
-      >
+      {/* Form container */}
+      <div className="relative w-full max-w-xl mx-auto p-8">
         <div className="relative backdrop-blur-xl bg-white/5 rounded-2xl shadow-2xl border border-white/10">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-pink-500/10 rounded-2xl" />
 
@@ -308,7 +298,7 @@ export function OfferForm() {
             </form>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

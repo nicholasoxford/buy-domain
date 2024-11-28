@@ -66,7 +66,7 @@ export async function sendDomainOfferNotification({
       email: email.trim(),
       dataVariables: {
         domain: domain.trim(),
-        offerAmount: offer.amount,
+        offerAmount: offer.amount.toString(),
         buyerEmail: offer.email,
         message: offer.description || "",
         dashboardDomainUrl: `https://www.domain-bridge.com/dashboard/domains/${domain}`,
