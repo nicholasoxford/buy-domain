@@ -5,9 +5,10 @@ import { useFormStatus } from "react-dom";
 import { login, signup, type AuthState } from "./actions";
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, Lock } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { testimonials } from "@/components/testimonials";
 import Image from "next/image";
+
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
 
@@ -38,6 +39,7 @@ const initialState: AuthState = {
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const redirectTo = searchParams.get("redirect");
   const showSignup = searchParams.get("signup") === "true";
 
@@ -51,6 +53,23 @@ export default function LoginPage() {
     isLogin ? login : signup,
     initialState
   );
+
+  const toggleMode = () => {
+    const newMode = !isLogin;
+    setIsLogin(newMode);
+    // Update URL to reflect the current mode
+    const params = new URLSearchParams(searchParams);
+    if (newMode) {
+      params.delete("signup");
+    } else {
+      params.set("signup", "true");
+    }
+    // Preserve other parameters like redirect
+    if (redirectTo) {
+      params.set("redirect", redirectTo);
+    }
+    router.replace(`?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center pt-16 sm:pt-24 p-4">
@@ -70,22 +89,24 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
-            <div className="flex -space-x-2 mr-2">
-              {testimonials.map((person) => (
-                <div
-                  key={person.name}
-                  className="relative w-6 h-6 rounded-full shadow-sm"
-                >
-                  <Image
-                    src={person.image}
-                    alt={person.name}
-                    fill
-                    className="rounded-full object-cover"
-                    sizes="24px"
-                  />
-                </div>
-              ))}
-            </div>
+            {!isLogin && (
+              <div className="flex -space-x-2 mr-2">
+                {testimonials.map((person) => (
+                  <div
+                    key={person.name}
+                    className="relative w-6 h-6 rounded-full shadow-sm"
+                  >
+                    <Image
+                      src={person.image}
+                      alt={person.name}
+                      fill
+                      className="rounded-full object-cover"
+                      sizes="24px"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             <span className="text-sm font-medium text-purple-200">
               {isLogin ? "Welcome back!" : "Join 500+ Domain Investors"}
             </span>
@@ -167,18 +188,22 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              type="button"
+              onClick={toggleMode}
               className="text-sm text-slate-400 hover:text-purple-400 transition-colors"
             >
               {isLogin ? (
                 <>
-                  <span>Don&apos;t have an account?</span>
-                  <span className=" ml-2 font-medium text-purple-400">
+                  Don&apos;t have an account?{" "}
+                  <span className="font-medium text-purple-400">
                     Create one
                   </span>
                 </>
               ) : (
-                "Already have an account? Sign in"
+                <>
+                  Already have an account?{" "}
+                  <span className="font-medium text-purple-400">Sign in</span>
+                </>
               )}
             </button>
           </div>

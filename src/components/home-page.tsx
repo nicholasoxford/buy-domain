@@ -87,16 +87,16 @@ export function HomePage({ user }: { user: User | null }) {
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-center mx-auto max-w-4xl bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white leading-[1.1] tracking-tight mb-6">
-            Start For Free, Scale
+            Transform Dormant Domains Into
             <span className="block text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">
-              When You&apos;re Ready
+              Profitable Assets
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-300 text-center max-w-2xl mx-auto mb-8 leading-relaxed">
-            Get started with one domain for free. Deploy beautiful &ldquo;Domain
-            For Sale&rdquo; pages, receive weekly updates, and track your last
-            20 offers. Upgrade anytime as you grow.
+            Deploy beautiful &ldquo;Domain For Sale&rdquo; pages in seconds. Get
+            instant notifications when offers arrive. Track performance across
+            your entire portfolio.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
@@ -108,7 +108,7 @@ export function HomePage({ user }: { user: User | null }) {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/docs"
+              href={user ? "/docs" : "/demo"}
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-lg transition-colors border border-white/10"
             >
               {user ? "Documentation" : "See How It Works"}
@@ -125,8 +125,8 @@ export function HomePage({ user }: { user: User | null }) {
               <div className="text-sm text-slate-400">Free Forever</div>
             </div>
             <div className="flex flex-col items-center p-6 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-3xl font-bold text-white mb-1">20</div>
-              <div className="text-sm text-slate-400">Offer History</div>
+              <div className="text-3xl font-bold text-white mb-1">500+</div>
+              <div className="text-sm text-slate-400">Active Domains</div>
             </div>
           </div>
 

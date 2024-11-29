@@ -103,7 +103,6 @@ export const renderDNSRecord = (record: DNSRecord) => (
 );
 
 export default function DomainPage({ domain }: { domain: any }) {
-  console.log("DomainPage", domain);
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">

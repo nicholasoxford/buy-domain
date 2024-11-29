@@ -12,6 +12,8 @@ import {
   Settings,
 } from "lucide-react";
 import Link from "next/link";
+import { ManagedServicePricing } from "./managed-service-pricing";
+import FreeTierBanner from "@/components/free-tier-banner";
 
 export const dynamic = "force-static";
 
@@ -57,17 +59,16 @@ export default function ManagedServicePage() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
             <Link
-              href="/dashboard"
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              Start Free Trial
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link
               href="/demo"
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
             >
               View Live Demo
+            </Link>
+            <Link
+              href="/docs"
+              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              Documentation
             </Link>
           </div>
 
@@ -88,92 +89,61 @@ export default function ManagedServicePage() {
             ))}
           </div>
 
+          <FreeTierBanner />
+
           {/* Pricing Section */}
-          <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-8 border border-blue-500/20 mb-20">
-            <h2 className="text-2xl font-bold mb-8">
-              Simple, Transparent Pricing
-            </h2>
-            <div className="max-w-lg mx-auto text-center">
-              <div className="mb-6">
-                <div className="text-4xl font-bold text-white mb-2">
-                  $5/month
-                </div>
-                <div className="text-slate-400">per 5 domains</div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {[
-                  "Unlimited offers",
-                  "Advanced analytics",
-                  "Custom domains",
-                  "Email notifications",
-                  "Priority support",
-                  "Automatic backups",
-                  "SSL certificates",
-                  "99.9% uptime",
-                ].map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-center gap-2 text-slate-300"
-                  >
-                    <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-                    {feature}
-                  </div>
-                ))}
-              </div>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors"
-              >
-                Start 14-Day Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </div>
-          </div>
+          <ManagedServicePricing />
 
           {/* Getting Started Steps */}
-          <div className="text-left max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8 text-center">
-              Get Started in Minutes
-            </h2>
-            <div className="space-y-6">
-              {[
-                {
-                  icon: Users,
-                  title: "Create Account",
-                  description: "Sign up for a Domain Bridge account",
-                },
-                {
-                  icon: Cloud,
-                  title: "Add Domain",
-                  description: "Connect your domain through our dashboard",
-                },
-                {
-                  icon: Settings,
-                  title: "Configure",
-                  description: "Customize your offer page appearance",
-                },
-                {
-                  icon: Clock,
-                  title: "Go Live",
-                  description: "Start receiving offers in minutes",
-                },
-              ].map(({ icon: Icon, title, description }) => (
-                <div
-                  key={title}
-                  className="flex items-start gap-4 bg-slate-800/50 rounded-xl p-6 border border-blue-500/20"
-                >
-                  <div className="p-2 bg-blue-500/10 rounded-lg">
-                    <Icon className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-white mb-1">{title}</h3>
-                    <p className="text-sm text-slate-300">{description}</p>
-                  </div>
-                </div>
-              ))}
+          <GettingStartedSteps />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GettingStartedSteps() {
+  return (
+    <div className="text-left max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-8 text-center">
+        Get Started in Minutes
+      </h2>
+      <div className="space-y-6">
+        {[
+          {
+            icon: Users,
+            title: "Create Account",
+            description: "Sign up for a Domain Bridge account",
+          },
+          {
+            icon: Cloud,
+            title: "Add Domain",
+            description: "Connect your domain through our dashboard",
+          },
+          {
+            icon: Settings,
+            title: "Configure",
+            description: "Customize your offer page appearance",
+          },
+          {
+            icon: Clock,
+            title: "Go Live",
+            description: "Start receiving offers in minutes",
+          },
+        ].map(({ icon: Icon, title, description }) => (
+          <div
+            key={title}
+            className="flex items-start gap-4 bg-slate-800/50 rounded-xl p-6 border border-blue-500/20"
+          >
+            <div className="p-2 bg-blue-500/10 rounded-lg">
+              <Icon className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <h3 className="font-medium text-white mb-1">{title}</h3>
+              <p className="text-sm text-slate-300">{description}</p>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
