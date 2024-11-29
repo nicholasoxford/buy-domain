@@ -85,7 +85,7 @@ export function OfferForm() {
     setSubmitStatus({ type: "idle", message: "" });
 
     // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 425));
 
     try {
       const newOffer = {

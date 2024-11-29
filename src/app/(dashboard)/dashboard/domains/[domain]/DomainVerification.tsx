@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface DNSRecord {
   type: string;
@@ -23,7 +23,6 @@ export function DomainVerification({ domain }: { domain: string }) {
     error: null,
   });
   const [countdown, setCountdown] = useState(5);
-  const router = useRouter();
 
   const getRequiredDNSRecords = (): DNSRecord[] => {
     const records = [
@@ -84,46 +83,66 @@ export function DomainVerification({ domain }: { domain: string }) {
         throw new Error(result.error || "Failed to verify domain");
       }
 
-      const isVerified =
-        result.verifyStatus?.main?.verified &&
-        result.verifyStatus?.www?.verified;
-      const isConfigured =
-        !result.configuration?.main?.misconfigured &&
-        !result.configuration?.www?.misconfigured;
+      // Check if both A and CNAME records are properly configured
+      const mainConfigured = !result.configuration?.main?.misconfigured;
+      const wwwConfigured = !result.configuration?.www?.misconfigured;
+
+      // If both are configured, we don't need to keep checking
+      const isFullyConfigured = mainConfigured && wwwConfigured;
 
       setState({
-        status: isVerified && isConfigured ? "verified" : "failed",
+        status: isFullyConfigured ? "verified" : "failed",
         verificationDetails: result,
-        error: !isVerified
-          ? "Domain verification pending"
-          : !isConfigured
-          ? "DNS records need to be configured"
-          : null,
+        error:
+          !mainConfigured || !wwwConfigured
+            ? "DNS records need to be configured"
+            : null,
       });
+
+      return isFullyConfigured;
     } catch (error: any) {
       setState({
         status: "failed",
         verificationDetails: null,
         error: error.message,
       });
+      return false;
     } finally {
       setCountdown(5);
     }
   };
 
   useEffect(() => {
-    checkVerification();
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          checkVerification();
-          return 5;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    let timer: NodeJS.Timeout;
+    let isActive = true;
 
-    return () => clearInterval(timer);
+    const check = async () => {
+      if (!isActive) return;
+
+      const isConfigured = await checkVerification();
+
+      // Only continue checking if not configured and component is still mounted
+      if (!isConfigured && isActive) {
+        timer = setInterval(() => {
+          setCountdown((prev) => {
+            if (prev <= 1) {
+              check(); // Recheck when countdown reaches 0
+              return 5;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    };
+
+    check(); // Initial check
+
+    return () => {
+      isActive = false;
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [domain]);
 
   const CopyButton = ({ value }: { value: string }) => {
@@ -257,12 +276,8 @@ export function DomainVerification({ domain }: { domain: string }) {
     </div>
   );
 
-  const isFullyVerified =
+  const isFullyConfigured =
     state.verificationDetails &&
-    (!state.verificationDetails.verifyStatus?.main?.error ||
-      state.verificationDetails.verifyStatus?.main?.verified) &&
-    (!state.verificationDetails.verifyStatus?.www?.error ||
-      state.verificationDetails.verifyStatus?.www?.verified) &&
     !state.verificationDetails.configuration?.main?.misconfigured &&
     !state.verificationDetails.configuration?.www?.misconfigured;
 
@@ -273,19 +288,19 @@ export function DomainVerification({ domain }: { domain: string }) {
           <h2 className="text-lg font-semibold text-white">
             DNS Configuration Status
           </h2>
-          {isFullyVerified && (
+          {isFullyConfigured && (
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="px-3 py-1.5 text-sm bg-slate-700/50 hover:bg-slate-700 text-white rounded-md transition-colors"
+              <Link
+                href="/dashboard"
+                className="px-3 py-1.5 text-sm bg-slate-700/50 hover:bg-slate-700 text-white rounded-md"
               >
                 Back to Dashboard
-              </button>
+              </Link>
               <a
                 href={`https://${domain}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded-md transition-colors"
+                className="px-3 py-1.5 text-sm bg-purple-500 hover:bg-purple-700 text-white rounded-md"
               >
                 Visit Site
               </a>
@@ -342,9 +357,11 @@ export function DomainVerification({ domain }: { domain: string }) {
         </div>
       )}
 
-      <div className="text-sm text-slate-400">
-        Next check in {countdown} seconds...
-      </div>
+      {!isFullyConfigured && (
+        <div className="text-sm text-slate-400">
+          Next check in {countdown} seconds...
+        </div>
+      )}
     </div>
   );
 }

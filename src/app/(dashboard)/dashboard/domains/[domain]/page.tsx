@@ -13,5 +13,5 @@ export default async function DomainPageServer({
     notFound();
   }
 
-  return <DomainPage domain={domain} />;
+  return <DomainPage domain={domain.domain} />;
 }

@@ -1,15 +1,13 @@
 "use client";
 import { useOffers } from "@/contexts/OffersContext";
-import { motion } from "framer-motion";
 
 type StatsGridProps = {
-  initialTotalVisits: number; // Only pass initial visits since other stats will be calculated
+  initialTotalVisits: number;
 };
 
 export function StatsGrid({ initialTotalVisits }: StatsGridProps) {
   const { offers } = useOffers();
 
-  // Calculate stats from current offers
   const stats = {
     totalOffers: offers.length,
     highestOffer: Math.max(...offers.map((offer) => offer.amount), 0),
@@ -51,22 +49,12 @@ function StatCard({
   icon: string;
 }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 hover:border-purple-500/30 transition-colors"
-    >
+    <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
       <div className="flex items-center gap-2 mb-4">
         <span className="text-lg">{icon}</span>
         <h3 className="text-sm font-medium text-slate-400">{title}</h3>
       </div>
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-bold text-white"
-      >
-        {value}
-      </motion.p>
-    </motion.div>
+      <p className="text-3xl font-bold text-white">{value}</p>
+    </div>
   );
 }

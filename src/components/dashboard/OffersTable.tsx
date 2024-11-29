@@ -2,9 +2,7 @@
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
 import Link from "next/link";
 import { useOffers } from "@/contexts/OffersContext";
-import { motion } from "framer-motion";
-import { DollarSign, ExternalLink } from "lucide-react";
-import { Mail } from "lucide-react";
+import { DollarSign, ExternalLink, Mail } from "lucide-react";
 
 export function OffersTable() {
   const { offers, deleteOffer } = useOffers();
@@ -33,11 +31,8 @@ export function OffersTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
-            {offers.map((offer, index) => (
-              <motion.tr
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+            {offers.map((offer) => (
+              <tr
                 key={offer.timestamp}
                 className="hover:bg-slate-800/30 transition-colors group"
               >
@@ -91,7 +86,7 @@ export function OffersTable() {
                     onDelete={async () => await deleteOffer(offer.timestamp)}
                   />
                 </td>
-              </motion.tr>
+              </tr>
             ))}
             {offers.length === 0 && (
               <tr>
