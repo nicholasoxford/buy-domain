@@ -20,8 +20,9 @@ export function DashboardHeader({
     <header className="h-16 border-b border-slate-800 bg-slate-900/95 backdrop-blur-xl">
       <div className="h-full px-4 lg:px-8 flex items-center justify-between">
         <MobileMenuButton />
-
-        <h1 className="text-lg font-medium text-white">Dashboard</h1>
+        <a href="/dashboard" className="text-lg font-medium text-white">
+          Dashboard
+        </a>
 
         <div className="flex items-center gap-2 lg:gap-6">
           {isSubscribed && (

@@ -92,13 +92,13 @@ export default async function AllDomainsPage() {
                   <td className="px-6 py-4 text-slate-300">{offers.length}</td>
                   <td className="px-6 py-4 text-slate-300">{visits}</td>
                   <td className="px-6 py-4">
-                    <Link
+                    <a
                       href={`/dashboard/domains/${domain}`}
                       className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:text-blue-300 rounded-md transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       Manage Domain
-                    </Link>
+                    </a>
                   </td>
                 </tr>
               );
