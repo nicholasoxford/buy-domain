@@ -3,18 +3,14 @@
 import { Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Offer } from "@/types/offers";
 
 interface DeleteOfferButtonProps {
-  domain: string;
-  timestamp: string;
+  offer: Offer;
   onDelete: (domain: string, timestamp: string) => Promise<void>;
 }
 
-export function DeleteOfferButton({
-  domain,
-  timestamp,
-  onDelete,
-}: DeleteOfferButtonProps) {
+export function DeleteOfferButton({ offer, onDelete }: DeleteOfferButtonProps) {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -26,7 +22,7 @@ export function DeleteOfferButton({
     }
 
     startTransition(async () => {
-      await onDelete(domain, timestamp);
+      await onDelete(offer.domain, offer.timestamp);
       router.refresh();
       setIsConfirming(false);
     });

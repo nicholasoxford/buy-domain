@@ -134,7 +134,7 @@ export function HomePage({ user }: { user: User | null }) {
           <div className="relative group mb-4">
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
             <Link
-              href="/example"
+              href="/demo"
               className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all duration-200"
             >
               <div className="flex flex-col items-start">
@@ -207,7 +207,7 @@ export function HomePage({ user }: { user: User | null }) {
             <div className="relative group mb-4">
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
               <Link
-                href="/example"
+                href="/demo"
                 className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-pink-500/50 transition-all duration-200"
               >
                 <div className="flex flex-col items-start">

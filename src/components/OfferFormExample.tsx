@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Globe, ArrowRight, Loader2 } from "lucide-react";
+import { useOffers } from "@/contexts/OffersContext";
 
 // Move the FloatingOrb component here
 const FloatingOrb = ({ delay = 0 }) => (
@@ -37,6 +38,7 @@ const formSchema = z.object({
 });
 
 export function OfferForm() {
+  const { addOffer } = useOffers();
   const [characterCount, setCharacterCount] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -86,18 +88,25 @@ export function OfferForm() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
-      // Simulate successful submission
+      const newOffer = {
+        timestamp: new Date().toISOString(),
+        domain: siteBaseUrl,
+        email: values.email,
+        amount: parseInt(values.offer),
+        description: values.description,
+      };
+
+      addOffer(newOffer);
+
       setSubmitStatus({
         type: "success",
-        message:
-          "Your offer has been submitted successfully! This is a demo form.",
+        message: "Your offer has been submitted successfully!",
       });
       form.reset();
     } catch (error) {
       setSubmitStatus({
         type: "error",
-        message:
-          "This is a demo form. In production, this would submit to your API.",
+        message: "Failed to submit offer. Please try again.",
       });
     } finally {
       setIsSubmitting(false);

@@ -4,6 +4,7 @@ import {
   getAllOffers,
   getDomainStats,
 } from "@/lib/supabase/actions";
+import { Offer } from "@/types/offers";
 
 // Add this function to generate demo data
 export async function createDemoData() {
@@ -66,7 +67,7 @@ export async function createDemoData() {
 
   return {
     allDomains: demoDomains,
-    offers: demoOffers,
+    offers: demoOffers as Offer[],
     stats: demoStats,
     metrics: {
       totalVisits: demoStats.reduce((sum, stat) => sum + stat.visits, 0),

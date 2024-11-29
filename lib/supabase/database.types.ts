@@ -12,27 +12,27 @@ export type Database = {
       domain_offers: {
         Row: {
           amount: number
-          created_at: string | null
+          created_at: string
           description: string | null
-          domain: string | null
+          domain: string
           email: string
           id: string
           token: string | null
         }
         Insert: {
           amount: number
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          domain?: string | null
+          domain: string
           email: string
           id?: string
           token?: string | null
         }
         Update: {
           amount?: number
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          domain?: string | null
+          domain?: string
           email?: string
           id?: string
           token?: string | null

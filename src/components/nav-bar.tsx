@@ -97,9 +97,9 @@ export function NavBar({
               </Link>
 
               <Link
-                href="/example"
+                href="/demo"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                  isActive("/example")
+                  isActive("/demo")
                     ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
                     : "text-slate-300 hover:bg-white/10 hover:text-white"
                 }`}
@@ -281,9 +281,9 @@ export function NavBar({
                   </Link>
 
                   <Link
-                    href="/example"
+                    href="/demo"
                     className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
-                      isActive("/example")
+                      isActive("/demo")
                         ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
                         : "text-white hover:bg-slate-800"
                     }`}

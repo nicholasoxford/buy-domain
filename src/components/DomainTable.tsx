@@ -1,9 +1,9 @@
 "use client";
 
-import { DomainStat } from "@/lib/utils";
 import { useState } from "react";
+import { useOffers } from "@/contexts/OffersContext";
+import { DomainStat } from "@/lib/utils";
 
-// Add these types at the top
 type SortField =
   | "domain"
   | "visits"
@@ -13,7 +13,6 @@ type SortField =
   | "offerCount";
 type SortDirection = "asc" | "desc";
 
-// Add this component for the sortable header
 function SortableHeader({
   label,
   field,
@@ -42,13 +41,12 @@ function SortableHeader({
   );
 }
 
-// Modify the domain stats table section
 export function DomainStatsTable({
   initialStats,
 }: {
   initialStats: DomainStat[];
 }) {
-  const [stats, setStats] = useState(initialStats);
+  const { offers } = useOffers();
   const [sort, setSort] = useState<{
     field: SortField;
     direction: SortDirection;
@@ -57,52 +55,69 @@ export function DomainStatsTable({
     direction: "desc",
   });
 
-  const handleSort = (field: SortField) => {
-    // Calculate new sort state first
-    const newSort: { field: SortField; direction: SortDirection } = {
-      field,
-      // If clicking the same field, cycle through: desc -> asc -> desc
-      // If clicking a new field, start with desc
-      direction:
-        sort.field === field
-          ? ((sort.direction === "desc" ? "asc" : "desc") as SortDirection)
-          : "desc",
+  // Calculate domain stats from current offers
+  const stats = initialStats.map((stat) => {
+    const domainOffers = offers.filter((offer) => offer.domain === stat.domain);
+
+    return {
+      ...stat,
+      offerCount: domainOffers.length,
+      topOffer: domainOffers.length
+        ? Math.max(...domainOffers.map((o) => o.amount))
+        : 0,
+      avgOffer: domainOffers.length
+        ? domainOffers.reduce((sum, o) => sum + o.amount, 0) /
+          domainOffers.length
+        : 0,
+      lastOffer: domainOffers.length
+        ? new Date(
+            Math.max(
+              ...domainOffers.map((o) => new Date(o.timestamp).getTime())
+            )
+          )
+        : null,
     };
+  });
 
-    // Update sort state
-    setSort(newSort);
-
-    // Use the new sort state for sorting
-    setStats((prev) =>
-      [...prev].sort((a, b) => {
-        let comparison = 0;
-
-        switch (field) {
-          case "domain":
-            comparison = a.domain.localeCompare(b.domain);
-            break;
-          case "visits":
-            comparison = a.visits - b.visits;
-            break;
-          case "lastOffer":
-            comparison =
-              (a.lastOffer?.getTime() || 0) - (b.lastOffer?.getTime() || 0);
-            break;
-          case "avgOffer":
-            comparison = a.avgOffer - b.avgOffer;
-            break;
-          case "topOffer":
-            comparison = a.topOffer - b.topOffer;
-            break;
-          case "offerCount":
-            comparison = a.offerCount - b.offerCount;
-            break;
-        }
-
-        return newSort.direction === "asc" ? comparison : -comparison;
-      })
-    );
+  const handleSort = (field: SortField) => {
+    setSort((prev) => ({
+      field,
+      direction:
+        prev.field === field
+          ? prev.direction === "desc"
+            ? "asc"
+            : "desc"
+          : "desc",
+    }));
   };
+
+  const sortedStats = [...stats].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sort.field) {
+      case "domain":
+        comparison = a.domain.localeCompare(b.domain);
+        break;
+      case "visits":
+        comparison = a.visits - b.visits;
+        break;
+      case "lastOffer":
+        comparison =
+          (a.lastOffer?.getTime() || 0) - (b.lastOffer?.getTime() || 0);
+        break;
+      case "avgOffer":
+        comparison = a.avgOffer - b.avgOffer;
+        break;
+      case "topOffer":
+        comparison = a.topOffer - b.topOffer;
+        break;
+      case "offerCount":
+        comparison = a.offerCount - b.offerCount;
+        break;
+    }
+
+    return sort.direction === "asc" ? comparison : -comparison;
+  });
 
   return (
     <div className="overflow-x-auto">
@@ -148,7 +163,7 @@ export function DomainStatsTable({
           </tr>
         </thead>
         <tbody>
-          {stats.map((stat) => (
+          {sortedStats.map((stat) => (
             <tr
               key={stat.domain}
               className="border-t border-slate-700 hover:bg-slate-800/30 transition-colors"

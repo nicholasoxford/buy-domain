@@ -19,7 +19,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/example"
+                  href="/demo"
                   className="text-sm text-slate-400 hover:text-white transition-colors"
                 >
                   Example

@@ -1,26 +1,28 @@
+"use client";
 import { DeleteOfferButton } from "@/components/DeleteOfferButton";
-import { deleteOffer } from "@/lib/data/dashboard";
 import Link from "next/link";
+import { useOffers } from "@/contexts/OffersContext";
+import { motion } from "framer-motion";
+import { DollarSign, ExternalLink } from "lucide-react";
+import { Mail } from "lucide-react";
 
-type Offer = {
-  timestamp: string | null;
-  domain: string | null;
-  email: string;
-  amount: number;
-  description: string | null;
-};
+export function OffersTable() {
+  const { offers, deleteOffer } = useOffers();
 
-export function OffersTable({ offers }: { offers: Offer[] }) {
   return (
-    <>
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 mb-8">
-        <div className="px-6 py-4 border-b border-slate-700/50">
+    <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
+      <div className="px-6 py-4 border-b border-slate-700/50">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-white">Recent Offers</h2>
+          <span className="text-sm text-slate-400">
+            {offers.length} total offers
+          </span>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="text-xs text-slate-400 bg-slate-800/50">
+          <thead className="text-xs uppercase tracking-wider text-slate-400 bg-slate-800/50">
             <tr>
               <th className="px-6 py-3 font-medium">Date</th>
               <th className="px-6 py-3 font-medium">Domain</th>
@@ -31,32 +33,46 @@ export function OffersTable({ offers }: { offers: Offer[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
-            {offers.map((offer) => (
-              <tr
+            {offers.map((offer, index) => (
+              <motion.tr
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 key={offer.timestamp}
-                className="hover:bg-slate-800/30 transition-colors"
+                className="hover:bg-slate-800/30 transition-colors group"
               >
-                <td className="px-6 py-4 text-sm text-slate-300">
-                  {offer.timestamp
-                    ? new Date(offer.timestamp).toLocaleDateString()
-                    : ""}
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-200">
+                      {new Date(offer.timestamp).toLocaleDateString()}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {new Date(offer.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <Link
                     href={`https://${offer.domain}`}
-                    className="text-sm font-medium text-purple-400 hover:text-purple-300"
+                    target="_blank"
+                    className="flex items-center gap-2 text-sm font-medium text-purple-400 hover:text-purple-300 group"
                   >
                     {offer.domain}
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-300">
-                  {offer.email}
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    {offer.email}
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white">
-                      ${offer.amount.toLocaleString()}
-                    </span>
+                    <div className="flex items-center gap-1 text-sm font-medium text-white">
+                      <DollarSign className="w-4 h-4 text-slate-400" />
+                      {offer.amount.toLocaleString()}
+                    </div>
                     {offer.amount >= 5000 && (
                       <span className="px-2 py-0.5 text-xs bg-purple-500/20 text-purple-300 rounded-full">
                         High Value
@@ -64,21 +80,36 @@ export function OffersTable({ offers }: { offers: Offer[] }) {
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-300 truncate max-w-xs">
-                  {offer.description}
+                <td className="px-6 py-4">
+                  <p className="text-sm text-slate-300 truncate max-w-xs">
+                    {offer.description}
+                  </p>
                 </td>
                 <td className="px-6 py-4">
                   <DeleteOfferButton
-                    domain={offer.domain || ""}
-                    timestamp={offer.timestamp || ""}
-                    onDelete={deleteOffer}
+                    offer={offer}
+                    onDelete={async () => await deleteOffer(offer.timestamp)}
                   />
                 </td>
-              </tr>
+              </motion.tr>
             ))}
+            {offers.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-8 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-sm text-slate-400">
+                      No offers yet
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      Offers will appear here when submitted
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
