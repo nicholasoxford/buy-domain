@@ -78,7 +78,7 @@ export default function MobileSidebar({
                 onClick={() => setIsOpen(false)}
               >
                 <Globe className="w-5 h-5" />
-                <span>All Domains</span>
+                <span>Manage Domains</span>
               </Link>
             </li>
             <li>

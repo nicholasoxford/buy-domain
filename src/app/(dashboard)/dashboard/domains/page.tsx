@@ -49,7 +49,7 @@ export default async function AllDomainsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">All Domains</h1>
+        <h1 className="text-2xl font-bold text-white">Manage Domains</h1>
         <Link
           href="/dashboard/domains/add"
           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all duration-150 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105"

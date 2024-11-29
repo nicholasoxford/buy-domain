@@ -59,6 +59,10 @@ export type Database = {
           created_at: string | null
           domain: string
           metadata: Json | null
+          notification_frequencies:
+            | Database["public"]["Enums"]["notification_frequency"][]
+            | null
+          notification_threshold: number | null
           user_id: string | null
           vercel_project_id: string | null
           verification_details: Json | null
@@ -68,6 +72,10 @@ export type Database = {
           created_at?: string | null
           domain: string
           metadata?: Json | null
+          notification_frequencies?:
+            | Database["public"]["Enums"]["notification_frequency"][]
+            | null
+          notification_threshold?: number | null
           user_id?: string | null
           vercel_project_id?: string | null
           verification_details?: Json | null
@@ -77,6 +85,10 @@ export type Database = {
           created_at?: string | null
           domain?: string
           metadata?: Json | null
+          notification_frequencies?:
+            | Database["public"]["Enums"]["notification_frequency"][]
+            | null
+          notification_threshold?: number | null
           user_id?: string | null
           vercel_project_id?: string | null
           verification_details?: Json | null

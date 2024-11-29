@@ -40,7 +40,7 @@ export function DesktopSidebar({
               className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <Globe className="w-5 h-5" />
-              <span>All Domains</span>
+              <span>Manage Domains</span>
             </Link>
           </li>
           <li>

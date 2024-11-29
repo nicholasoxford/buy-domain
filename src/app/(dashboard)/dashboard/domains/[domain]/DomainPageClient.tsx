@@ -9,6 +9,8 @@ interface DNSRecord {
 import { useState } from "react";
 import { DangerZone } from "./DangerZone";
 import { DomainVerification } from "./DomainVerification";
+import { DomainSettings } from "./DomainSettings";
+import { Database, Tables } from "@/lib/supabase/database.types";
 
 const CopyButton = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false);
@@ -102,7 +104,8 @@ export const renderDNSRecord = (record: DNSRecord) => (
   </div>
 );
 
-export default function DomainPage({ domain }: { domain: any }) {
+export default function DomainPage({ domain }: { domain: Tables<"domains"> }) {
+  console.log("DomainPage", domain);
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -113,8 +116,11 @@ export default function DomainPage({ domain }: { domain: any }) {
 
       <div className="space-y-6">
         {/* Status Card */}
+        <DomainSettings
+          domain={domain.domain}
+          initialFrequencies={domain.notification_frequencies}
+        />
         <DomainVerification domain={domain} />
-
         {/* Danger Zone Component */}
         <DangerZone domain={domain.domain} />
       </div>

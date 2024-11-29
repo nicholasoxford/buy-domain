@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Tables } from "@/lib/supabase/database.types";
 
 interface DNSRecord {
   type: string;
@@ -16,7 +17,7 @@ interface VerificationState {
   error: string | null;
 }
 
-export function DomainVerification({ domain }: { domain: string }) {
+export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
   const [state, setState] = useState<VerificationState>({
     status: "pending",
     verificationDetails: null,
@@ -76,7 +77,7 @@ export function DomainVerification({ domain }: { domain: string }) {
   const checkVerification = async () => {
     try {
       setState((prev) => ({ ...prev, status: "pending" }));
-      const response = await fetch(`/api/domains/${domain}/verify`);
+      const response = await fetch(`/api/domains/${domain.domain}/verify`);
       const result = await response.json();
 
       if (!response.ok) {
