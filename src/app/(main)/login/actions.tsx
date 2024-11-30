@@ -83,7 +83,7 @@ export async function signup(
 
 export async function signInWithGoogle(redirectTo?: string) {
   "use server";
-
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dash.domains";
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
