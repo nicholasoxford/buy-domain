@@ -34,27 +34,6 @@ describe("Domains API", () => {
     expect(data).toEqual({ error: "Unauthorized" });
   });
 
-  it("should return 403 if CSRF token is invalid", async () => {
-    mockAuth.mockResolvedValueOnce({
-      user: { id: "test-user", email: "test@example.com" },
-    });
-
-    const request = new Request("http://localhost:3000/api/domains", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": "invalid-token",
-      },
-      body: JSON.stringify({ domain: "test.com" }),
-    });
-
-    const response = await POST(request);
-    const data = await response.json();
-
-    expect(response.status).toBe(403);
-    expect(data).toEqual({ error: "Invalid CSRF token" });
-  });
-
   it("should return 400 if domain is invalid", async () => {
     mockAuth.mockResolvedValueOnce({
       user: { id: "test-user", email: "test@example.com" },

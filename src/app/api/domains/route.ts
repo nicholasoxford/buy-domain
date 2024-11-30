@@ -6,13 +6,6 @@ import { validateData, domainSchema } from "@/lib/validation";
 import { headers } from "next/headers";
 
 async function handler(req: Request) {
-  // Verify CSRF token
-  const headersList = headers();
-  const csrfToken = headersList.get("x-csrf-token");
-  if (!csrfToken || csrfToken !== process.env.CSRF_SECRET) {
-    return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 });
-  }
-
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
