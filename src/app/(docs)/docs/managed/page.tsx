@@ -66,7 +66,7 @@ export default function ManagedDocs() {
               step: "1",
               title: "Create an Account",
               description:
-                "Sign up for a Domain Bridge account to access the dashboard",
+                "Sign up for a Domain Dash account to access the dashboard",
             },
             {
               step: "2",

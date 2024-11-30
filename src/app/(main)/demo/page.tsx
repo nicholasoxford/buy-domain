@@ -53,7 +53,7 @@ export default async function AdminPage() {
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-white mb-4">
-                  Deploy Your Domain Bridge
+                  Deploy Your Domain Dash
                 </h2>
 
                 <p className="text-lg text-slate-300/90 max-w-2xl mb-8">

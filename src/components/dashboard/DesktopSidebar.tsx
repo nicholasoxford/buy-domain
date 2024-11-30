@@ -19,7 +19,7 @@ export function DesktopSidebar({
       >
         <Command className="h-6 w-6 text-purple-400" />
         <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-          Domain Bridge
+          Domain Dash
         </span>
       </Link>
 

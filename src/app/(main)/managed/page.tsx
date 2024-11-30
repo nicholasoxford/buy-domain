@@ -113,7 +113,7 @@ function GettingStartedSteps() {
           {
             icon: Users,
             title: "Create Account",
-            description: "Sign up for a Domain Bridge account",
+            description: "Sign up for a Domain Dash account",
           },
           {
             icon: Cloud,

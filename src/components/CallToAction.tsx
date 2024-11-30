@@ -7,8 +7,7 @@ export function CallToAction() {
         Ready to Monetize Your Domains?
       </h2>
       <p className="text-lg mb-6">
-        Join Domain Bridge today and start turning your idle domains into
-        profit.
+        Join Domain Dash today and start turning your idle domains into profit.
       </p>
       <Button size="lg" variant="secondary">
         Get Started Now
