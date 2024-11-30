@@ -61,7 +61,7 @@ export function HomePage({ user }: { user: User | null }) {
       />
 
       <div className="relative z-10 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 sm:pt-24 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-20 pb-16 sm:pt-24 sm:pb-20">
           <div className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
               <div className="flex -space-x-2">
