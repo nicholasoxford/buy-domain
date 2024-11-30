@@ -116,12 +116,12 @@ export default function DomainPage({ domain }: { domain: Tables<"domains"> }) {
 
       <div className="space-y-6">
         {/* Status Card */}
+        <DomainVerification domain={domain} />
         <NotificationSettings
           domain={domain.domain}
           initialFrequencies={domain.notification_frequencies}
           initialThreshold={domain.notification_threshold}
         />
-        <DomainVerification domain={domain} />
         {/* Danger Zone Component */}
         <DangerZone domain={domain.domain} />
       </div>
