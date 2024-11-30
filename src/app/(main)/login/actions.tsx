@@ -83,12 +83,15 @@ export async function signup(
 
 export async function signInWithGoogle(redirectTo?: string) {
   "use server";
-
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    // Make sure it includes https:// and no trailing slash
+    "https://dash.domains";
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=${redirectTo || "/dashboard"}`,
+      redirectTo: `${siteUrl}/auth/callback?redirect=${redirectTo || "/dashboard"}`,
       queryParams: {
         access_type: "offline",
         prompt: "consent",
