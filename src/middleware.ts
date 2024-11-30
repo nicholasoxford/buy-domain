@@ -37,28 +37,28 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Rate limiting for API routes
-  const ip = request.ip ?? "127.0.0.1";
-  const { success, pending, limit, reset, remaining } = await ratelimit.limit(
-    `ratelimit_${ip}`
-  );
+  // // Rate limiting for API routes
+  // const ip = request.ip ?? "127.0.0.1";
+  // const { success, pending, limit, reset, remaining } = await ratelimit.limit(
+  //   `ratelimit_${ip}`
+  // );
 
-  if (!success) {
-    return new NextResponse("Too Many Requests", {
-      status: 429,
-      headers: {
-        "Retry-After": reset.toString(),
-        ...securityHeaders,
-      },
-    });
-  }
+  // if (!success) {
+  //   return new NextResponse("Too Many Requests", {
+  //     status: 429,
+  //     headers: {
+  //       "Retry-After": reset.toString(),
+  //       ...securityHeaders,
+  //     },
+  //   });
+  // }
 
   const response = await updateSession(request);
 
   // Add rate limit headers
-  response.headers.set("X-RateLimit-Limit", limit.toString());
-  response.headers.set("X-RateLimit-Remaining", remaining.toString());
-  response.headers.set("X-RateLimit-Reset", reset.toString());
+  // response.headers.set("X-RateLimit-Limit", limit.toString());
+  // response.headers.set("X-RateLimit-Remaining", remaining.toString());
+  // response.headers.set("X-RateLimit-Reset", reset.toString());
 
   // Add security headers
   Object.entries(securityHeaders).forEach(([key, value]) => {
