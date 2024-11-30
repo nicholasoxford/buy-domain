@@ -5,10 +5,10 @@ import { useOffers } from "@/contexts/OffersContext";
 import { DollarSign, ExternalLink, Mail } from "lucide-react";
 
 export interface OffersTableProps {
-  isSubscribed: boolean;
+  isSubscribed?: boolean;
 }
 
-export function OffersTable({ isSubscribed }: OffersTableProps) {
+export function OffersTable({ isSubscribed = false }: OffersTableProps) {
   const { offers, deleteOffer } = useOffers();
 
   // Limit offers to last 20 for non-subscribed users
