@@ -7,12 +7,20 @@ import { Database } from "@/lib/supabase/database.types";
 type NotificationFrequency =
   Database["public"]["Enums"]["notification_frequency"];
 
+const NOTIFICATION_OPTIONS = [
+  { value: "never", label: "Never" },
+  { value: "on_demand", label: "On Demand" },
+  { value: "daily", label: "Daily" },
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+] as const;
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
     // Notification Settings
     notificationEmail: "",
-    notificationFrequency: "on_demand" as NotificationFrequency,
-    minimumOfferAmount: 0,
+    notificationFrequencies: ["on_demand"] as NotificationFrequency[],
+    notificationThreshold: 0,
 
     // New Settings
     enableHighValueAlerts: true,
@@ -47,7 +55,7 @@ export default function SettingsPage() {
     const { data: profile } = await supabase
       .from("profiles")
       .select(
-        "notification_email, notification_frequency, notification_minimum_amount"
+        "notification_email, notification_frequencies, notification_threshold"
       )
       .eq("id", user.id)
       .single();
@@ -56,8 +64,10 @@ export default function SettingsPage() {
       setSettings((currentSettings) => ({
         ...currentSettings,
         notificationEmail: profile.notification_email || "",
-        notificationFrequency: profile.notification_frequency || "on_demand",
-        minimumOfferAmount: profile.notification_minimum_amount || 0,
+        notificationFrequencies: profile.notification_frequencies || [
+          "on_demand",
+        ],
+        notificationThreshold: profile.notification_threshold || 0,
       }));
     }
   }
@@ -77,8 +87,8 @@ export default function SettingsPage() {
       .from("profiles")
       .update({
         notification_email: settings.notificationEmail,
-        notification_frequency: settings.notificationFrequency,
-        notification_minimum_amount: settings.minimumOfferAmount,
+        notification_frequencies: settings.notificationFrequencies,
+        notification_threshold: settings.notificationThreshold,
       })
       .eq("id", user.id);
 
@@ -88,6 +98,19 @@ export default function SettingsPage() {
     } else {
       setMessage({ type: "success", text: "Settings saved successfully" });
     }
+  };
+
+  const toggleFrequency = (frequency: NotificationFrequency) => {
+    setSettings((prev) => {
+      const frequencies = prev.notificationFrequencies || [];
+      const newFrequencies = frequencies.includes(frequency)
+        ? frequencies.filter((f) => f !== frequency)
+        : [...frequencies, frequency];
+      return {
+        ...prev,
+        notificationFrequencies: newFrequencies,
+      };
+    });
   };
 
   return (
@@ -101,166 +124,72 @@ export default function SettingsPage() {
           onSubmit={handleSubmit}
           className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 space-y-6"
         >
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              High Value Offer Alerts
-            </label>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="enableHighValueAlerts"
-                  checked={settings.enableHighValueAlerts}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      enableHighValueAlerts: e.target.checked,
-                    })
-                  }
-                  className="mr-2"
-                />
-                <label
-                  htmlFor="enableHighValueAlerts"
-                  className="text-sm text-slate-300"
-                >
-                  Enable instant notifications for high-value offers
-                </label>
-              </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Notification Email
+              </label>
               <input
-                type="number"
-                value={settings.highValueThreshold}
+                type="email"
+                value={settings.notificationEmail}
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    highValueThreshold: Number(e.target.value),
+                    notificationEmail: e.target.value,
                   })
                 }
                 className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="High value threshold amount"
+                placeholder="Enter your notification email"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Domain Expiry Alerts
-            </label>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="enableDomainExpiryAlerts"
-                  checked={settings.enableDomainExpiryAlerts}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      enableDomainExpiryAlerts: e.target.checked,
-                    })
-                  }
-                  className="mr-2"
-                />
-                <label
-                  htmlFor="enableDomainExpiryAlerts"
-                  className="text-sm text-slate-300"
-                >
-                  Notify me before domains expire
-                </label>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Notification Frequency
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                {NOTIFICATION_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      toggleFrequency(option.value as NotificationFrequency)
+                    }
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      settings.notificationFrequencies?.includes(
+                        option.value as NotificationFrequency
+                      )
+                        ? "bg-purple-600 text-white"
+                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Notification Threshold (USD)
+              </label>
               <input
                 type="number"
-                value={settings.expiryAlertDays}
+                value={settings.notificationThreshold}
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    expiryAlertDays: Number(e.target.value),
+                    notificationThreshold: Number(e.target.value),
                   })
                 }
                 className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="Days before expiry"
+                placeholder="Minimum offer amount for notifications"
+                min="0"
+                step="100"
               />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Auto-Response Template
-            </label>
-            <textarea
-              value={settings.defaultReplyTemplate}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  defaultReplyTemplate: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
-              placeholder="Thank you for your interest in {domain}. Your offer of ${amount} has been received..."
-            />
-            <p className="text-xs text-slate-400 mt-1">
-              Use &quot;{`{domain}`}&quot;, &quot;{`{amount}`}&quot;, and &quot;
-              {`{email}`}&quot; as placeholders
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Auto-Reject Threshold
-            </label>
-            <input
-              type="number"
-              value={settings.autoRejectBelowAmount}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  autoRejectBelowAmount: Number(e.target.value),
-                })
-              }
-              className="w-full px-3 py-2 bg-slate-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Automatically reject offers below this amount"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="enableWeeklyReports"
-                checked={settings.enableWeeklyReports}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    enableWeeklyReports: e.target.checked,
-                  })
-                }
-                className="mr-2"
-              />
-              <label
-                htmlFor="enableWeeklyReports"
-                className="text-sm text-slate-300"
-              >
-                Send weekly portfolio performance reports
-              </label>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="enableComparisonData"
-                checked={settings.enableComparisonData}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    enableComparisonData: e.target.checked,
-                  })
-                }
-                className="mr-2"
-              />
-              <label
-                htmlFor="enableComparisonData"
-                className="text-sm text-slate-300"
-              >
-                Include market comparison data in reports
-              </label>
+              <p className="text-xs text-slate-400 mt-1">
+                You will only be notified of offers above this amount
+              </p>
             </div>
           </div>
 

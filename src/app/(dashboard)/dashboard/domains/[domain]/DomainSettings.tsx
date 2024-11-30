@@ -1,54 +1,82 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Bell, Loader2, Save } from "lucide-react";
-import type { Database, Tables } from "@/lib/supabase/database.types";
+import * as React from "react";
+import { Bell, Info, Loader2, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import type { Database } from "@/lib/supabase/database.types";
 
 type NotificationFrequency =
   Database["public"]["Enums"]["notification_frequency"];
 
-interface DomainSettingsProps {
+const frequencies: {
+  value: NotificationFrequency;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: "daily",
+    label: "Daily Updates",
+    description: "Get a summary of all offers at the end of each day",
+  },
+  {
+    value: "weekly",
+    label: "Weekly Digest",
+    description: "Receive a weekly summary of all activity",
+  },
+  {
+    value: "on_demand",
+    label: "On Demand",
+    description: "Only get notified when specific conditions are met",
+  },
+  {
+    value: "never",
+    label: "Never",
+    description: "Don't receive any email notifications",
+  },
+];
+
+interface NotificationSettingsProps {
   domain: string;
   initialFrequencies: NotificationFrequency[] | null;
   initialThreshold?: number | null;
 }
 
-export function DomainSettings({
+export function NotificationSettings({
   domain,
   initialFrequencies,
   initialThreshold = null,
-}: DomainSettingsProps) {
-  const [frequencies, setFrequencies] = useState<NotificationFrequency[]>(
-    initialFrequencies || []
+}: NotificationSettingsProps) {
+  const [selectedFrequencies, setSelectedFrequencies] = React.useState<
+    NotificationFrequency[]
+  >(initialFrequencies || []);
+  const [threshold, setThreshold] = React.useState<number | null>(
+    initialThreshold
   );
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-  const [threshold, setThreshold] = useState<number | null>(initialThreshold);
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [isTestingSend, setIsTestingSend] = React.useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
+  const hasUnsavedChanges = React.useMemo(() => {
     const hasThresholdChanged = threshold !== initialThreshold;
     const hasFrequenciesChanged =
-      JSON.stringify(frequencies) !== JSON.stringify(initialFrequencies);
-    setHasUnsavedChanges(hasThresholdChanged || hasFrequenciesChanged);
-  }, [threshold, frequencies, initialThreshold, initialFrequencies]);
+      JSON.stringify(selectedFrequencies) !==
+      JSON.stringify(initialFrequencies);
+    return hasThresholdChanged || hasFrequenciesChanged;
+  }, [threshold, selectedFrequencies, initialThreshold, initialFrequencies]);
 
   const toggleFrequency = (frequency: NotificationFrequency) => {
-    let newFrequencies: NotificationFrequency[];
-
-    if (frequencies.includes(frequency)) {
-      // Don't allow removing the last frequency
-      if (frequencies.length === 1) {
-        return;
+    setSelectedFrequencies((current) => {
+      if (current.includes(frequency)) {
+        // Don't allow removing the last frequency
+        if (current.length === 1) return current;
+        return current.filter((f) => f !== frequency);
       }
-      newFrequencies = frequencies.filter((f) => f !== frequency);
-    } else {
-      newFrequencies = [...frequencies, frequency];
-    }
-
-    setFrequencies(newFrequencies);
+      return [...current, frequency];
+    });
   };
 
   const saveChanges = async () => {
@@ -57,13 +85,12 @@ export function DomainSettings({
       const { error } = await supabase
         .from("domains")
         .update({
-          notification_frequencies: frequencies,
+          notification_frequencies: selectedFrequencies,
           notification_threshold: threshold,
         })
         .eq("domain", domain);
 
       if (error) throw error;
-      setHasUnsavedChanges(false);
     } catch (error) {
       console.error("Error saving settings:", error);
     } finally {
@@ -71,156 +98,137 @@ export function DomainSettings({
     }
   };
 
+  const sendTestNotification = async () => {
+    setIsTestingSend(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } finally {
+      setIsTestingSend(false);
+    }
+  };
+
   return (
-    <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-blue-500/10 rounded-lg">
-          <Bell className="w-5 h-5 text-blue-400" />
-        </div>
-        <h2 className="text-lg font-semibold text-white">
+    <Card className="bg-slate-900 border-slate-800">
+      <CardHeader className="border-b border-slate-800">
+        <CardTitle className="flex items-center gap-3 text-lg font-semibold">
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <Bell className="h-5 w-5 text-blue-400" />
+          </div>
           Notification Settings
-        </h2>
-      </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="border-b border-slate-800 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <span className="font-medium">Email Notifications</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500">Webhooks</span>
+              <Badge variant="secondary" className="bg-slate-800">
+                Soon
+              </Badge>
+            </div>
+          </div>
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {(["daily", "weekly", "on_demand", "never"] as const).map(
-            (option) => (
-              <button
-                key={option}
-                onClick={() => toggleFrequency(option)}
-                disabled={
-                  frequencies.length === 1 && frequencies.includes(option)
-                }
-                className={`
-                relative px-4 py-3 rounded-lg border transition-all duration-200
-                ${
-                  frequencies.includes(option)
-                    ? "bg-blue-500/20 border-blue-500/50 text-blue-300"
-                    : "bg-slate-900/50 border-slate-700/50 text-slate-300 hover:border-slate-600"
-                }
-                ${
-                  frequencies.length === 1 && frequencies.includes(option)
-                    ? "cursor-not-allowed opacity-50"
-                    : ""
-                }
-              `}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium capitalize">
-                    {option}
-                  </span>
-                  {frequencies.includes(option) && (
-                    <div className="w-2 h-2 rounded-full bg-blue-400" />
+          <div className="space-y-2">
+            {frequencies.map(({ value, label, description }) => {
+              const isSelected = selectedFrequencies.includes(value);
+              const isDisabled = selectedFrequencies.length === 1 && isSelected;
+
+              return (
+                <button
+                  key={value}
+                  onClick={() => toggleFrequency(value)}
+                  disabled={isDisabled}
+                  className={`
+                    w-full px-4 py-3 rounded-lg flex items-center justify-between
+                    transition-colors duration-200
+                    ${
+                      isSelected
+                        ? "bg-blue-950 text-blue-100"
+                        : "bg-slate-800/50 hover:bg-slate-800 text-slate-300"
+                    }
+                    ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+                >
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="font-medium">{label}</span>
+                    <span className="text-sm text-slate-400">
+                      {description}
+                    </span>
+                  </div>
+                  {isSelected && (
+                    <div className="h-2 w-2 rounded-full bg-blue-400 flex-shrink-0" />
                   )}
-                </div>
-              </button>
-            )
-          )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="text-sm space-y-2">
-          <p className="text-slate-400">
-            Choose when you want to receive email notifications about new offers
-            for {domain}.
-          </p>
-          <p className="text-slate-500">
-            Current notifications:{" "}
-            {frequencies
-              .map((f) => f.charAt(0).toUpperCase() + f.slice(1))
-              .join(", ")}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-8 pt-6 border-t border-slate-700/50">
-        <button
-          onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-          className="flex items-center gap-2 text-slate-300 hover:text-slate-200 w-full p-3 rounded-lg hover:bg-slate-800/50 transition-colors"
-        >
-          <span className="text-sm font-medium">Advanced Settings</span>
-          <svg
-            className={`w-4 h-4 transition-transform duration-200 ${
-              isAdvancedOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        {isAdvancedOpen && (
-          <div className="mt-4 space-y-4">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">
-                Immediate notification threshold
-              </label>
+        <div className="p-4 space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">Notification Threshold</span>
               <div className="flex items-center gap-2">
                 <span className="text-slate-400">$</span>
-                <input
+                <Input
                   type="number"
                   value={threshold || ""}
                   onChange={(e) =>
                     setThreshold(e.target.value ? Number(e.target.value) : null)
                   }
-                  placeholder="Enter amount"
-                  className="bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-300 w-32"
+                  className="w-24 bg-slate-800 border-slate-700"
                 />
               </div>
-              <p className="text-sm text-slate-500">
-                Get notified immediately when an offer exceeds this amount
-              </p>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-300">
-                  Extra Verification for Offers
-                </span>
-                <span className="text-xs px-2 py-1 rounded-full bg-slate-700/50 text-slate-400">
-                  Coming Soon
-                </span>
-              </div>
-              <p className="text-sm text-slate-500">
-                Require additional verification steps before accepting offers
-              </p>
-            </div>
+            <p className="text-sm text-slate-500">
+              Get notified immediately when an offer exceeds this amount
+            </p>
           </div>
-        )}
-      </div>
 
-      <div className="mt-6 pt-6 border-t border-slate-700/50">
-        <div className="flex items-center justify-between">
-          {hasUnsavedChanges && (
-            <span className="text-sm text-slate-400">
-              You have unsaved changes
-            </span>
-          )}
-          <button
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">Extra Verification</span>
+              <Badge variant="secondary" className="bg-slate-800">
+                Coming Soon
+              </Badge>
+            </div>
+            <p className="text-sm text-slate-500">
+              Require additional verification steps before accepting offers
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border-t border-slate-800">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={sendTestNotification}
+            disabled={isTestingSend}
+            className="bg-transparent"
+          >
+            {isTestingSend ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Mail className="mr-2 h-4 w-4" />
+            )}
+            Send Test Notification
+          </Button>
+
+          <Button
+            size="sm"
             onClick={saveChanges}
             disabled={!hasUnsavedChanges || isSaving}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ml-auto ${
-              !hasUnsavedChanges
-                ? "bg-slate-800/50 text-slate-500 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
           >
-            {isSaving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -9,8 +9,8 @@ interface DNSRecord {
 import { useState } from "react";
 import { DangerZone } from "./DangerZone";
 import { DomainVerification } from "./DomainVerification";
-import { DomainSettings } from "./DomainSettings";
-import { Database, Tables } from "@/lib/supabase/database.types";
+import { NotificationSettings } from "./DomainSettings";
+import { Tables } from "@/lib/supabase/database.types";
 
 const CopyButton = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false);
@@ -116,7 +116,7 @@ export default function DomainPage({ domain }: { domain: Tables<"domains"> }) {
 
       <div className="space-y-6">
         {/* Status Card */}
-        <DomainSettings
+        <NotificationSettings
           domain={domain.domain}
           initialFrequencies={domain.notification_frequencies}
           initialThreshold={domain.notification_threshold}

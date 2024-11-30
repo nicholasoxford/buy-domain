@@ -6,6 +6,10 @@ import {
   sendDomainOfferNotification,
 } from "../loops";
 import { revalidatePath } from "next/cache";
+import type { Database } from "./database.types";
+
+type NotificationFrequency =
+  Database["public"]["Enums"]["notification_frequency"];
 
 export async function submitDomainOffer(
   domain: string,
@@ -269,6 +273,17 @@ export async function addDomain(domain: string, userId: string) {
 
   const supabase = await createClient();
 
+  // Get user's default notification settings
+  const { data: userProfile, error: profileError } = await supabase
+    .from("profiles")
+    .select("notification_frequency, notification_minimum_amount")
+    .eq("id", userId)
+    .single();
+
+  if (profileError) {
+    throw new Error(`Failed to get user profile: ${profileError.message}`);
+  }
+
   // First check if domain exists
   const { data: existingDomain, error: checkError } = await supabase
     .from("domains")
@@ -284,6 +299,12 @@ export async function addDomain(domain: string, userId: string) {
   try {
     let dbDomain;
 
+    // Convert single frequency to array for domain settings
+    const notificationFrequencies: NotificationFrequency[] =
+      userProfile?.notification_frequency
+        ? [userProfile.notification_frequency]
+        : ["on_demand"];
+
     if (existingDomain) {
       // Update ownership of existing domain
       const { data: updatedDomain, error: updateError } = await supabase
@@ -292,6 +313,9 @@ export async function addDomain(domain: string, userId: string) {
           user_id: userId,
           verified: false,
           created_at: new Date().toISOString(),
+          notification_frequencies: notificationFrequencies,
+          notification_threshold:
+            userProfile?.notification_minimum_amount || null,
         })
         .eq("domain", cleanDomain)
         .select()
@@ -313,6 +337,9 @@ export async function addDomain(domain: string, userId: string) {
           user_id: userId,
           verified: false,
           created_at: new Date().toISOString(),
+          notification_frequencies: notificationFrequencies,
+          notification_threshold:
+            userProfile?.notification_minimum_amount || null,
         })
         .select()
         .single();

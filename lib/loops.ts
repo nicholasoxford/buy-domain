@@ -1,6 +1,7 @@
 "use server";
 import { DomainOffer } from "./utils";
 import { LoopsClient } from "loops";
+import { createClient } from "./supabase/client";
 
 export async function sendDomainAddedNotification(
   domain: string,
@@ -47,6 +48,34 @@ export async function sendDomainAddedNotification(
   }
 }
 
+async function shouldSendNotification(domain: string, amount?: number) {
+  const supabase = createClient();
+  const { data: domainData, error } = await supabase
+    .from("domains")
+    .select("notification_frequencies, notification_threshold")
+    .eq("domain", domain)
+    .single();
+
+  if (error || !domainData) {
+    console.error("Error checking notification settings:", error);
+    return false;
+  }
+
+  // If no notification frequencies are set, don't send
+  if (!domainData.notification_frequencies?.length) {
+    return false;
+  }
+
+  // If amount is provided and threshold is set, check threshold
+  if (amount && domainData.notification_threshold) {
+    if (amount < domainData.notification_threshold) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export async function sendDomainOfferNotification({
   domain,
   email,
@@ -56,6 +85,13 @@ export async function sendDomainOfferNotification({
   email: string;
   offer: Omit<DomainOffer, "timestamp">;
 }) {
+  // Check notification settings before sending
+  const shouldSend = await shouldSendNotification(domain, offer.amount);
+  if (!shouldSend) {
+    console.log("Skipping notification due to settings:", { domain, offer });
+    return;
+  }
+
   const LOOPS_API_KEY = process.env.LOOPS_API_KEY ?? "";
   const loops = new LoopsClient(LOOPS_API_KEY);
 

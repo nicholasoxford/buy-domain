@@ -5,9 +5,10 @@ import { useFormStatus } from "react-dom";
 import { login, signup, type AuthState } from "./actions";
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, Lock } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, redirect } from "next/navigation";
 import { testimonials } from "@/components/testimonials";
 import Image from "next/image";
+import { useUser } from "@/lib/hooks/useUser";
 
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
@@ -38,6 +39,11 @@ const initialState: AuthState = {
 };
 
 export default function LoginPage() {
+  const user = useUser();
+  if (user) {
+    redirect("/dashboard");
+  }
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const redirectTo = searchParams.get("redirect");

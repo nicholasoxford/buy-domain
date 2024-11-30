@@ -231,7 +231,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      notification_frequency: "daily" | "weekly" | "on_demand" | "never"
+      notification_frequency:
+        | "daily"
+        | "weekly"
+        | "on_demand"
+        | "never"
+        | "monthly"
       product_type: "subscription" | "template" | "other"
       subscription_tier: "basic" | "premium" | "professional" | "template"
     }
