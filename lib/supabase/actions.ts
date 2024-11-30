@@ -540,7 +540,7 @@ export async function getUserSubscription(userId: string): Promise<boolean> {
   const supabase = await createClient();
 
   const { data: subscription, error } = await supabase
-    .from("subscriptions")
+    .from("purchases")
     .select("status")
     .eq("user_id", userId)
     .single();
