@@ -85,9 +85,7 @@ export async function signInWithGoogle(redirectTo?: string) {
   "use server";
 
   const supabase = await createClient();
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dash.domains";
-  const redirectToUrl =
-    `${baseUrl}/auth/callback` + (redirectTo ? `?redirect=${redirectTo}` : "");
+  const redirectToUrl = getRedirectUrl(redirectTo);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -98,3 +96,10 @@ export async function signInWithGoogle(redirectTo?: string) {
   if (error) throw error;
   return data.url;
 }
+
+const getRedirectUrl = (redirectTo?: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dash.domains";
+  return (
+    `${baseUrl}/auth/callback` + (redirectTo ? `?redirect=${redirectTo}` : "")
+  );
+};
