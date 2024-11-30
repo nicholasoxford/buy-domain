@@ -15,7 +15,7 @@ const features = [
 
 export default function FreeTierBanner() {
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto mb-12">
       <Card className="relative overflow-hidden border-0 bg-gradient-to-b from-slate-900 to-slate-900/90">
         {/* Gradient overlays */}
         <div className="absolute inset-0 pointer-events-none">

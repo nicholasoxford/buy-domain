@@ -104,7 +104,7 @@ export default function ManagedServicePage() {
 
 function GettingStartedSteps() {
   return (
-    <div className="text-left max-w-3xl mx-auto">
+    <div className="text-left max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-8 text-center">
         Get Started in Minutes
       </h2>
