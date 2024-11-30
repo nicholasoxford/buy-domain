@@ -50,7 +50,7 @@ export function AddDomainForm({ isSubscribed }: { isSubscribed: boolean }) {
         throw new Error(data.error || "Failed to add domain");
       }
 
-      router.push(`/dashboard/domains/${domain}/verify`);
+      router.push(`/dashboard/domains/${domain}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add domain");
     } finally {
