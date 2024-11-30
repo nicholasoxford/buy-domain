@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserDomainCount } from "@/lib/supabase/actions";
 
-async function GET() {
+export async function GET() {
   const supabase = await createClient();
   const {
     data: { user },
