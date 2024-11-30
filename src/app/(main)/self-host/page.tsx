@@ -14,11 +14,9 @@ import {
   CreditCard,
   Code2,
   Rocket,
-  CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { useUser } from "@/lib/hooks/useUser";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { AuthModal } from "@/components/auth-modal";

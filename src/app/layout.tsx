@@ -5,6 +5,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/domain-dash-icon-only.svg",
+  },
   title: "Domain Dash - Monetize Your Dormant Domains",
   description:
     "Turn your unused domains into profit with Domain Dash. Choose from affordable templates or hassle-free hosting.",
