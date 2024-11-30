@@ -66,7 +66,7 @@ export default function FreeTierBanner() {
 
             <div className="w-full lg:w-auto flex flex-col items-center gap-3">
               <Link
-                href="/signup"
+                href="/login?signup=true"
                 className="group relative inline-flex items-center justify-center"
               >
                 <div className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-lg transition-all duration-200">
