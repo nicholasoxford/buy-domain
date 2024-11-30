@@ -4,18 +4,31 @@ import Link from "next/link";
 import { useOffers } from "@/contexts/OffersContext";
 import { DollarSign, ExternalLink, Mail } from "lucide-react";
 
-export function OffersTable() {
+export interface OffersTableProps {
+  isSubscribed: boolean;
+}
+
+export function OffersTable({ isSubscribed }: OffersTableProps) {
   const { offers, deleteOffer } = useOffers();
+
+  // Limit offers to last 20 for non-subscribed users
+  const displayedOffers = isSubscribed ? offers : offers.slice(0, 20);
 
   return (
     <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
-      <div className="px-6 py-4 border-b border-slate-700/50">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-white">Recent Offers</h2>
-          <span className="text-sm text-slate-400">
-            {offers.length} total offers
-          </span>
-        </div>
+      <div className="px-6 py-4 border-b border-slate-700/50 flex justify-between items-center">
+        <h2 className="text-lg font-medium text-white">Recent Offers</h2>
+        {!isSubscribed && (
+          <div className="text-sm text-slate-400">
+            Showing last 20 offers -{" "}
+            <Link
+              href="/pricing"
+              className="text-purple-400 hover:text-purple-300"
+            >
+              Upgrade to see all
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -31,7 +44,7 @@ export function OffersTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
-            {offers.map((offer) => (
+            {displayedOffers.map((offer) => (
               <tr
                 key={offer.timestamp}
                 className="hover:bg-slate-800/30 transition-colors group"
@@ -88,7 +101,7 @@ export function OffersTable() {
                 </td>
               </tr>
             ))}
-            {offers.length === 0 && (
+            {displayedOffers.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center">
                   <div className="flex flex-col items-center gap-2">

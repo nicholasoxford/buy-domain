@@ -24,19 +24,6 @@ async function handler(request: NextRequest) {
     });
   }
 
-  // Validate request origin
-  const origin = request.headers.get("origin");
-  if (
-    process.env.NODE_ENV === "production" &&
-    process.env.ALLOWED_ORIGINS &&
-    !process.env.ALLOWED_ORIGINS.split(",").includes(origin || "")
-  ) {
-    return new NextResponse("Invalid origin", {
-      status: 403,
-      headers: corsHeaders,
-    });
-  }
-
   const data = await request.json();
   const validatedData = await validateData(offerSchema, data);
 

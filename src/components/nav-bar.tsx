@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Menu, X, Command, ChevronDown, LogOut, Settings } from "lucide-react";
 import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 import { signOut } from "@/lib/supabase/server-actions";
-
+import Image from "next/image";
 interface NavBarProps {
   initialUser?: User | null;
   initialProfile?: {
@@ -61,15 +61,18 @@ export function NavBar({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center gap-2 text-white font-bold text-xl group"
+              className="flex items-center -ml-3 py-2 text-white font-bold text-xl group"
             >
-              <Command className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
-              <span className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                Domain Dash
-              </span>
+              <Image
+                src="/domain-dash-larger-text-white.svg"
+                alt="Domain Dash"
+                width={100}
+                height={48}
+                className="w-48 h-auto"
+              />
             </Link>
 
             {/* Primary Navigation */}

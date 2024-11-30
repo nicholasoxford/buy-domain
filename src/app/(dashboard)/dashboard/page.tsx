@@ -9,6 +9,7 @@ import { getDashboardData } from "@/lib/data/dashboard";
 import { OffersProvider } from "@/contexts/OffersContext";
 import { Search } from "lucide-react";
 import { TabRefresh } from "@/components/dashboard/TabRefresh";
+import { getUserSubscription } from "@/lib/supabase/actions";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -16,6 +17,8 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const isSubscribed = await getUserSubscription(user.id);
 
   const { allDomains, offers, stats, metrics } = await getDashboardData(
     user.id
@@ -48,7 +51,7 @@ export default async function DashboardPage() {
         <OffersProvider initialOffers={offers}>
           <div className="space-y-8">
             <StatsGrid initialTotalVisits={metrics.totalVisits} />
-            <OffersTable />
+            <OffersTable isSubscribed={isSubscribed} />
             <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
               <div className="px-6 py-4 border-b border-slate-700/50">
                 <h2 className="text-lg font-medium text-white">

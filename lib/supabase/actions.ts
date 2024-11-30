@@ -535,3 +535,19 @@ export async function getUserByDomain(domain: string) {
 
   return profile;
 }
+
+export async function getUserSubscription(userId: string): Promise<boolean> {
+  const supabase = await createClient();
+
+  const { data: subscription, error } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !subscription) {
+    return false;
+  }
+
+  return subscription.status === "active";
+}
