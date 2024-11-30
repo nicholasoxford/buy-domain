@@ -22,13 +22,13 @@ export const navigation: NavigationSection[] = [
         title: "Self Hosting",
         href: "/docs/self-host",
         sections: [
-          { title: "Quick Start", href: "#quick-start" },
+          { title: "Features", href: "#features" },
           { title: "Prerequisites", href: "#prerequisites" },
-          { title: "Turnstile Setup", href: "#turnstile-setup" },
-          { title: "CLI Options", href: "#cli-options" },
-          { title: "Multiple Domains", href: "#multiple-domains" },
-          { title: "Post-Deployment", href: "#post-deployment" },
+          { title: "Quick Start", href: "#quick-start" },
           { title: "Configuration", href: "#configuration" },
+          { title: "Deployment", href: "#deployment" },
+          { title: "Security", href: "#security" },
+          { title: "Support", href: "#support" },
         ],
       },
       {
@@ -44,5 +44,4 @@ export const navigation: NavigationSection[] = [
       },
     ],
   },
-  // ... other navigation sections
 ];

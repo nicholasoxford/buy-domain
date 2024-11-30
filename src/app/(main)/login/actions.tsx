@@ -80,3 +80,20 @@ export async function signup(
   redirect("/check-email");
   return { error: null, success: true };
 }
+
+export async function signInWithGoogle(redirectTo?: string) {
+  "use server";
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=${redirectTo || "/dashboard"}`,
+    },
+  });
+
+  if (error) throw error;
+
+  // Return the URL to redirect to
+  return data.url;
+}

@@ -26,65 +26,11 @@ export default function Documentation() {
           Workers.
         </p>
 
-        <section id="features" className="scroll-mt-24 mb-12 sm:mb-16">
-          <div className="not-prose grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {[
-              {
-                icon: Shield,
-                title: "Enterprise Security",
-                description:
-                  "Built-in Cloudflare Turnstile and rate limiting protection",
-              },
-              {
-                icon: Globe,
-                title: "Multi-Domain Support",
-                description: "Manage unlimited domains from one dashboard",
-              },
-              {
-                icon: Server,
-                title: "Serverless Architecture",
-                description: "Powered by Cloudflare Workers and KV Storage",
-              },
-              {
-                icon: Lock,
-                title: "Access Control",
-                description:
-                  "Role-based admin dashboard with secure authentication",
-              },
-              {
-                icon: Code,
-                title: "Developer Friendly",
-                description: "TypeScript support with hot-reload development",
-              },
-              {
-                icon: Sparkles,
-                title: "Customizable",
-                description: "Easily extend and modify the codebase",
-              },
-            ].map(({ icon: Icon, title, description }) => (
-              <div
-                key={title}
-                className="bg-slate-800/50 border border-purple-500/20 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6"
-              >
-                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-purple-400" />
-                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white">
-                    {title}
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-400">
-                  {description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="prerequisites" className="scroll-mt-24 mb-16">
+        <section id="prerequisites" className="scroll-mt-24 mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-6">
             System Requirements
           </h2>
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
               <h3 className="text-lg font-semibold text-white mb-4">
                 Required Tools
@@ -96,109 +42,166 @@ export default function Documentation() {
                 <li>• Wrangler CLI (latest version)</li>
               </ul>
             </div>
-
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Cloudflare Requirements
-              </h3>
-              <ul className="space-y-3 text-slate-300">
-                <li>• Cloudflare account</li>
-                <li>• Workers Paid Plan (for multiple domains)</li>
-                <li>• KV Storage enabled</li>
-                <li>• Domains configured on Cloudflare</li>
-              </ul>
-            </div>
           </div>
         </section>
 
         <section id="installation" className="scroll-mt-24 mb-16">
           <h2 className="text-2xl sm:text-3xl font-bold mb-6">Quick Start</h2>
-          <div className="not-prose space-y-4">
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-4 sm:p-6 border border-purple-500/20">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                1. Get Access
-              </h3>
-              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Download className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-white">Instant Download</h4>
-                    <p className="text-sm text-slate-300">
-                      Get the complete source code as a ZIP file
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Github className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-white">GitHub Access</h4>
-                    <p className="text-sm text-slate-300">
-                      Get invited to the private repository
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Sparkles className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-white">Lifetime Updates</h4>
-                    <p className="text-sm text-slate-300">
-                      Free access to all future updates
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href={stripeUrl}
-                  target="_blank"
-                  className="w-full sm:w-auto text-center px-4 sm:px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors"
-                >
-                  Purchase for $10
-                  <ArrowRight className="inline-block ml-2 h-4 w-4" />
-                </Link>
-                <Link
-                  href="/demo"
-                  className="w-full sm:w-auto text-center px-4 sm:px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg font-medium transition-colors"
-                >
-                  View Live Demo
-                </Link>
-              </div>
-            </div>
-
+          <div className="not-prose space-y-8">
             {[
               {
-                title: "2. Clone and Install",
-                code: "git clone [repository-url]\ncd [repository-name]\nnpm install",
+                title: "1. Installation",
+                code: `git clone https://github.com/yourusername/domain-dash-pro
+cd domain-dash-pro
+npm install`,
               },
               {
-                title: "3. Login to Wrangler",
+                title: "2. Authentication",
                 code: "npx wrangler login",
               },
               {
-                title: "4. Deploy Your First Domain",
-                code: "npm run create-domain",
+                title: "3. KV Storage Setup",
+                code: `# Create KV namespace
+npx wrangler kv:namespace create kvcache
+
+# Note the ID from the output:
+# kvcache_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`,
               },
-            ].map(({ title, code }) => (
+              {
+                title: "4. Turnstile Setup",
+                steps: [
+                  {
+                    text: "Visit Cloudflare Turnstile Dashboard",
+                    link: "https://dash.cloudflare.com/?to=/:account/turnstile",
+                  },
+                  "Create a new site widget",
+                  "Note both the Site Key and Secret Key",
+                ],
+              },
+              {
+                title: "5. Deploy Your First Domain",
+                code: `npm run create-domain`,
+                additionalCode: `# Or with all options specified:
+npm run create-domain \\
+  --kv-id your-kv-id \\
+  --admin-password your-password \\
+  --turnstile-site-key your-site-key \\
+  --turnstile-secret-key your-secret-key`,
+              },
+            ].map((step) => (
               <div
-                key={title}
+                key={step.title}
                 className="bg-slate-800/50 rounded-xl border border-white/5 overflow-hidden"
               >
-                <div className="px-3 sm:px-4 py-2 border-b border-white/5 bg-white/5">
-                  <h3 className="text-sm font-medium text-slate-300">
-                    {title}
+                <div className="px-6 py-4 border-b border-white/5 bg-white/5">
+                  <h3 className="text-lg font-semibold text-white">
+                    {step.title}
                   </h3>
                 </div>
-                <pre className="p-3 sm:p-4 text-sm overflow-x-auto">
-                  <code>{code}</code>
-                </pre>
+                <div className="p-6">
+                  {step.code && (
+                    <pre className="bg-slate-900 p-4 rounded-lg overflow-x-auto mb-4">
+                      <code className="text-sm text-slate-300">
+                        {step.code}
+                      </code>
+                    </pre>
+                  )}
+                  {step.additionalCode && (
+                    <pre className="bg-slate-900 p-4 rounded-lg overflow-x-auto mt-4">
+                      <code className="text-sm text-slate-300">
+                        {step.additionalCode}
+                      </code>
+                    </pre>
+                  )}
+                  {step.steps && (
+                    <ol className="list-decimal list-inside space-y-2 text-slate-300">
+                      {step.steps.map((item, index) => (
+                        <li key={index}>
+                          {typeof item === "string" ? (
+                            item
+                          ) : (
+                            <Link
+                              href={item.link}
+                              className="text-purple-400 hover:text-purple-300 underline"
+                              target="_blank"
+                            >
+                              {item.text}
+                            </Link>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </div>
               </div>
             ))}
+
+            <div className="bg-slate-800/50 rounded-xl border border-white/5 overflow-hidden">
+              <div className="px-6 py-4 border-b border-white/5 bg-white/5">
+                <h3 className="text-lg font-semibold text-white">
+                  Command Line Options
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left border-b border-white/10">
+                        <th className="pb-4 pr-4 text-purple-400">Option</th>
+                        <th className="pb-4 pr-4 text-purple-400">
+                          Description
+                        </th>
+                        <th className="pb-4 pr-4 text-purple-400">Required</th>
+                        <th className="pb-4 text-purple-400">Example</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-300">
+                      {[
+                        {
+                          option: "--kv-id",
+                          description: "Your Cloudflare KV namespace ID",
+                          required: "Yes",
+                          example: "--kv-id abc123...",
+                        },
+                        {
+                          option: "--admin-password",
+                          description:
+                            "Password for accessing admin dashboards",
+                          required: "Yes",
+                          example: "--admin-password mySecurePass123!",
+                        },
+                        {
+                          option: "--turnstile-site-key",
+                          description: "Cloudflare Turnstile Site Key",
+                          required: "Yes",
+                          example: "--turnstile-site-key 0x4AAAAAAACt...",
+                        },
+                        {
+                          option: "--turnstile-secret-key",
+                          description: "Cloudflare Turnstile Secret Key",
+                          required: "Yes",
+                          example: "--turnstile-secret-key 0x4AAAAAAACt...",
+                        },
+                      ].map((row) => (
+                        <tr
+                          key={row.option}
+                          className="border-b border-white/5"
+                        >
+                          <td className="py-4 pr-4 font-mono text-sm">
+                            {row.option}
+                          </td>
+                          <td className="py-4 pr-4">{row.description}</td>
+                          <td className="py-4 pr-4">{row.required}</td>
+                          <td className="py-4 font-mono text-sm">
+                            {row.example}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -332,108 +335,6 @@ id = "your-kv-id"`}
   --value your-new-password`}</code>
               </pre>
             </div>
-          </div>
-        </section>
-
-        <section id="security" className="scroll-mt-24 mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">
-            Security Best Practices
-          </h2>
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Regular Updates
-              </h3>
-              <pre className="bg-slate-900 p-4 rounded-lg overflow-x-auto mb-4">
-                <code className="text-sm text-slate-300">{`npm update
-npm audit fix`}</code>
-              </pre>
-            </div>
-
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Password Security
-              </h3>
-              <ul className="space-y-2 text-slate-300">
-                <li>• Use strong passwords (min 12 characters)</li>
-                <li>• Rotate secrets regularly</li>
-                <li>• Enable 2FA on Cloudflare account</li>
-              </ul>
-            </div>
-
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Access Control
-              </h3>
-              <ul className="space-y-2 text-slate-300">
-                <li>• Limit admin access</li>
-                <li>• Use separate credentials per team member</li>
-                <li>• Regular access audits</li>
-              </ul>
-            </div>
-
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/5">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Monitoring
-              </h3>
-              <ul className="space-y-2 text-slate-300">
-                <li>• Enable Cloudflare logging</li>
-                <li>• Monitor API usage</li>
-                <li>• Set up alerts for unusual activity</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section id="support" className="scroll-mt-24">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">
-            Support Resources
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                title: "Documentation",
-                items: [
-                  "Full Documentation",
-                  "API Reference",
-                  "Deployment Guide",
-                ],
-              },
-              {
-                title: "Community",
-                items: [
-                  "Discord Community",
-                  "GitHub Discussions",
-                  "Stack Overflow",
-                ],
-              },
-              {
-                title: "Premium Support",
-                items: [
-                  "Priority Email Support",
-                  "Custom Feature Development",
-                  "Deployment Assistance",
-                ],
-              },
-              {
-                title: "Updates",
-                items: ["Release Notes", "Security Advisories", "Newsletter"],
-              },
-            ].map((section) => (
-              <div
-                key={section.title}
-                className="bg-slate-800/50 rounded-xl p-6 border border-white/5"
-              >
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  {section.title}
-                </h3>
-                <ul className="space-y-2 text-slate-300">
-                  {section.items.map((item) => (
-                    <li key={item}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
         </section>
       </div>

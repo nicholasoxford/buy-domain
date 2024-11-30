@@ -55,39 +55,6 @@ export default function Documentation() {
         </div>
       </div>
 
-      {/* Quick Links Section */}
-      <section className="mb-24">
-        <h2 className="text-3xl font-bold mb-8">Quick Links</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Getting Started",
-              description: "Quick introduction to the platform",
-              href: "/docs/getting-started",
-            },
-            {
-              title: "API Reference",
-              description: "Integrate with our REST API",
-              href: "/docs/api",
-            },
-            {
-              title: "FAQ",
-              description: "Common questions and answers",
-              href: "/docs/faq",
-            },
-          ].map(({ title, description, href }) => (
-            <Link
-              key={title}
-              href={href}
-              className="block bg-slate-900/30 rounded-xl p-6 border border-slate-800 hover:border-slate-700"
-            >
-              <h3 className="font-semibold text-xl mb-2">{title}</h3>
-              <p className="text-slate-400">{description}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Feature Comparison */}
       <section>
         <h2 className="text-2xl font-bold mb-8">Compare Options</h2>
@@ -104,7 +71,7 @@ export default function Documentation() {
             </thead>
             <tbody className="text-slate-300">
               {[
-                ["Setup Time", "30 minutes", "Instant"],
+                ["Setup Time", "5-10 minutes", "Instant"],
                 ["Custom Domain", "✓", "✓"],
                 ["Analytics", "Basic", "Advanced"],
                 ["Support", "Community", "Priority"],
