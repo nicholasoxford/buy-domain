@@ -29,7 +29,8 @@ export function NavBar({
   initialProfile,
   variant = "default",
 }: NavBarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
   const isSubscribed =
@@ -50,7 +51,8 @@ export function NavBar({
 
   const handleSignOut = async () => {
     await signOut();
-    setIsOpen(false);
+    setIsMobileMenuOpen(false);
+    setIsUserMenuOpen(false);
     setUser(null);
   };
 
@@ -123,8 +125,8 @@ export function NavBar({
                 )}
                 <UserMenu
                   user={user}
-                  isOpen={isOpen}
-                  setIsOpen={setIsOpen}
+                  isOpen={isUserMenuOpen}
+                  setIsOpen={setIsUserMenuOpen}
                   handleSignOut={handleSignOut}
                 />
               </div>
@@ -136,10 +138,10 @@ export function NavBar({
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-150"
             >
-              {isOpen ? (
+              {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
               ) : (
                 <Menu className="h-5 w-5" />
@@ -150,13 +152,13 @@ export function NavBar({
       </div>
 
       {/* Mobile menu */}
-      {isOpen && (
+      {isMobileMenuOpen && (
         <MobileMenu
           user={user}
           navigationItems={navigationItems}
           isActive={isActive}
           handleSignOut={handleSignOut}
-          setIsOpen={setIsOpen}
+          setIsOpen={setIsMobileMenuOpen}
         />
       )}
     </nav>
