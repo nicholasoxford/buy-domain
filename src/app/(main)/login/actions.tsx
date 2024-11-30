@@ -85,15 +85,13 @@ export async function signInWithGoogle(redirectTo?: string) {
   "use server";
 
   const supabase = await createClient();
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dash.domains";
+  const redirectToUrl =
+    `${baseUrl}/auth/callback` + (redirectTo ? `?redirect=${redirectTo}` : "");
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "https://dash.domains/auth/callback",
-      queryParams: {
-        access_type: "offline",
-        prompt: "consent",
-        redirect_to: redirectTo || "/dashboard",
-      },
+      redirectTo: redirectToUrl,
     },
   });
 
