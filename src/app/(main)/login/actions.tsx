@@ -13,6 +13,11 @@ export type AuthState = {
   success: boolean;
 };
 
+export const handleAuth = async (prevState: AuthState, formData: FormData) => {
+  const isSignup = formData.get("mode") === "signup";
+  return isSignup ? signup(prevState, formData) : login(prevState, formData);
+};
+
 export async function login(
   prevState: AuthState,
   formData: FormData

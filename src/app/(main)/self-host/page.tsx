@@ -11,6 +11,10 @@ import {
   Sparkles,
   Shield,
   Globe,
+  CreditCard,
+  Code2,
+  Rocket,
+  CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -64,16 +68,34 @@ export default function SelfHostShowcase() {
       step: "1",
       title: "Purchase License",
       description: "Get instant access to the private GitHub repository",
+      icon: CreditCard,
+      details: [
+        "One-time payment",
+        "Instant repository access",
+        "Lifetime updates included",
+      ],
     },
     {
       step: "2",
       title: "Clone & Configure",
       description: "Set up your environment and customize settings",
+      icon: Code2,
+      details: [
+        "Simple environment setup",
+        "Customizable configuration",
+        "Detailed documentation",
+      ],
     },
     {
       step: "3",
       title: "Deploy",
       description: "Deploy to Cloudflare Workers with one command",
+      icon: Rocket,
+      details: [
+        "Single command deployment",
+        "Automatic SSL/HTTPS",
+        "Global CDN distribution",
+      ],
     },
   ];
 
@@ -154,24 +176,55 @@ export default function SelfHostShowcase() {
 
           {/* Getting Started Steps */}
           <div className="mb-20">
-            <h2 className="text-2xl font-bold mb-8">Getting Started</h2>
-            <div className="space-y-6">
-              {steps.map(({ step, title, description }) => (
-                <div
-                  key={step}
-                  className="flex items-start gap-4 bg-slate-800/50 rounded-xl p-6 border border-purple-500/20"
-                >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-purple-400 font-medium">{step}</span>
+            <h2 className="text-3xl font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+              Getting Started
+            </h2>
+            <div className="space-y-4">
+              {steps.map(
+                ({ step, title, description, icon: Icon, details }) => (
+                  <div
+                    key={step}
+                    className="relative bg-slate-800/50 rounded-2xl p-8 border border-purple-500/20"
+                  >
+                    {/* Icon and Title */}
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="w-12 h-12 bg-purple-900/50 rounded-full flex items-center justify-center">
+                        <Icon className="h-6 w-6 text-purple-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-white">
+                        {title}
+                      </h3>
+                    </div>
+
+                    {/* Description - Centered */}
+                    <p className="text-slate-400 text-center mb-8">
+                      {description}
+                    </p>
+
+                    {/* Details - Three Column Grid */}
+                    <div className="grid grid-cols-3 gap-x-4">
+                      {details.map((detail, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-sm text-slate-300"
+                        >
+                          <div className="flex-shrink-0">
+                            <div className="w-4 h-4 rounded-full bg-purple-500/20 flex items-center justify-center">
+                              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                            </div>
+                          </div>
+                          <span>{detail}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Vertical Line Connector */}
+                    {step !== "3" && (
+                      <div className="absolute left-[2.25rem] -bottom-4 w-0.5 h-8 bg-purple-500/20" />
+                    )}
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
-                      {title}
-                    </h3>
-                    <p className="text-slate-400">{description}</p>
-                  </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
 

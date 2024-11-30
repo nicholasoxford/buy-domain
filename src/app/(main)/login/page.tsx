@@ -2,7 +2,7 @@
 
 import { useFormState } from "react-dom";
 import { useFormStatus } from "react-dom";
-import { login, signup, type AuthState } from "./actions";
+import { handleAuth, login, signup, type AuthState } from "./actions";
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import { useSearchParams, useRouter, redirect } from "next/navigation";
@@ -39,38 +39,30 @@ const initialState: AuthState = {
 };
 
 export default function LoginPage() {
-  const user = useUser();
-  if (user) {
-    redirect("/dashboard");
-  }
-
-  const searchParams = useSearchParams();
+  const { user, loading } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
   const showSignup = searchParams.get("signup") === "true";
+  const [state, formAction] = useFormState(handleAuth, initialState);
 
-  const [isLogin, setIsLogin] = useState(!showSignup);
+  const isLogin = !showSignup;
 
-  useEffect(() => {
-    setIsLogin(!showSignup);
-  }, [showSignup]);
-
-  const [state, formAction] = useFormState(
-    isLogin ? login : signup,
-    initialState
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const toggleMode = () => {
-    const newMode = !isLogin;
-    setIsLogin(newMode);
-    // Update URL to reflect the current mode
     const params = new URLSearchParams(searchParams);
-    if (newMode) {
+    if (showSignup) {
       params.delete("signup");
     } else {
       params.set("signup", "true");
     }
-    // Preserve other parameters like redirect
     if (redirectTo) {
       params.set("redirect", redirectTo);
     }
@@ -130,6 +122,11 @@ export default function LoginPage() {
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50 shadow-xl">
           <form action={formAction} className="space-y-6">
             <input type="hidden" name="redirect" value={redirectTo || ""} />
+            <input
+              type="hidden"
+              name="mode"
+              value={showSignup ? "signup" : "login"}
+            />
 
             {state?.error && (
               <div className="p-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg">
