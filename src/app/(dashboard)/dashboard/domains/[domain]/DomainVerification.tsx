@@ -23,7 +23,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
     verificationDetails: null,
     error: null,
   });
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(30);
 
   const getRequiredDNSRecords = (): DNSRecord[] => {
     const records = [
@@ -109,7 +109,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
       });
       return false;
     } finally {
-      setCountdown(5);
+      setCountdown(30);
     }
   };
 
@@ -128,7 +128,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
           setCountdown((prev) => {
             if (prev <= 1) {
               check(); // Recheck when countdown reaches 0
-              return 5;
+              return 30; // Reset to 30 seconds
             }
             return prev - 1;
           });
@@ -360,7 +360,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
 
       {!isFullyConfigured && (
         <div className="text-sm text-slate-400">
-          Next check in {countdown} seconds...
+          Next check in {countdown} {countdown === 1 ? "second" : "seconds"}...
         </div>
       )}
     </div>
