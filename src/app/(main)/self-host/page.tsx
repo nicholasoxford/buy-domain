@@ -20,14 +20,26 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/hooks/useUser";
+import { useAuthModal } from "@/hooks/useAuthModal";
+import { AuthModal } from "@/components/auth-modal";
 
 const BUY_SELF_HOSTED_STRIPE_LINK =
   "https://buy.stripe.com/test_dR63f48ve81hbyE144";
 
 export default function SelfHostShowcase() {
-  const user = useUser();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const router = useRouter();
+  const { user } = useUser();
+  const {
+    showAuthModal,
+    setShowAuthModal,
+    handleGuestCheckout,
+    handleSignIn,
+    closeModal,
+  } = useAuthModal({
+    onGuestCheckout: () => {
+      window.location.href = BUY_SELF_HOSTED_STRIPE_LINK;
+    },
+    redirectPath: "/self-host",
+  });
 
   const features = [
     {
@@ -119,7 +131,7 @@ export default function SelfHostShowcase() {
   ];
 
   const handleGetStarted = () => {
-    if (user) {
+    if (user?.email) {
       window.location.href = BUY_SELF_HOSTED_STRIPE_LINK;
     } else {
       setShowAuthModal(true);
@@ -127,201 +139,181 @@ export default function SelfHostShowcase() {
   };
 
   return (
-    <div className="px-4 sm:px-6 max-w-[100vw] overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center py-20">
-          {/* Hero Section */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            Self-Host Your Domain Dash
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-3xl mx-auto">
-            Take full control of your domain sales infrastructure with our
-            self-hosted solution. Deploy unlimited domains with complete
-            ownership and customization capabilities.
-          </p>
+    <>
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={closeModal}
+        onGuestCheckout={handleGuestCheckout}
+        onSignIn={handleSignIn}
+      />
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
-            <button
-              onClick={handleGetStarted}
-              className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              Get Started for $10
-              <ArrowRight className="h-5 w-5" />
-            </button>
-            <Link
-              href="/demo"
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              View Live Demo
-            </Link>
-          </div>
+      <div className="px-4 sm:px-6 max-w-[100vw] overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-20">
+            {/* Hero Section */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+              Self-Host Your Domain Dash
+            </h1>
+            <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-3xl mx-auto">
+              Take full control of your domain sales infrastructure with our
+              self-hosted solution. Deploy unlimited domains with complete
+              ownership and customization capabilities.
+            </p>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-            {features.map(({ icon: Icon, title, description }) => (
-              <motion.div
-                key={title}
-                whileHover={{ scale: 1.02 }}
-                className="bg-slate-800/50 border border-purple-500/20 rounded-xl p-6"
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+              <button
+                onClick={handleGetStarted}
+                className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <Icon className="h-6 w-6 text-purple-400" />
-                  <h3 className="text-lg font-semibold text-white">{title}</h3>
-                </div>
-                <p className="text-sm text-slate-400">{description}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Getting Started Steps */}
-          <div className="mb-20">
-            <h2 className="text-3xl font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-              Getting Started
-            </h2>
-            <div className="space-y-4">
-              {steps.map(
-                ({ step, title, description, icon: Icon, details }) => (
-                  <div
-                    key={step}
-                    className="relative bg-slate-800/50 rounded-2xl p-8 border border-purple-500/20"
-                  >
-                    {/* Icon and Title */}
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="w-12 h-12 bg-purple-900/50 rounded-full flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-purple-400" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-white">
-                        {title}
-                      </h3>
-                    </div>
-
-                    {/* Description - Centered */}
-                    <p className="text-slate-400 text-center mb-8">
-                      {description}
-                    </p>
-
-                    {/* Details - Three Column Grid */}
-                    <div className="grid grid-cols-3 gap-x-4">
-                      {details.map((detail, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-2 text-sm text-slate-300"
-                        >
-                          <div className="flex-shrink-0">
-                            <div className="w-4 h-4 rounded-full bg-purple-500/20 flex items-center justify-center">
-                              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
-                            </div>
-                          </div>
-                          <span>{detail}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Vertical Line Connector */}
-                    {step !== "3" && (
-                      <div className="absolute left-[2.25rem] -bottom-4 w-0.5 h-8 bg-purple-500/20" />
-                    )}
-                  </div>
-                )
-              )}
+                Get Started for $10
+                <ArrowRight className="h-5 w-5" />
+              </button>
+              <Link
+                href="/demo"
+                className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                View Live Demo
+              </Link>
             </div>
-          </div>
 
-          {/* What's Included Section */}
-          <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-8 border border-purple-500/20 mb-20">
-            <h2 className="text-2xl font-bold mb-8">What&apos;s Included</h2>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Download className="h-5 w-5 text-purple-400" />
-                </div>
-                <div className="text-left">
-                  <h4 className="font-medium text-white">Source Code</h4>
-                  <p className="text-sm text-slate-300">
-                    Complete codebase with documentation
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Github className="h-5 w-5 text-purple-400" />
-                </div>
-                <div className="text-left">
-                  <h4 className="font-medium text-white">
-                    Private Repo Access
-                  </h4>
-                  <p className="text-sm text-slate-300">
-                    GitHub repository invitation
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Sparkles className="h-5 w-5 text-purple-400" />
-                </div>
-                <div className="text-left">
-                  <h4 className="font-medium text-white">Lifetime Updates</h4>
-                  <p className="text-sm text-slate-300">
-                    Free access to all future updates
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* FAQ Section */}
-          <div className="mb-20">
-            <h2 className="text-2xl font-bold mb-8">
-              Frequently Asked Questions
-            </h2>
-            <div className="space-y-6">
-              {faq.map(({ q, a }) => (
-                <div
-                  key={q}
-                  className="bg-slate-800/50 rounded-xl p-6 border border-purple-500/20 text-left"
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+              {features.map(({ icon: Icon, title, description }) => (
+                <motion.div
+                  key={title}
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-slate-800/50 border border-purple-500/20 rounded-xl p-6"
                 >
-                  <h3 className="text-lg font-semibold text-white mb-2">{q}</h3>
-                  <p className="text-slate-400">{a}</p>
-                </div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Icon className="h-6 w-6 text-purple-400" />
+                    <h3 className="text-lg font-semibold text-white">
+                      {title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-slate-400">{description}</p>
+                </motion.div>
               ))}
             </div>
-          </div>
 
-          {/* Authentication Modal */}
-          {showAuthModal && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-slate-700/50">
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  Sign in to continue
-                </h2>
-                <div className="space-y-4">
-                  <button
-                    onClick={() => router.push("/login?redirect=/self-host")}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-medium"
-                  >
-                    Sign in / Create account
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.location.href = BUY_SELF_HOSTED_STRIPE_LINK;
-                    }}
-                    className="w-full px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium border border-white/10"
-                  >
-                    Continue as guest
-                  </button>
-                  <button
-                    onClick={() => setShowAuthModal(false)}
-                    className="w-full px-6 py-3 text-slate-400 hover:text-white text-sm"
-                  >
-                    Cancel
-                  </button>
+            {/* Getting Started Steps */}
+            <div className="mb-20">
+              <h2 className="text-3xl font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                Getting Started
+              </h2>
+              <div className="space-y-4">
+                {steps.map(
+                  ({ step, title, description, icon: Icon, details }) => (
+                    <div
+                      key={step}
+                      className="relative bg-slate-800/50 rounded-2xl p-8 border border-purple-500/20"
+                    >
+                      {/* Icon and Title */}
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="w-12 h-12 bg-purple-900/50 rounded-full flex items-center justify-center">
+                          <Icon className="h-6 w-6 text-purple-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-white">
+                          {title}
+                        </h3>
+                      </div>
+
+                      {/* Description - Centered */}
+                      <p className="text-slate-400 text-center mb-8">
+                        {description}
+                      </p>
+
+                      {/* Details - Three Column Grid */}
+                      <div className="grid grid-cols-3 gap-x-4">
+                        {details.map((detail, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-sm text-slate-300"
+                          >
+                            <div className="flex-shrink-0">
+                              <div className="w-4 h-4 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                              </div>
+                            </div>
+                            <span>{detail}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Vertical Line Connector */}
+                      {step !== "3" && (
+                        <div className="absolute left-[2.25rem] -bottom-4 w-0.5 h-8 bg-purple-500/20" />
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* What's Included Section */}
+            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-8 border border-purple-500/20 mb-20">
+              <h2 className="text-2xl font-bold mb-8">What&apos;s Included</h2>
+              <div className="grid sm:grid-cols-3 gap-6">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Download className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-medium text-white">Source Code</h4>
+                    <p className="text-sm text-slate-300">
+                      Complete codebase with documentation
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Github className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-medium text-white">
+                      Private Repo Access
+                    </h4>
+                    <p className="text-sm text-slate-300">
+                      GitHub repository invitation
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Sparkles className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-medium text-white">Lifetime Updates</h4>
+                    <p className="text-sm text-slate-300">
+                      Free access to all future updates
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+
+            {/* FAQ Section */}
+            <div className="mb-20">
+              <h2 className="text-2xl font-bold mb-8">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-6">
+                {faq.map(({ q, a }) => (
+                  <div
+                    key={q}
+                    className="bg-slate-800/50 rounded-xl p-6 border border-purple-500/20 text-left"
+                  >
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {q}
+                    </h3>
+                    <p className="text-slate-400">{a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

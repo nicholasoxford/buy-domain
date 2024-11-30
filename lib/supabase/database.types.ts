@@ -96,6 +96,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      enterprise_inquiries: {
+        Row: {
+          company_name: string;
+          contact_name: string;
+          created_at: string;
+          email: string;
+          employees: string;
+          id: string;
+          message: string;
+          phone: string | null;
+          status: string;
+        };
+        Insert: {
+          company_name: string;
+          contact_name: string;
+          created_at?: string;
+          email: string;
+          employees: string;
+          id?: string;
+          message: string;
+          phone?: string | null;
+          status?: string;
+        };
+        Update: {
+          company_name?: string;
+          contact_name?: string;
+          created_at?: string;
+          email?: string;
+          employees?: string;
+          id?: string;
+          message?: string;
+          phone?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
       page_views: {
         Row: {
           id: number;
@@ -212,26 +248,6 @@ export type Database = {
           user_id?: string | null;
         };
         Relationships: [];
-      };
-      subscriptions: {
-        Row: {
-          id: string;
-          user_id: string;
-          status: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          status: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          status?: string;
-          created_at?: string;
-        };
       };
     };
     Views: {

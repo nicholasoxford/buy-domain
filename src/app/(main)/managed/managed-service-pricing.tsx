@@ -134,7 +134,7 @@ export function ManagedServicePricing() {
         </ul>
 
         <Link
-          href="mailto:sales@example.com"
+          href="/enterprise"
           className="block w-full text-center py-2 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg font-medium transition-all mt-auto"
         >
           Contact Sales
