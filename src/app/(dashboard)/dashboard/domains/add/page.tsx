@@ -67,5 +67,5 @@ export default async function AddDomainPage() {
     );
   }
 
-  return <AddDomainForm />;
+  return <AddDomainForm isSubscribed={isSubscribed} />;
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export function AddDomainForm() {
+export function AddDomainForm({ isSubscribed }: { isSubscribed: boolean }) {
   const [domain, setDomain] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export function AddDomainForm() {
     setLoading(true);
     setError(null);
 
-    if (domainCount && domainCount >= 1) {
+    if (domainCount && domainCount >= 1 && !isSubscribed) {
       setError(
         "You can only add one domain on the free tier. Please upgrade to add more domains."
       );
