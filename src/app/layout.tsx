@@ -8,13 +8,11 @@ export const metadata: Metadata = {
   icons: {
     icon: "/domain-dash-icon-only.svg",
   },
-  title: "Domain Dash - Monetize Your Dormant Domains",
-  description:
-    "Turn your unused domains into profit with Domain Dash. Choose from affordable templates or hassle-free hosting.",
+  title: "Domain Dash - Put Your Domains to Work",
+  description: "Simple tools to manage and monetize your parked domains.",
   openGraph: {
-    title: "Domain Dash - Monetize Your Dormant Domains",
-    description:
-      "Turn your unused domains into profit with Domain Dash. Choose from affordable templates or hassle-free hosting.",
+    title: "Domain Dash - Put Your Domains to Work",
+    description: "Simple tools to manage and monetize your parked domains.",
     images: ["https://assets.bigskydevcon.com/domain-bridge.png"],
   },
 };
