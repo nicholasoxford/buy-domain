@@ -379,7 +379,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
                 Back to Dashboard
               </Link>
               <a
-                href={`https://${domain}`}
+                href={`https://${domain.domain}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-3 py-1.5 text-sm bg-purple-500 hover:bg-purple-700 text-white rounded-md"
