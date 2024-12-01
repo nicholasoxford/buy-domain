@@ -1,19 +1,9 @@
-import {
-  ArrowRight,
-  Globe,
-  Key,
-  Lock,
-  Server,
-  Shield,
-  Download,
-  Github,
-  Sparkles,
-  Code,
-} from "lucide-react";
+import { TEMPLATE_STRIPE_LINK } from "@/utils/constants";
+import { ArrowRight, Download, Github, Sparkle, Sparkles } from "lucide-react";
 import Link from "next/link";
 export const dynamic = "force-static";
 export default function Documentation() {
-  const stripeUrl = "https://buy.stripe.com/test_dR63f48ve81hbyE144";
+  const stripeUrl = TEMPLATE_STRIPE_LINK;
 
   return (
     <>

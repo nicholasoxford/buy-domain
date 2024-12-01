@@ -101,8 +101,10 @@ export function Pricing({ user }: { user: User | null }) {
 
   const handleBuyNowClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log({ TEMPLATE_STRIPE_LINK });
     if (user?.email) {
       const stripeUrl = new URL(TEMPLATE_STRIPE_LINK);
+
       if (user.email) {
         stripeUrl.searchParams.set("prefilled_email", user.email);
       }

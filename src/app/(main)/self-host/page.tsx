@@ -20,9 +20,7 @@ import Link from "next/link";
 import { useUser } from "@/lib/hooks/useUser";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { AuthModal } from "@/components/auth-modal";
-
-const BUY_SELF_HOSTED_STRIPE_LINK =
-  "https://buy.stripe.com/test_dR63f48ve81hbyE144";
+import { TEMPLATE_STRIPE_LINK } from "@/utils/constants";
 
 export default function SelfHostShowcase() {
   const { user } = useUser();
@@ -34,7 +32,7 @@ export default function SelfHostShowcase() {
     closeModal,
   } = useAuthModal({
     onGuestCheckout: () => {
-      window.location.href = BUY_SELF_HOSTED_STRIPE_LINK;
+      window.location.href = TEMPLATE_STRIPE_LINK;
     },
     redirectPath: "/self-host",
   });
@@ -130,7 +128,7 @@ export default function SelfHostShowcase() {
 
   const handleGetStarted = () => {
     if (user?.email) {
-      window.location.href = BUY_SELF_HOSTED_STRIPE_LINK;
+      window.location.href = TEMPLATE_STRIPE_LINK;
     } else {
       setShowAuthModal(true);
     }
