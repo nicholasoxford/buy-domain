@@ -12,6 +12,7 @@ async function handler(req: Request) {
   }
 
   const data = await req.json();
+
   const validatedDomain = await validateData(domainSchema, data.domain);
 
   const result = await addDomain(validatedDomain, session.user.id);

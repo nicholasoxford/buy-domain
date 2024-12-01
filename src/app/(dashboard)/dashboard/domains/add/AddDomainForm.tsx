@@ -50,7 +50,14 @@ export function AddDomainForm({ isSubscribed }: { isSubscribed: boolean }) {
         throw new Error(data.error || "Failed to add domain");
       }
 
-      router.push(`/dashboard/domains/${domain}`);
+      // parse out any http:// or https:// or wwww, I just want domain.com
+
+      const cleanDomain = domain
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/\/$/, "");
+
+      router.push(`/dashboard/domains/${cleanDomain}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add domain");
     } finally {
