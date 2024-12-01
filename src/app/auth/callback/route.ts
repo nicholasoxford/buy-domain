@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import {
-  BUY_TEMPLATE_STRIPE_LINK,
-  BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  TEMPLATE_STRIPE_LINK,
+  BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
 } from "@/utils/constants";
 
 export async function GET(request: Request) {
@@ -18,10 +18,10 @@ export async function GET(request: Request) {
   // Handle special redirect cases
   let finalRedirect = redirect;
   if (redirect === "/buy-template") {
-    finalRedirect = BUY_TEMPLATE_STRIPE_LINK;
+    finalRedirect = TEMPLATE_STRIPE_LINK;
   }
   if (redirect === "/buy-basic-subscription") {
-    finalRedirect = BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
+    finalRedirect = BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
   }
 
   // For external URLs (like Stripe), use the full URL

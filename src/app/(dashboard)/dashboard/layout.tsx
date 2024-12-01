@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 import { redirect } from "next/navigation";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
@@ -26,7 +26,7 @@ export default async function AdminLayout({
     profile?.subscription_status === "active" ||
     profile?.subscription_status === "trialing";
 
-  let stripeUrl = BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
+  let stripeUrl = BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
   if (user.email) {
     stripeUrl += `?prefilled_email=${user.email}`;
   }

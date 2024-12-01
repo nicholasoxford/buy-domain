@@ -12,9 +12,9 @@ import {
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 import {
-  BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
-  BUY_PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
-  BUY_TEMPLATE_STRIPE_LINK,
+  BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  TEMPLATE_STRIPE_LINK,
 } from "@/utils/constants";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -70,7 +70,7 @@ export function Pricing({ user }: { user: User | null }) {
     closeModal,
   } = useAuthModal({
     onGuestCheckout: () => {
-      window.location.href = BUY_TEMPLATE_STRIPE_LINK;
+      window.location.href = TEMPLATE_STRIPE_LINK;
     },
     redirectPath: "/buy-template",
   });
@@ -80,7 +80,7 @@ export function Pricing({ user }: { user: User | null }) {
   const handleStarterPlanClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (user?.email) {
-      const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+      const stripeUrl = new URL(BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
       stripeUrl.searchParams.set("prefilled_email", user.email);
       window.location.href = stripeUrl.toString();
     } else {
@@ -91,7 +91,7 @@ export function Pricing({ user }: { user: User | null }) {
   const handleProPlanClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (user?.email) {
-      const stripeUrl = new URL(BUY_PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+      const stripeUrl = new URL(PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
       stripeUrl.searchParams.set("prefilled_email", user.email);
       window.location.href = stripeUrl.toString();
     } else {
@@ -102,7 +102,7 @@ export function Pricing({ user }: { user: User | null }) {
   const handleBuyNowClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (user?.email) {
-      const stripeUrl = new URL(BUY_TEMPLATE_STRIPE_LINK);
+      const stripeUrl = new URL(TEMPLATE_STRIPE_LINK);
       if (user.email) {
         stripeUrl.searchParams.set("prefilled_email", user.email);
       }

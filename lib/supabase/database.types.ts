@@ -4,285 +4,288 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   public: {
     Tables: {
       domain_offers: {
         Row: {
-          amount: number;
-          created_at: string;
-          description: string | null;
-          domain: string;
-          email: string;
-          id: string;
-          token: string | null;
-        };
+          amount: number
+          created_at: string
+          description: string | null
+          domain: string
+          email: string
+          id: string
+          token: string | null
+        }
         Insert: {
-          amount: number;
-          created_at?: string;
-          description?: string | null;
-          domain: string;
-          email: string;
-          id?: string;
-          token?: string | null;
-        };
+          amount: number
+          created_at?: string
+          description?: string | null
+          domain: string
+          email: string
+          id?: string
+          token?: string | null
+        }
         Update: {
-          amount?: number;
-          created_at?: string;
-          description?: string | null;
-          domain?: string;
-          email?: string;
-          id?: string;
-          token?: string | null;
-        };
+          amount?: number
+          created_at?: string
+          description?: string | null
+          domain?: string
+          email?: string
+          id?: string
+          token?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "domain_offers_domain_fkey";
-            columns: ["domain"];
-            isOneToOne: false;
-            referencedRelation: "domain_stats";
-            referencedColumns: ["domain"];
+            foreignKeyName: "domain_offers_domain_fkey"
+            columns: ["domain"]
+            isOneToOne: false
+            referencedRelation: "domain_stats"
+            referencedColumns: ["domain"]
           },
           {
-            foreignKeyName: "domain_offers_domain_fkey";
-            columns: ["domain"];
-            isOneToOne: false;
-            referencedRelation: "domains";
-            referencedColumns: ["domain"];
+            foreignKeyName: "domain_offers_domain_fkey"
+            columns: ["domain"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["domain"]
           },
-        ];
-      };
+        ]
+      }
       domains: {
         Row: {
-          created_at: string | null;
-          domain: string;
-          metadata: Json | null;
+          created_at: string | null
+          domain: string
+          metadata: Json | null
           notification_frequencies:
             | Database["public"]["Enums"]["notification_frequency"][]
-            | null;
-          notification_threshold: number | null;
-          user_id: string | null;
-          vercel_project_id: string | null;
-          verification_details: Json | null;
-          verified: boolean | null;
-        };
+            | null
+          notification_threshold: number | null
+          user_id: string | null
+          vercel_project_id: string | null
+          verification_details: Json | null
+          verified: boolean | null
+        }
         Insert: {
-          created_at?: string | null;
-          domain: string;
-          metadata?: Json | null;
+          created_at?: string | null
+          domain: string
+          metadata?: Json | null
           notification_frequencies?:
             | Database["public"]["Enums"]["notification_frequency"][]
-            | null;
-          notification_threshold?: number | null;
-          user_id?: string | null;
-          vercel_project_id?: string | null;
-          verification_details?: Json | null;
-          verified?: boolean | null;
-        };
+            | null
+          notification_threshold?: number | null
+          user_id?: string | null
+          vercel_project_id?: string | null
+          verification_details?: Json | null
+          verified?: boolean | null
+        }
         Update: {
-          created_at?: string | null;
-          domain?: string;
-          metadata?: Json | null;
+          created_at?: string | null
+          domain?: string
+          metadata?: Json | null
           notification_frequencies?:
             | Database["public"]["Enums"]["notification_frequency"][]
-            | null;
-          notification_threshold?: number | null;
-          user_id?: string | null;
-          vercel_project_id?: string | null;
-          verification_details?: Json | null;
-          verified?: boolean | null;
-        };
-        Relationships: [];
-      };
+            | null
+          notification_threshold?: number | null
+          user_id?: string | null
+          vercel_project_id?: string | null
+          verification_details?: Json | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       enterprise_inquiries: {
         Row: {
-          company_name: string;
-          contact_name: string;
-          created_at: string;
-          email: string;
-          employees: string;
-          id: string;
-          message: string;
-          phone: string | null;
-          status: string;
-        };
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          employees: string
+          id: string
+          message: string
+          phone: string | null
+          status: string
+        }
         Insert: {
-          company_name: string;
-          contact_name: string;
-          created_at?: string;
-          email: string;
-          employees: string;
-          id?: string;
-          message: string;
-          phone?: string | null;
-          status?: string;
-        };
+          company_name: string
+          contact_name: string
+          created_at?: string
+          email: string
+          employees: string
+          id?: string
+          message: string
+          phone?: string | null
+          status?: string
+        }
         Update: {
-          company_name?: string;
-          contact_name?: string;
-          created_at?: string;
-          email?: string;
-          employees?: string;
-          id?: string;
-          message?: string;
-          phone?: string | null;
-          status?: string;
-        };
-        Relationships: [];
-      };
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          employees?: string
+          id?: string
+          message?: string
+          phone?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
-          id: number;
-          metadata: Json | null;
-          page_url: string;
-          user_id: string | null;
-          view_timestamp: string | null;
-        };
+          id: number
+          metadata: Json | null
+          page_url: string
+          user_id: string | null
+          view_timestamp: string | null
+        }
         Insert: {
-          id?: never;
-          metadata?: Json | null;
-          page_url: string;
-          user_id?: string | null;
-          view_timestamp?: string | null;
-        };
+          id?: never
+          metadata?: Json | null
+          page_url: string
+          user_id?: string | null
+          view_timestamp?: string | null
+        }
         Update: {
-          id?: never;
-          metadata?: Json | null;
-          page_url?: string;
-          user_id?: string | null;
-          view_timestamp?: string | null;
-        };
-        Relationships: [];
-      };
+          id?: never
+          metadata?: Json | null
+          page_url?: string
+          user_id?: string | null
+          view_timestamp?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
-          email: string | null;
-          first_name: string | null;
-          id: string;
-          last_name: string | null;
-          notification_email: string | null;
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          notification_email: string | null
           notification_frequency:
             | Database["public"]["Enums"]["notification_frequency"]
-            | null;
-          notification_minimum_amount: number | null;
-          subscription_status: string | null;
+            | null
+          notification_minimum_amount: number | null
+          subscription_end_date: string | null
+          subscription_status: string | null
           subscription_tier:
             | Database["public"]["Enums"]["subscription_tier"]
-            | null;
-        };
+            | null
+        }
         Insert: {
-          email?: string | null;
-          first_name?: string | null;
-          id: string;
-          last_name?: string | null;
-          notification_email?: string | null;
+          email?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          notification_email?: string | null
           notification_frequency?:
             | Database["public"]["Enums"]["notification_frequency"]
-            | null;
-          notification_minimum_amount?: number | null;
-          subscription_status?: string | null;
+            | null
+          notification_minimum_amount?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
-            | null;
-        };
+            | null
+        }
         Update: {
-          email?: string | null;
-          first_name?: string | null;
-          id?: string;
-          last_name?: string | null;
-          notification_email?: string | null;
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          notification_email?: string | null
           notification_frequency?:
             | Database["public"]["Enums"]["notification_frequency"]
-            | null;
-          notification_minimum_amount?: number | null;
-          subscription_status?: string | null;
+            | null
+          notification_minimum_amount?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
-            | null;
-        };
-        Relationships: [];
-      };
+            | null
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
-          created_at: string | null;
-          email: string;
-          expiration_date: string | null;
-          id: string;
-          metadata: Json | null;
-          product_type: Database["public"]["Enums"]["product_type"];
-          status: string | null;
-          stripe_customer_id: string | null;
-          stripe_subscription_id: string | null;
-          tier: Database["public"]["Enums"]["subscription_tier"] | null;
-          updated_at: string | null;
-          user_id: string | null;
-        };
+          created_at: string | null
+          email: string
+          expiration_date: string | null
+          id: string
+          metadata: Json | null
+          product_type: Database["public"]["Enums"]["product_type"]
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier: Database["public"]["Enums"]["subscription_tier"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
         Insert: {
-          created_at?: string | null;
-          email: string;
-          expiration_date?: string | null;
-          id?: string;
-          metadata?: Json | null;
-          product_type: Database["public"]["Enums"]["product_type"];
-          status?: string | null;
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
-          tier?: Database["public"]["Enums"]["subscription_tier"] | null;
-          updated_at?: string | null;
-          user_id?: string | null;
-        };
+          created_at?: string | null
+          email: string
+          expiration_date?: string | null
+          id?: string
+          metadata?: Json | null
+          product_type: Database["public"]["Enums"]["product_type"]
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
         Update: {
-          created_at?: string | null;
-          email?: string;
-          expiration_date?: string | null;
-          id?: string;
-          metadata?: Json | null;
-          product_type?: Database["public"]["Enums"]["product_type"];
-          status?: string | null;
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
-          tier?: Database["public"]["Enums"]["subscription_tier"] | null;
-          updated_at?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-    };
+          created_at?: string | null
+          email?: string
+          expiration_date?: string | null
+          id?: string
+          metadata?: Json | null
+          product_type?: Database["public"]["Enums"]["product_type"]
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
     Views: {
       domain_stats: {
         Row: {
-          avg_offer: number | null;
-          domain: string | null;
-          last_offer: string | null;
-          offer_count: number | null;
-          top_offer: number | null;
-          visits: number | null;
-        };
-        Relationships: [];
-      };
-    };
+          avg_offer: number | null
+          domain: string | null
+          last_offer: string | null
+          offer_count: number | null
+          top_offer: number | null
+          visits: number | null
+        }
+        Relationships: []
+      }
+    }
     Functions: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Enums: {
       notification_frequency:
         | "daily"
         | "weekly"
         | "on_demand"
         | "never"
-        | "monthly";
-      product_type: "subscription" | "template" | "other";
-      subscription_tier: "basic" | "premium" | "professional" | "template";
-    };
+        | "monthly"
+      product_type: "subscription" | "template" | "other"
+      subscription_tier: "basic" | "premium" | "professional" | "template"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type PublicSchema = Database[Extract<keyof Database, "public">];
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
@@ -295,7 +298,7 @@ export type Tables<
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
@@ -303,11 +306,11 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R;
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
@@ -318,17 +321,17 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
@@ -339,17 +342,17 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
@@ -362,14 +365,14 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never;
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof PublicSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof Database
   }
     ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
@@ -377,4 +380,4 @@ export type CompositeTypes<
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never;
+    : never

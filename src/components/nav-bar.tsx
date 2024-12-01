@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { Menu, X, Command, ChevronDown, LogOut, Settings } from "lucide-react";
-import { BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
+import { BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK } from "@/utils/constants";
 import { signOut } from "@/lib/supabase/server-actions";
 import Image from "next/image";
 
@@ -38,7 +38,7 @@ export function NavBar({
     initialProfile?.subscription_status === "trialing";
   const isDocs = variant === "docs";
 
-  const stripeUrl = new URL(BUY_BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
+  const stripeUrl = new URL(BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK);
   if (user?.email) {
     stripeUrl.searchParams.set("prefilled_email", user.email);
   }

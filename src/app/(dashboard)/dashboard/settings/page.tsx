@@ -41,8 +41,16 @@ export default function SettingsPage() {
     text: string;
   } | null>(null);
 
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriptionTier, setSubscriptionTier] = useState<string | null>(null);
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(
+    null
+  );
+
   useEffect(() => {
     loadSettings();
+    loadSubscriptionStatus();
   }, []);
 
   async function loadSettings() {
@@ -70,6 +78,51 @@ export default function SettingsPage() {
         notificationThreshold: profile.notification_threshold || 0,
       }));
     }
+  }
+
+  async function loadSubscriptionStatus() {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Get profile and purchase info
+    const [profileResult, purchaseResult] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("subscription_status, subscription_tier")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("purchases")
+        .select("expiration_date")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single(),
+    ]);
+
+    if (profileResult.data) {
+      setIsSubscribed(
+        profileResult.data.subscription_status === "active" ||
+          profileResult.data.subscription_status === "pending_cancellation"
+      );
+      setSubscriptionTier(profileResult.data.subscription_tier);
+    }
+
+    if (purchaseResult.data) {
+      setSubscriptionEndDate(purchaseResult.data.expiration_date);
+    }
+  }
+
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,8 +166,77 @@ export default function SettingsPage() {
     });
   };
 
+  async function handleCancelSubscription() {
+    if (
+      !confirm(
+        "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your current billing period."
+      )
+    ) {
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      const response = await fetch("/api/subscription/cancel", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to cancel subscription");
+      }
+
+      setIsSubscribed(false);
+      setSubscriptionTier(null);
+      setMessage({
+        type: "success",
+        text: "Your subscription has been cancelled and will end at the end of the current billing period",
+      });
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Failed to cancel subscription",
+      });
+    } finally {
+      setIsCancelling(false);
+    }
+  }
+
   return (
     <div className="space-y-8">
+      {/* Subscription Management Section */}
+      {isSubscribed && (
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Subscription Management
+          </h2>
+          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-white">
+                  Current Plan: {subscriptionTier?.charAt(0).toUpperCase()}
+                  {subscriptionTier?.slice(1)}
+                </h3>
+                <p className="text-sm text-slate-400 mt-1">
+                  {subscriptionEndDate
+                    ? `Your subscription will end on ${formatDate(subscriptionEndDate)}. You'll continue to have access to all features until then.`
+                    : `You are currently subscribed to our ${subscriptionTier} plan`}
+                </p>
+              </div>
+              {!subscriptionEndDate && (
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={isCancelling}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCancelling ? "Cancelling..." : "Cancel Subscription"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Notification Settings Section */}
       <div>
         <h2 className="text-xl font-semibold text-white mb-4">
