@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Domain Dash - Put Your Domains to Work",
     description: "Simple tools to manage and monetize your parked domains.",
-    images: ["https://assets.bigskydevcon.com/domain-bridge.png"],
+    images: ["https://assets.bigskydevcon.com/domain-dash.png"],
   },
 };
 
