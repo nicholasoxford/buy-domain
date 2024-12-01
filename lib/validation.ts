@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 // Domain validation
-const domainRegex =
-  /^(?!www\.)(?:[a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
 
 export const domainSchema = z
   .string()
@@ -12,7 +11,8 @@ export const domainSchema = z
     let cleaned = domain
       .toLowerCase()
       .replace(/^https?:\/\//, "")
-      .replace(/^www\./, "");
+      .replace(/^www\./, "")
+      .replace(/\/$/, ""); // Remove trailing slash
 
     // Count the number of dots to check for subdomains
     const dotCount = (cleaned.match(/\./g) || []).length;
