@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   TEMPLATE_STRIPE_LINK,
   BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
 } from "@/utils/constants";
 
 export async function GET(request: Request) {
@@ -22,6 +23,9 @@ export async function GET(request: Request) {
   }
   if (redirect === "/buy-basic-subscription") {
     finalRedirect = BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
+  }
+  if (redirect === "/buy-pro-subscription") {
+    finalRedirect = PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
   }
 
   // For external URLs (like Stripe), use the full URL

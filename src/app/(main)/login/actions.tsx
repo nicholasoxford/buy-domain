@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   TEMPLATE_STRIPE_LINK,
   BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
+  PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK,
 } from "@/utils/constants";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -42,6 +43,9 @@ export async function login(
 
   if (redirectTo === "/buy-template") {
     redirectUrl = TEMPLATE_STRIPE_LINK;
+  }
+  if (redirectTo === "/buy-pro-subscription") {
+    redirectUrl = PRO_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
   }
   if (redirectTo === "/buy-basic-subscription") {
     redirectUrl = BASIC_DOMAIN_BRIDGE_SUBSCRIPTION_LINK;
