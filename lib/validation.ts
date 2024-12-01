@@ -1,13 +1,30 @@
 import { z } from "zod";
 
 // Domain validation
+const domainRegex =
+  /^(?!www\.)(?:[a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+
 export const domainSchema = z
   .string()
   .min(1, "Domain is required")
-  .regex(
-    /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/,
-    "Invalid domain format"
-  );
+  .transform((domain) => {
+    // Remove https://, http://, and www.
+    let cleaned = domain
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "");
+
+    // Count the number of dots to check for subdomains
+    const dotCount = (cleaned.match(/\./g) || []).length;
+
+    // If it's a subdomain (more than one dot), throw an error
+    if (dotCount > 1) {
+      throw new Error("Subdomains are not allowed");
+    }
+
+    return cleaned;
+  })
+  .refine((domain) => domainRegex.test(domain), "Invalid domain format");
 
 // Offer validation
 export const offerSchema = z.object({
