@@ -44,9 +44,69 @@ export default function Documentation() {
             </div>
           </div>
         </section>
+        <section id="installation" className="scroll-mt-24 mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Quick Start</h2>
+          <div className="not-prose space-y-4">
+            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-4 sm:p-6 border border-purple-500/20">
+              <h3 className="text-lg font-semibold text-white mb-4">
+                1. Get Access
+              </h3>
+              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Download className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white">Instant Download</h4>
+                    <p className="text-sm text-slate-300">
+                      Get the complete source code as a ZIP file
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Github className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white">GitHub Access</h4>
+                    <p className="text-sm text-slate-300">
+                      Get invited to the private repository
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-lg">
+                    <Sparkles className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white">Lifetime Updates</h4>
+                    <p className="text-sm text-slate-300">
+                      Free access to all future updates
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href={stripeUrl}
+                  target="_blank"
+                  className="w-full sm:w-auto text-center px-4 sm:px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors"
+                >
+                  Purchase for $10
+                  <ArrowRight className="inline-block ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/demo"
+                  className="w-full sm:w-auto text-center px-4 sm:px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg font-medium transition-colors"
+                >
+                  View Live Demo
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section id="installation" className="scroll-mt-24 mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Quick Start</h2>
           <div className="not-prose space-y-8">
             {[
               {
