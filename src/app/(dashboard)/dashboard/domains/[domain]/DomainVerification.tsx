@@ -15,6 +15,7 @@ interface VerificationState {
   status: "pending" | "verified" | "failed";
   verificationDetails: any;
   error: string | null;
+  nameservers?: string[];
 }
 
 export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
@@ -84,21 +85,31 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
         throw new Error(result.error || "Failed to verify domain");
       }
 
-      // Check if both A and CNAME records are properly configured
       const mainConfigured = !result.configuration?.main?.misconfigured;
       const wwwConfigured = !result.configuration?.www?.misconfigured;
-
-      // If both are configured, we don't need to keep checking
       const isFullyConfigured = mainConfigured && wwwConfigured;
 
-      setState({
-        status: isFullyConfigured ? "verified" : "failed",
-        verificationDetails: result,
-        error:
-          !mainConfigured || !wwwConfigured
-            ? "DNS records need to be configured"
-            : null,
-      });
+      // If not fully configured, fetch nameservers
+      if (!isFullyConfigured) {
+        const nsResponse = await fetch(
+          `/api/domains/${domain.domain}/nameservers`
+        );
+        const nsResult = await nsResponse.json();
+
+        setState({
+          status: "failed",
+          verificationDetails: result,
+          nameservers: nsResult.nameservers,
+          error: "DNS records need to be configured",
+        });
+      } else {
+        setState({
+          status: "verified",
+          verificationDetails: result,
+          error: null,
+          nameservers: undefined,
+        });
+      }
 
       return isFullyConfigured;
     } catch (error: any) {
@@ -106,6 +117,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
         status: "failed",
         verificationDetails: null,
         error: error.message,
+        nameservers: undefined,
       });
       return false;
     } finally {
@@ -277,6 +289,51 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
     </div>
   );
 
+  const renderNameservers = () => {
+    if (!state.nameservers?.length) return null;
+
+    const hasCloudflare = state.nameservers.some((ns) =>
+      ns.toLowerCase().includes("cloudflare")
+    );
+
+    return (
+      <div className="bg-slate-900/50 rounded-lg p-4 space-y-3">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm font-medium text-slate-300">
+            Current Nameservers:
+          </span>
+        </div>
+        <div className="space-y-2">
+          {state.nameservers.map((ns, index) => (
+            <div
+              key={index}
+              className="font-mono text-sm text-slate-400 break-all"
+            >
+              {ns}
+            </div>
+          ))}
+        </div>
+        <div className="text-xs text-slate-400 mt-2">
+          {hasCloudflare ? (
+            <>
+              • Configure DNS records in{" "}
+              <a
+                href={`https://dash.cloudflare.com/?to=/:account/${domain.domain}/dns`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                Cloudflare&apos;s DNS settings
+              </a>
+            </>
+          ) : (
+            "• Add the DNS records in your domain registrar&apos;s DNS settings"
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const isFullyConfigured =
     state.verificationDetails &&
     !state.verificationDetails.configuration?.main?.misconfigured &&
@@ -331,6 +388,8 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
 
             return renderDNSRecord(record, isConfigured, isVerified);
           })}
+
+          {renderNameservers()}
 
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-300">
             <div className="flex items-center gap-2 mb-2">
