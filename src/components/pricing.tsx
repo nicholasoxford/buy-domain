@@ -307,10 +307,10 @@ export function Pricing({ user }: { user: User | null }) {
                 <h2 className="text-xl font-bold text-white">Self-Hosted</h2>
                 <div className="flex items-baseline gap-1">
                   <span className="text-sm font-medium text-slate-400 line-through">
-                    $20
+                    $99
                   </span>
                   <span className="text-2xl font-bold text-purple-400">
-                    $10
+                    $79
                   </span>
                   <span className="text-purple-300 text-sm">one-time</span>
                 </div>
