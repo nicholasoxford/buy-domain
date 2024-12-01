@@ -265,11 +265,15 @@ function MobileMenu({
   handleSignOut,
   setIsOpen,
 }: MobileMenuProps) {
+  const handleNavigation = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
       <div
         className="fixed inset-0 bg-black/80 z-40"
-        onClick={() => setIsOpen(false)}
+        onClick={handleNavigation}
       />
       <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-slate-950 border-l border-slate-800 z-50 shadow-2xl animate-in slide-in-from-right">
         <div className="flex items-center justify-between px-6 h-16 border-b border-slate-800 bg-slate-900">
@@ -284,7 +288,7 @@ function MobileMenu({
             <span className="text-sm font-medium text-white">Menu</span>
           </div>
           <button
-            onClick={() => setIsOpen(false)}
+            onClick={handleNavigation}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
           >
             <X className="h-5 w-5" />
@@ -303,7 +307,7 @@ function MobileMenu({
                       ? `bg-${item.color}-500/10 text-${item.color}-400 ring-1 ring-${item.color}-500/20`
                       : "text-white hover:bg-slate-800"
                   }`}
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleNavigation}
                 >
                   {item.label}
                 </Link>
@@ -330,7 +334,12 @@ function MobileMenu({
                       </div>
                     </div>
                   </div>
-                  <form action={handleSignOut}>
+                  <form
+                    action={async () => {
+                      await handleSignOut();
+                      handleNavigation();
+                    }}
+                  >
                     <button
                       type="submit"
                       className="w-full px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 rounded-lg text-left"
@@ -340,7 +349,9 @@ function MobileMenu({
                   </form>
                 </div>
               ) : (
-                <AuthButtons />
+                <div onClick={handleNavigation}>
+                  <AuthButtons />
+                </div>
               )}
             </div>
           </div>
