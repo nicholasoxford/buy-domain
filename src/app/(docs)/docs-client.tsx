@@ -6,6 +6,7 @@ import { Command } from "lucide-react";
 import { type NavigationSection } from "./navigation-config";
 import { DocSidebar } from "./doc-sidebar";
 import { useDocNavigation } from "@/hooks/useDocNavigation";
+import { usePathname } from "next/navigation";
 
 interface DocsClientProps {
   children: React.ReactNode;
@@ -14,8 +15,7 @@ interface DocsClientProps {
 
 export function DocsClient({ children, navigation }: DocsClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { activeSection } = useDocNavigation();
-
+  const pathname = usePathname();
   return (
     <div className="lg:container mx-auto">
       {/* Mobile Navigation */}
@@ -64,21 +64,23 @@ export function DocsClient({ children, navigation }: DocsClientProps) {
         {/* Main Content Area */}
         <div className="flex-1 max-w-3xl">
           {/* Pro Tip */}
-          <div className="fixed bottom-8 right-8 w-72 p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 shadow-lg backdrop-blur-sm hidden md:block">
-            <div className="flex items-center gap-2 mb-2">
-              <Command className="h-4 w-4 text-purple-400" />
-              <span className="text-sm font-medium text-purple-400">
-                Pro Tip
-              </span>
+          {pathname === "/docs/self-host" && (
+            <div className="fixed bottom-8 right-8 w-72 p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 shadow-lg backdrop-blur-sm hidden md:block">
+              <div className="flex items-center gap-2 mb-2">
+                <Command className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-400">
+                  Pro Tip
+                </span>
+              </div>
+              <p className="text-sm text-slate-300">
+                Press{" "}
+                <kbd className="px-1.5 py-0.5 text-xs bg-slate-800 rounded border border-white/10">
+                  ESC
+                </kbd>{" "}
+                twice to access the admin panel from anywhere.
+              </p>
             </div>
-            <p className="text-sm text-slate-300">
-              Press{" "}
-              <kbd className="px-1.5 py-0.5 text-xs bg-slate-800 rounded border border-white/10">
-                ESC
-              </kbd>{" "}
-              twice to access the admin panel from anywhere.
-            </p>
-          </div>
+          )}
 
           {/* Main Content */}
           <main className="flex-1 min-w-0">
