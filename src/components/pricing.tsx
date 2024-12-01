@@ -310,7 +310,7 @@ export function Pricing({ user }: { user: User | null }) {
                     $99
                   </span>
                   <span className="text-2xl font-bold text-purple-400">
-                    $79
+                    $39
                   </span>
                   <span className="text-purple-300 text-sm">one-time</span>
                 </div>
