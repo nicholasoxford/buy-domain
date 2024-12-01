@@ -207,15 +207,15 @@ export function HomePage({ user }: { user: User | null }) {
             <div className="relative group mb-4">
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200" />
               <Link
-                href="/demo"
+                href="/managed"
                 className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-pink-500/50 transition-all duration-200"
               >
                 <div className="flex flex-col items-start">
                   <span className="text-lg font-semibold text-white">
-                    Try It Yourself
+                    Learn More About Managed Hosting
                   </span>
                   <span className="text-sm text-slate-400">
-                    See our interactive offer form in action
+                    We take care of the hosting, so you don&apos;t have to.
                   </span>
                 </div>
                 <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
