@@ -16,7 +16,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-1 sm:p-6">
+    <div className="min-h-dvh bg-slate-900 p-1 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         <h1 className="text-xl sm:text-2xl font-bold text-white">Demo Page</h1>
 

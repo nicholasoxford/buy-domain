@@ -14,7 +14,7 @@ export default async function DocsLayout({ children }: DocsLayoutProps) {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen bg-slate-900 w-dvw">
+    <div className="min-h-dvh bg-slate-900 w-dvw">
       <NavBar initialUser={user} variant="docs" />
       <DocsClient navigation={navigation}>{children}</DocsClient>
     </div>

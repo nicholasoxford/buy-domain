@@ -13,7 +13,7 @@ export default function EnterprisePage() {
   const router = useRouter();
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-slate-900">
+    <div className="relative min-h-dvh overflow-x-hidden bg-slate-900">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-slate-900" />
 
       <div className="relative z-10 container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">

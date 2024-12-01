@@ -31,7 +31,7 @@ export default async function SubscriptionThankYou({
 
   if (!searchParams.session_id) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-red-500/20 text-center max-w-md">
           <h1 className="text-2xl font-bold text-white mb-4">
             Invalid Session
@@ -44,7 +44,7 @@ export default async function SubscriptionThankYou({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-red-500/20 text-center max-w-md">
           <h1 className="text-2xl font-bold text-white mb-4">
             Verification Error
@@ -57,7 +57,7 @@ export default async function SubscriptionThankYou({
 
   if (!verified) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-red-500/20 text-center max-w-md">
           <h1 className="text-2xl font-bold text-white mb-4">
             Payment Not Verified
@@ -72,7 +72,7 @@ export default async function SubscriptionThankYou({
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20">
           <div className="text-center mb-8">

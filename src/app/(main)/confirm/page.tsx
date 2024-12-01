@@ -68,7 +68,7 @@ export default function ConfirmEmailPage() {
   }, [searchParams]);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-slate-900 flex flex-col items-center justify-center antialiased">
+    <div className="relative min-h-dvh overflow-x-hidden bg-slate-900 flex flex-col items-center justify-center antialiased">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-slate-900" />
 
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

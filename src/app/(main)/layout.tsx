@@ -35,7 +35,7 @@ export default async function RootLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       <NavBar initialUser={user} initialProfile={profile} />
       <main className="flex-1">{children}</main>
       <Footer />

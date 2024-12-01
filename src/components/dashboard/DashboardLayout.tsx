@@ -30,7 +30,7 @@ export default function DashboardLayout({
 
   return (
     <MobileMenuContext.Provider value={{ isOpen, setIsOpen }}>
-      <div className="min-h-screen bg-slate-900 flex flex-col lg:flex-row">
+      <div className="min-h-dvh bg-slate-900 flex flex-col lg:flex-row">
         {/* Desktop Sidebar */}
         <DesktopSidebar isSubscribed={isSubscribed} stripeUrl={stripeUrl} />
 

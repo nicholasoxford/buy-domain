@@ -2,7 +2,7 @@ import { Download, Github } from "lucide-react";
 
 export default function ThankYouLoading() {
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20">
           <div className="text-center mb-8">

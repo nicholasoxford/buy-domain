@@ -46,7 +46,7 @@ const features = [
 
 export default function CheckEmailPage() {
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-slate-900 flex items-center justify-center p-4">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <FloatingOrb delay={0} />
