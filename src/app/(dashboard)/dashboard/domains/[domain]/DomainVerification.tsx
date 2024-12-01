@@ -24,7 +24,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
     verificationDetails: null,
     error: null,
   });
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(8);
 
   const getRequiredDNSRecords = (): DNSRecord[] => {
     const records = [
@@ -35,7 +35,6 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
         notes: [
           "@ represents your base domain",
           "Points your base domain to Vercel's servers",
-          "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
         ],
         required: true,
       },
@@ -43,10 +42,7 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
         type: "CNAME",
         name: "www",
         value: "cname.vercel-dns.com",
-        notes: [
-          "Points your www subdomain to Vercel",
-          "If using Cloudflare, set Proxy status to 'DNS only' (grey cloud)",
-        ],
+        notes: ["Points your www subdomain to Vercel"],
         required: true,
       },
     ];
@@ -121,26 +117,40 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
       });
       return false;
     } finally {
-      setCountdown(30);
+      setCountdown(8);
     }
   };
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout | null = null;
     let isActive = true;
 
-    const check = async () => {
+    const check = async (isInitialCheck = false) => {
       if (!isActive) return;
+
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+
+      // Only show pending during checks if it's not the initial load
+      if (!isInitialCheck) {
+        setState((prev) => ({ ...prev, status: "pending" }));
+      }
 
       const isConfigured = await checkVerification();
 
-      // Only continue checking if not configured and component is still mounted
       if (!isConfigured && isActive) {
+        setState((prev) => ({ ...prev, status: "failed" }));
         timer = setInterval(() => {
           setCountdown((prev) => {
             if (prev <= 1) {
-              check(); // Recheck when countdown reaches 0
-              return 30; // Reset to 30 seconds
+              if (timer) {
+                clearInterval(timer);
+                timer = null;
+              }
+              check(false); // Pass false for subsequent checks
+              return 8;
             }
             return prev - 1;
           });
@@ -148,7 +158,8 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
       }
     };
 
-    check(); // Initial check
+    // Initial check - status is already "pending" from initial state
+    check(true);
 
     return () => {
       isActive = false;
@@ -305,18 +316,27 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
         </div>
         <div className="text-xs text-slate-400">
           {hasCloudflare ? (
-            <div className="flex items-center gap-2">
-              <span>
-                Configure your DNS records directly in{" "}
-                <a
-                  href={`https://dash.cloudflare.com/?to=/:account/${domain.domain}/dns`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 underline"
-                >
-                  Cloudflare&apos;s Dashboard
-                </a>
-              </span>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span>
+                  Configure your DNS records directly in{" "}
+                  <a
+                    href={`https://dash.cloudflare.com/?to=/:account/${domain.domain}/dns`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 underline"
+                  >
+                    Cloudflare&apos;s Dashboard
+                  </a>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-blue-300">
+                <span className="text-blue-400">⚠️</span>
+                <span>
+                  Remember to set Proxy status to DNS only (grey cloud) for A
+                  and CNAME records
+                </span>
+              </div>
             </div>
           ) : (
             <div className="flex items-center gap-2">

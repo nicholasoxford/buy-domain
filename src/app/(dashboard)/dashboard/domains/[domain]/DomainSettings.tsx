@@ -205,21 +205,6 @@ export function NotificationSettings({
 
         <div className="flex items-center justify-between p-4 border-t border-slate-800">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={sendTestNotification}
-            disabled={isTestingSend}
-            className="bg-transparent"
-          >
-            {isTestingSend ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Mail className="mr-2 h-4 w-4" />
-            )}
-            Send Test Notification
-          </Button>
-
-          <Button
             size="sm"
             onClick={saveChanges}
             disabled={!hasUnsavedChanges || isSaving}
