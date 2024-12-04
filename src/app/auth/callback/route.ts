@@ -10,9 +10,9 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const redirect = requestUrl.searchParams.get("redirect") || "/dashboard";
-
+  console.log("HITTING AUTH");
   if (code) {
-    const supabase = await createClient();
+    const supabase = createClient();
     await supabase.auth.exchangeCodeForSession(code);
   }
 
