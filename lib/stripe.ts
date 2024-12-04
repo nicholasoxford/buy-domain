@@ -261,6 +261,12 @@ export async function handleTemplatePayment(session: Stripe.Checkout.Session) {
   }
 }
 
+export function getNameApiBase() {
+  return process.env.NODE_ENV === "development"
+    ? "https://api.dev.name.com/v4"
+    : "https://api.name.com/v4";
+}
+
 async function registerDomain(domainName: string, email: string) {
   const namecomUsername = process.env.NAMECOM_USERNAME;
   const namecomToken = process.env.NAMECOM_TOKEN;
@@ -268,10 +274,7 @@ async function registerDomain(domainName: string, email: string) {
     `${namecomUsername}:${namecomToken}`
   ).toString("base64");
 
-  const namecomApiBase =
-    process.env.NODE_ENV === "development"
-      ? "https://api.dev.name.com/v4"
-      : "https://api.name.com/v4";
+  const namecomApiBase = getNameApiBase();
 
   try {
     // First check availability one last time
