@@ -34,7 +34,7 @@ export default async function AdminPage() {
               </h2>
               <StatsGrid initialTotalVisits={metrics.totalVisits} />
               <OffersTable />
-              <DomainStatsTable initialStats={stats} />
+              <DomainStatsTable initialStats={stats} showManageButton={false} />
             </div>
 
             {/* New CTA Section */}
