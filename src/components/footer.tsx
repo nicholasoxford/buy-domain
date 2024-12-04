@@ -129,11 +129,11 @@ export function Footer() {
           >
             <Command className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
             <span className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-              Domain Dash
+              Domain Bobber
             </span>
           </Link>
           <div className="text-sm text-slate-400">
-            © {new Date().getFullYear()} Domain Dash. All rights reserved.
+            © {new Date().getFullYear()} Domain Bobber. All rights reserved.
           </div>
         </div>
       </div>

@@ -81,7 +81,7 @@ export function NavBar({
             <Link href="/" className="flex items-center -ml-3 py-2">
               <Image
                 src="/domain-dash-larger-text-white.svg"
-                alt="Domain Dash"
+                alt="Domain Bobber"
                 width={100}
                 height={48}
                 className="w-48 h-auto"
@@ -280,7 +280,7 @@ function MobileMenu({
           <div className="flex items-center gap-2">
             <Image
               src="/domain-dash-icon-only.svg"
-              alt="Domain Dash"
+              alt="Domain Bobber"
               width={48}
               height={48}
               className="w-auto h-auto"

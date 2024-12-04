@@ -86,7 +86,7 @@ export default function LoginPage() {
           <div className="w-8 h-8 rounded bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
             DB
           </div>
-          Domain Dash
+          Domain Bobber
         </div>
       </div>
 

@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/domain-dash-icon-only.svg",
   },
-  title: "Domain Dash - Put Your Domains to Work",
+  title: "Domain Bobber - Put Your Domains to Work",
   description: "Simple tools to manage and monetize your parked domains.",
   openGraph: {
-    title: "Domain Dash - Put Your Domains to Work",
+    title: "Domain Bobber - Put Your Domains to Work",
     description: "Simple tools to manage and monetize your parked domains.",
     images: ["https://assets.bigskydevcon.com/domain-dash.png"],
   },

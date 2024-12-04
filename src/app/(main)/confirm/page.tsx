@@ -92,7 +92,7 @@ export default function ConfirmEmailPage() {
             <Rocket className="h-8 w-8 text-white" />
           </motion.div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Welcome to Domain Dash! 🎉
+            Welcome to Domain Bobber! 🎉
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Your email has been verified. Let&apos;s get you set up with

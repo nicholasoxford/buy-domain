@@ -148,7 +148,7 @@ export default function SelfHostShowcase() {
           <div className="text-center py-20">
             {/* Hero Section */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-              Self-Host Your Domain Dash
+              Self-Host Your Domain Bobber
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-3xl mx-auto">
               Take full control of your domain sales infrastructure with our

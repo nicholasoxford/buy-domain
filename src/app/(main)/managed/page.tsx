@@ -113,7 +113,7 @@ function GettingStartedSteps() {
           {
             icon: Users,
             title: "Create Account",
-            description: "Sign up for a Domain Dash account",
+            description: "Sign up for a Domain Bobber account",
           },
           {
             icon: Cloud,

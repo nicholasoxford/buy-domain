@@ -9,10 +9,10 @@ export default function Documentation() {
     <>
       <div className="px-4 sm:px-6 max-w-[100vw] overflow-hidden">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-          Self-Host Domain Dash
+          Self-Host Domain Bobber
         </h1>
         <p className="lead text-base sm:text-lg lg:text-xl text-slate-300 mb-8 sm:mb-12">
-          Deploy and manage your own instance of Domain Dash on Cloudflare
+          Deploy and manage your own instance of Domain Bobber on Cloudflare
           Workers.
         </p>
 

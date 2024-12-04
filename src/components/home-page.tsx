@@ -230,7 +230,7 @@ export function HomePage({ user }: { user: User | null }) {
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
-              Domain Dash Marketplace
+              Domain Bobber Marketplace
             </h2>
 
             <p className="text-lg text-slate-300 mb-12 max-w-3xl mx-auto">

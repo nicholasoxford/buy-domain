@@ -78,7 +78,7 @@ export default async function SubscriptionThankYou({
           <div className="text-center mb-8">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-white mb-2">
-              Welcome to Domain Dash Pro!
+              Welcome to Domain Bobber Pro!
             </h1>
             <p className="text-slate-300">
               Your subscription has been activated. You now have access to all

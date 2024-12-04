@@ -90,7 +90,11 @@ export async function handleCheckoutSession(session: Stripe.Checkout.Session) {
   console.log("Session mode:", session.mode);
 
   if (session.mode === "payment") {
-    await handleTemplatePayment(session);
+    if (session.metadata?.type === "domain_purchase") {
+      await handleDomainPurchase(session);
+    } else {
+      await handleTemplatePayment(session);
+    }
   } else if (session.mode === "subscription") {
     await handleSubscriptionChange({
       email: session.customer_details?.email || "",
@@ -254,6 +258,151 @@ export async function handleTemplatePayment(session: Stripe.Checkout.Session) {
 
   if (error) {
     throw new Error(`Failed to record template purchase: ${error.message}`);
+  }
+}
+
+async function registerDomain(domainName: string, email: string) {
+  const namecomUsername = process.env.NAMECOM_USERNAME;
+  const namecomToken = process.env.NAMECOM_TOKEN;
+  const namecomCredentials = Buffer.from(
+    `${namecomUsername}:${namecomToken}`
+  ).toString("base64");
+
+  const namecomApiBase =
+    process.env.NODE_ENV === "development"
+      ? "https://api.dev.name.com/v4"
+      : "https://api.name.com/v4";
+
+  try {
+    // First check availability one last time
+    const availabilityResponse = await fetch(
+      `${namecomApiBase}/domains:checkAvailability`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${namecomCredentials}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          domainNames: [domainName],
+        }),
+      }
+    );
+
+    const availabilityData = await availabilityResponse.json();
+    const domainResult = availabilityData.results?.[0];
+
+    if (!domainResult?.purchasable) {
+      throw new Error("Domain is no longer available for purchase");
+    }
+
+    // Register the domain
+    const response = await fetch(`${namecomApiBase}/domains`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${namecomCredentials}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        domain: {
+          domainName,
+        },
+        contacts: {
+          registrant: {
+            email,
+          },
+        },
+        period: 1, // 1 year registration
+        purchasePrice: domainResult.purchasePrice,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Failed to register domain: ${error.message}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error registering domain:", error);
+    throw error;
+  }
+}
+
+async function handleDomainPurchase(session: Stripe.Checkout.Session) {
+  console.log("Processing domain purchase for session:", session.id);
+  const supabase = await createClient();
+
+  const { domainName, userId } = session.metadata || {};
+  const email = session.customer_details?.email;
+
+  if (!domainName || !email) {
+    throw new Error("Missing required domain purchase information");
+  }
+
+  // Find existing purchase record by session ID
+  const { data: existingPurchase, error: lookupError } = await supabase
+    .from("purchases")
+    .select("*")
+    .eq("metadata->stripeSessionId", `"${session.id}"`)
+    .single();
+
+  if (lookupError) {
+    console.error("Error looking up purchase:", lookupError);
+    throw lookupError;
+  }
+
+  if (!existingPurchase) {
+    throw new Error("No purchase record found for session: " + session.id);
+  }
+
+  try {
+    console.log("BEFORE REGISTER");
+    await registerDomain(domainName, email);
+    console.log("PAST REGISTER");
+
+    // Update the existing purchase record
+    const { error: purchaseError } = await supabase
+      .from("purchases")
+      .update({
+        status: "completed",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("metadata->stripeSessionId", `"${session.id}"`);
+
+    if (purchaseError) {
+      console.error("Error updating purchase:", purchaseError);
+      throw purchaseError;
+    }
+
+    // Add domain to domains table if user exists
+    if (userId) {
+      const { error: domainError } = await supabase.from("domains").upsert({
+        domain: domainName,
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        verified: false,
+      });
+
+      if (domainError) {
+        console.error("Error saving domain:", domainError);
+      }
+    }
+  } catch (error) {
+    // Update the existing purchase record with error status
+    await supabase
+      .from("purchases")
+      .update({
+        status: "failed",
+        updated_at: new Date().toISOString(),
+        metadata: {
+          ...((existingPurchase.metadata as Record<string, unknown>) || {}),
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      })
+      .eq("metadata->stripeSessionId", `"${session.id}"`);
+
+    throw error;
   }
 }
 

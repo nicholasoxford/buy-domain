@@ -23,8 +23,8 @@ export function DomainInquiriesSection() {
       </h2>
 
       <p className="text-lg text-slate-300 mb-12 max-w-3xl mx-auto">
-        The average domain takes 12-24 months to sell. With Domain Dash, you can
-        dramatically reduce that time through better lead management and
+        The average domain takes 12-24 months to sell. With Domain Bobber, you
+        can dramatically reduce that time through better lead management and
         automated follow-ups.
       </p>
 
@@ -37,7 +37,7 @@ export function DomainInquiriesSection() {
             </span>
           </div>
           <h3 className="text-2xl font-bold text-white mb-6">
-            Without Domain Dash
+            Without Domain Bobber
           </h3>
           <div className="space-y-6">
             <div className="flex items-start gap-4">
@@ -74,11 +74,11 @@ export function DomainInquiriesSection() {
           </div>
         </div>
 
-        {/* With Domain Dash */}
+        {/* With Domain Bobber */}
         <div className="relative group bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/30 hover:scale-[1.02] transition-all duration-300 text-left">
           <div className="absolute -top-3 left-8">
             <span className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm rounded-full font-medium shadow-xl">
-              With Domain Dash
+              With Domain Bobber
             </span>
           </div>
           <h3 className="text-2xl font-bold text-white mb-6">

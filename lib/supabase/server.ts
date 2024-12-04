@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 import { Database } from "./database.types";
 import { getEnvVariable, getEnvVariables } from "@/utils/env";
 
-export async function createClient() {
-  const cookieStore = await cookies();
+export function createClient() {
+  const cookieStore = cookies();
 
   const env = getEnvVariables();
   return createServerClient<Database>(
