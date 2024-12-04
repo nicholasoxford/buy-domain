@@ -5,6 +5,13 @@ interface DNSRecord {
   value: string;
   notes: string[];
 }
+
+interface AddDNSRecordFormData {
+  type: string;
+  name: string;
+  value: string;
+}
+
 // ... other imports ...
 import { useState } from "react";
 import { DangerZone } from "./DangerZone";
@@ -104,6 +111,105 @@ export const renderDNSRecord = (record: DNSRecord) => (
   </div>
 );
 
+const DNSRecordForm = ({
+  onSubmit,
+}: {
+  onSubmit: (data: AddDNSRecordFormData) => void;
+}) => {
+  const [formData, setFormData] = useState<AddDNSRecordFormData>({
+    type: "A",
+    name: "",
+    value: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+    setFormData({ type: "A", name: "", value: "" });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 bg-slate-900/50 rounded-lg p-4"
+    >
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="text-xs text-slate-400 block mb-1">Type</label>
+          <select
+            value={formData.type}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white"
+          >
+            <option value="A">A</option>
+            <option value="AAAA">AAAA</option>
+            <option value="CNAME">CNAME</option>
+            <option value="MX">MX</option>
+            <option value="TXT">TXT</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-slate-400 block mb-1">Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white"
+            placeholder="@"
+          />
+        </div>
+        <div>
+          <label className="text-xs text-slate-400 block mb-1">Value</label>
+          <input
+            type="text"
+            value={formData.value}
+            onChange={(e) =>
+              setFormData({ ...formData, value: e.target.value })
+            }
+            className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white"
+            placeholder="Enter value"
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
+        >
+          Add Record
+        </button>
+      </div>
+    </form>
+  );
+};
+
+const HostedDomainSection = () => {
+  const [records, setRecords] = useState<DNSRecord[]>([
+    {
+      type: "A",
+      name: "@",
+      value: "76.76.21.21",
+      notes: ["Default Vercel A record"],
+    },
+  ]);
+
+  const handleAddRecord = (data: AddDNSRecordFormData) => {
+    setRecords([...records, { ...data, notes: ["Custom record"] }]);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">DNS Records</h2>
+      </div>
+      <DNSRecordForm onSubmit={handleAddRecord} />
+      <div className="space-y-4">
+        {records.map((record, index) => renderDNSRecord(record))}
+      </div>
+    </div>
+  );
+};
+
 export default function DomainPage({ domain }: { domain: Tables<"domains"> }) {
   return (
     <div className="max-w-3xl mx-auto">
@@ -114,15 +220,27 @@ export default function DomainPage({ domain }: { domain: Tables<"domains"> }) {
       </div>
 
       <div className="space-y-6">
-        {/* Status Card */}
-        <DomainVerification domain={domain} />
-        <NotificationSettings
-          domain={domain.domain}
-          initialFrequencies={domain.notification_frequencies}
-          initialThreshold={domain.notification_threshold}
-        />
-        {/* Danger Zone Component */}
-        <DangerZone domain={domain.domain} />
+        {domain.hosted ? (
+          <>
+            <HostedDomainSection />
+            <NotificationSettings
+              domain={domain.domain}
+              initialFrequencies={domain.notification_frequencies}
+              initialThreshold={domain.notification_threshold}
+            />
+            <DangerZone domain={domain.domain} />
+          </>
+        ) : (
+          <>
+            <DomainVerification domain={domain} />
+            <NotificationSettings
+              domain={domain.domain}
+              initialFrequencies={domain.notification_frequencies}
+              initialThreshold={domain.notification_threshold}
+            />
+            <DangerZone domain={domain.domain} />
+          </>
+        )}
       </div>
     </div>
   );

@@ -58,6 +58,7 @@ export type Database = {
         Row: {
           created_at: string | null
           domain: string
+          hosted: boolean | null
           metadata: Json | null
           notification_frequencies:
             | Database["public"]["Enums"]["notification_frequency"][]
@@ -71,6 +72,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           domain: string
+          hosted?: boolean | null
           metadata?: Json | null
           notification_frequencies?:
             | Database["public"]["Enums"]["notification_frequency"][]
@@ -84,6 +86,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           domain?: string
+          hosted?: boolean | null
           metadata?: Json | null
           notification_frequencies?:
             | Database["public"]["Enums"]["notification_frequency"][]
