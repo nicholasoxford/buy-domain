@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
+import { getNameApiBase } from "@/lib/stripe";
 
-const NAME_API_BASE = "https://api.name.com/v4";
+const NAME_API_BASE = getNameApiBase();
 
 async function getNameAPIHeaders() {
   const headersList = headers();
   const supabase = createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session?.user) {
+  if (!user) {
     throw new Error("Unauthorized");
   }
 
   // You should store these securely in environment variables
-  const username = process.env.NAME_API_USERNAME;
-  const token = process.env.NAME_API_TOKEN;
+  const username = process.env.NAMECOM_USERNAME;
+  const token = process.env.NAMECOM_TOKEN;
 
   if (!username || !token) {
     throw new Error("Missing Name.com API credentials");
@@ -101,6 +102,7 @@ export async function DELETE(
 ) {
   try {
     const headers = await getNameAPIHeaders();
+    console.log({ NAME_API_BASE });
     const response = await fetch(
       `${NAME_API_BASE}/domains/${params.domain}/records/${params.id}`,
       {
@@ -115,6 +117,7 @@ export async function DELETE(
 
     return NextResponse.json({});
   } catch (error) {
+    console.log("ERROR: ", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }

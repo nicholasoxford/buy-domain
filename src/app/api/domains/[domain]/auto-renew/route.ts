@@ -7,24 +7,25 @@ export async function POST(
   { params }: { params: { domain: string } }
 ) {
   try {
-    const { nameservers } = await request.json();
+    const { enable } = await request.json();
     const nameAuth = await getNameAuth();
     const NAME_API_BASE = getNameApiBase();
-
+    const endpoint = enable ? "enableAutorenew" : "disableAutorenew";
     const response = await fetch(
-      `${NAME_API_BASE}/domains/${params.domain}:setNameservers`,
+      `${NAME_API_BASE}/domains/${params.domain}:${endpoint}`,
       {
         method: "POST",
         headers: {
           Authorization: `Basic ${nameAuth}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nameservers }),
       }
     );
 
     if (!response.ok) {
-      throw new Error("Failed to update nameservers");
+      throw new Error(
+        `Failed to ${enable ? "enable" : "disable"} auto-renewal`
+      );
     }
 
     const data = await response.json();
