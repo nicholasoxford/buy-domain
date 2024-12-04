@@ -59,7 +59,10 @@ export default async function DashboardPage() {
                 </h2>
               </div>
               <div className="p-6">
-                <DomainStatsTable initialStats={stats} />
+                <DomainStatsTable
+                  initialStats={stats}
+                  showManageButton={true}
+                />
               </div>
             </div>
           </div>

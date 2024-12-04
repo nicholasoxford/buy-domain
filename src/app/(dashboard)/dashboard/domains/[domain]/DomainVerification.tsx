@@ -78,6 +78,12 @@ export function DomainVerification({ domain }: { domain: Tables<"domains"> }) {
       const result = await response.json();
 
       if (!response.ok) {
+        // Handle specific error cases
+        if (response.status === 404 || result.error?.includes("not found")) {
+          throw new Error(
+            "This domain is not connected to a Vercel project. Please add it to a Vercel project first."
+          );
+        }
         throw new Error(result.error || "Failed to verify domain");
       }
 

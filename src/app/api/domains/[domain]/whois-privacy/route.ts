@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getNameAuth } from "@/lib/name";
+import { getNameApiBase } from "@/lib/stripe";
 
 export async function POST(
   request: Request,
@@ -8,10 +9,10 @@ export async function POST(
   try {
     const { enable } = await request.json();
     const nameAuth = await getNameAuth();
-
+    const BASE_URL = getNameApiBase();
     const endpoint = enable ? "enableWhoisPrivacy" : "disableWhoisPrivacy";
     const response = await fetch(
-      `https://api.name.com/v4/domains/${params.domain}:${endpoint}`,
+      `${BASE_URL}/domains/${params.domain}:${endpoint}`,
       {
         method: "POST",
         headers: {

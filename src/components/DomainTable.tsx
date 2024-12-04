@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useOffers } from "@/contexts/OffersContext";
 import { DomainStat } from "@/lib/utils";
+import { Settings } from "lucide-react";
+import Link from "next/link";
 
 type SortField =
   | "domain"
@@ -43,8 +45,10 @@ function SortableHeader({
 
 export function DomainStatsTable({
   initialStats,
+  showManageButton,
 }: {
   initialStats: DomainStat[];
+  showManageButton: boolean;
 }) {
   const { offers } = useOffers();
   const [sort, setSort] = useState<{
@@ -61,6 +65,7 @@ export function DomainStatsTable({
 
     return {
       ...stat,
+
       offerCount: domainOffers.length,
       topOffer: domainOffers.length
         ? Math.max(...domainOffers.map((o) => o.amount))
@@ -160,6 +165,9 @@ export function DomainStatsTable({
               currentSort={sort}
               onSort={handleSort}
             />
+            {showManageButton && (
+              <th className="p-4 text-sm text-slate-400">Actions</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -228,6 +236,17 @@ export function DomainStatsTable({
                   `$${stat.topOffer.toLocaleString()}`
                 )}
               </td>
+              {showManageButton && (
+                <td className="px-6 py-4">
+                  <Link
+                    href={`/dashboard/domains/${stat.domain}`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:text-blue-300 rounded-md transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Manage Domain
+                  </Link>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

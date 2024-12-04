@@ -90,7 +90,7 @@ export async function getAllDomains(userId?: string) {
   const supabase = await createClient();
   let query = supabase
     .from("domains")
-    .select("domain")
+    .select("domain, hosted")
     .not("domain", "like", "www.%")
     .order("domain");
 
