@@ -8,6 +8,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ExternalLink, PlusCircle, Settings } from "lucide-react";
+import { formatCurrency } from "@/utils/format";
 
 export default async function AllDomainsPage() {
   const supabase = await createClient();
@@ -63,15 +64,23 @@ export default async function AllDomainsPage() {
           <thead className="text-xs text-slate-400 bg-slate-800/50">
             <tr>
               <th className="px-6 py-3 font-medium">Domain</th>
+              <th className="px-6 py-3 font-medium">Status</th>
               <th className="px-6 py-3 font-medium">Total Offers</th>
+              <th className="px-6 py-3 font-medium">Avg. Offer</th>
               <th className="px-6 py-3 font-medium">Total Visits</th>
               <th className="px-6 py-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
             {allDomains.map(async (domain) => {
+              const domainDetails = await getDomainByName(domain);
               const offers = await getDomainOffers(domain);
               const visits = await getVisits(domain);
+              const avgOffer =
+                offers.length > 0
+                  ? offers.reduce((sum, offer) => sum + offer.amount, 0) /
+                    offers.length
+                  : 0;
 
               return (
                 <tr
@@ -89,16 +98,30 @@ export default async function AllDomainsPage() {
                       <ExternalLink className="w-4 h-4 opacity-50" />
                     </a>
                   </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        domainDetails?.verified
+                          ? "bg-green-500/10 text-green-400"
+                          : "bg-yellow-500/10 text-yellow-400"
+                      }`}
+                    >
+                      {domainDetails?.verified ? "Verified" : "Unverified"}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-slate-300">{offers.length}</td>
+                  <td className="px-6 py-4 text-slate-300">
+                    {avgOffer > 0 ? formatCurrency(avgOffer) : "-"}
+                  </td>
                   <td className="px-6 py-4 text-slate-300">{visits}</td>
                   <td className="px-6 py-4">
-                    <a
+                    <Link
                       href={`/dashboard/domains/${domain}`}
                       className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:text-blue-300 rounded-md transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       Manage Domain
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               );
