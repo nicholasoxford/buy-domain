@@ -1,25 +1,20 @@
 import { getNameApiBase } from "@/lib/stripe";
 import { NextResponse } from "next/server";
-
-const NAMECOM_USERNAME = process.env.NAMECOM_USERNAME;
-const NAMECOM_TOKEN = process.env.NAMECOM_TOKEN;
+import { getNameAuth } from "@/lib/name";
 const NAMECOM_API_BASE = getNameApiBase();
 export async function GET(
   request: Request,
   { params }: { params: { domain: string } }
 ) {
+  const nameAuth = await getNameAuth();
   try {
-    const auth = Buffer.from(`${NAMECOM_USERNAME}:${NAMECOM_TOKEN}`).toString(
-      "base64"
-    );
-
     const url = `${NAMECOM_API_BASE}/domains/${params.domain}`;
 
     console.log({ url });
 
     const response = await fetch(url, {
       headers: {
-        Authorization: `Basic ${auth}`,
+        Authorization: `Basic ${nameAuth}`,
         "Content-Type": "application/json",
       },
     });

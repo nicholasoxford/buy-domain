@@ -1,8 +1,8 @@
+import { auth } from "@/lib/auth";
+import { getNameAuth } from "@/lib/name";
 import { getNameApiBase } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 
-const NAMECOM_USERNAME = process.env.NAMECOM_USERNAME;
-const NAMECOM_TOKEN = process.env.NAMECOM_TOKEN;
 const NAMECOM_API_BASE = getNameApiBase();
 
 export async function POST(
@@ -10,9 +10,7 @@ export async function POST(
   { params }: { params: { domain: string } }
 ) {
   try {
-    const auth = Buffer.from(`${NAMECOM_USERNAME}:${NAMECOM_TOKEN}`).toString(
-      "base64"
-    );
+    const nameAuth = await getNameAuth();
 
     const url = `${NAMECOM_API_BASE}/domains/${params.domain}:lock`;
 

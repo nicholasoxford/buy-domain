@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { STRIPE_WEBHOOK_SECRET } from "@/utils/constants";
 import { Database } from "@/lib/supabase/database.types";
+import { getNameAuth } from "./name";
 
 // Common types
 interface StripeRequestOptions {
@@ -269,11 +270,7 @@ export function getNameApiBase() {
 }
 
 async function registerDomain(domainName: string, email: string) {
-  const namecomUsername = process.env.NAMECOM_USERNAME;
-  const namecomToken = process.env.NAMECOM_TOKEN;
-  const namecomCredentials = Buffer.from(
-    `${namecomUsername}:${namecomToken}`
-  ).toString("base64");
+  const nameAuth = await getNameAuth();
 
   const namecomApiBase = getNameApiBase();
 
@@ -284,7 +281,7 @@ async function registerDomain(domainName: string, email: string) {
       {
         method: "POST",
         headers: {
-          Authorization: `Basic ${namecomCredentials}`,
+          Authorization: `Basic ${nameAuth}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -304,7 +301,7 @@ async function registerDomain(domainName: string, email: string) {
     const response = await fetch(`${namecomApiBase}/domains`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${namecomCredentials}`,
+        Authorization: `Basic ${nameAuth}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
