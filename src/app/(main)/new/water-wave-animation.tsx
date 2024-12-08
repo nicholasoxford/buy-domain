@@ -87,6 +87,11 @@ export default function WaterWaveAnimation() {
       {/* Bobber */}
       <motion.div
         className="absolute z-20"
+        initial={{
+          x: "-50%",
+          y: 0,
+          rotate: 0,
+        }}
         animate={{
           y: [-2, 2, -2],
           rotate: [-1, 1, -1],
@@ -99,9 +104,8 @@ export default function WaterWaveAnimation() {
         style={{
           width: "56px",
           height: "89px",
-          bottom: "45%",
+          bottom: "28%",
           left: "50%",
-          transform: "translateX(-50%)",
           filter: "drop-shadow(0 6px 8px rgba(0, 0, 0, 0.08))",
         }}
       >
@@ -113,6 +117,11 @@ export default function WaterWaveAnimation() {
         <motion.div
           key={index}
           className="absolute z-15 w-16 h-16 rounded-full border border-sky-200/20"
+          initial={{
+            x: "-50%",
+            scale: 0,
+            opacity: 0,
+          }}
           animate={{
             scale: [1, 2, 2],
             opacity: [0.15, 0, 0],
@@ -124,9 +133,8 @@ export default function WaterWaveAnimation() {
             delay: delay,
           }}
           style={{
-            bottom: "42%",
+            bottom: "25.5%",
             left: "50%",
-            transform: "translateX(-50%)",
           }}
         />
       ))}
@@ -134,6 +142,11 @@ export default function WaterWaveAnimation() {
       {/* Bobber reflection */}
       <motion.div
         className="absolute z-15 w-8 h-4 bg-white/10 rounded-full blur-sm"
+        initial={{
+          x: "-50%",
+          opacity: 0,
+          scale: 0,
+        }}
         animate={{
           opacity: [0.1, 0.15, 0.1],
           scale: [1, 1.1, 1],
@@ -144,9 +157,8 @@ export default function WaterWaveAnimation() {
           ease: "easeInOut",
         }}
         style={{
-          bottom: "41%",
+          bottom: "24.5%",
           left: "50%",
-          transform: "translateX(-50%)",
         }}
       />
 

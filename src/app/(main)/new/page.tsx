@@ -11,7 +11,7 @@ export default function New() {
               Domain Bobber
             </h1>
             <p className="text-xl md:text-2xl text-slate-400">
-              Catch the perfect domain name
+              Your Domain, Your Profit. Flip Fast, Sell Smart.
             </p>
           </div>
 
@@ -19,20 +19,27 @@ export default function New() {
             {/* Feature points */}
             {[
               {
-                title: "List Your Domains",
+                title: "Flip Domains for Profit",
                 description:
-                  "Easily list your unused domains for sale in minutes",
-                icon: "🎣",
+                  "Buy low, sell high. It's that easy. Find undervalued domains and resell them quickly on our marketplace. No experience needed.",
+                icon: "🔄",
               },
               {
-                title: "Set Your Price",
+                title: "Lowest Fees, Higher Profits",
                 description:
-                  "You're in control - set your own pricing and terms",
+                  "Keep more of your sale price. We offer significantly lower fees than other marketplaces, maximizing your earnings.",
                 icon: "💰",
               },
               {
-                title: "Secure Transactions",
-                description: "Safe and secure domain transfers, guaranteed",
+                title: "Instant 'For Sale' Pages",
+                description:
+                  "Turn any domain into a money-making asset. Create a professional 'For Sale' page in seconds and start attracting buyers immediately.",
+                icon: "⏱️",
+              },
+              {
+                title: "Secure and Transparent Transactions",
+                description:
+                  "We prioritize your security. Enjoy safe domain transfers and transparent transactions, every step of the way.",
                 icon: "🔒",
               },
             ].map((feature) => (
@@ -58,7 +65,7 @@ export default function New() {
                      rounded-full text-lg font-medium transition-colors duration-200
                      shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
           >
-            Start Selling Domains
+            Start Flipping Domains
           </button>
         </div>
       </div>
@@ -71,7 +78,7 @@ export default function New() {
             <div className="relative group">
               <input
                 type="text"
-                placeholder="Enter your dream domain..."
+                placeholder="Find a domain to flip..."
                 className="w-full px-6 py-4 text-lg rounded-full border-2 border-sky-100/80 
                          focus:border-sky-400 focus:outline-none shadow-lg
                          placeholder:text-slate-400 bg-white/95 backdrop-blur-sm

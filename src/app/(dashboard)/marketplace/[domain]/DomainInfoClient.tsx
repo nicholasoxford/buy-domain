@@ -152,7 +152,7 @@ export function DomainInfoClient({ domain }: DomainInfoClientProps) {
             price: prices.registration_price,
             icon: GlobeIcon,
             description: "First year registration fee",
-            action: "Register Now",
+            action: "Buy Now",
             primary: true,
             onClick: () => router.push(`/marketplace/${domain}/register`),
           },
