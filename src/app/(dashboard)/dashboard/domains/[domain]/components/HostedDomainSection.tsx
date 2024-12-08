@@ -89,9 +89,6 @@ export const HostedDomainSection = ({ domain }: HostedDomainSectionProps) => {
 
   return (
     <div className="bg-slate-900/50 rounded-lg overflow-hidden">
-      <div className="border-b border-slate-700/50 p-4">
-        <h2 className="text-lg font-semibold text-white">DNS Records</h2>
-      </div>
       <div className="p-6 space-y-6">
         <DNSRecordForm onSubmit={handleAddRecord} isLoading={isLoading} />
         <DNSRecordList records={records} onDelete={handleDeleteRecord} />
