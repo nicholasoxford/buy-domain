@@ -1,35 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { headers } from "next/headers";
+
 import { getNameApiBase } from "@/lib/stripe";
+import { getNameAPIHeaders } from "@/lib/name-api";
 
 const NAME_API_BASE = getNameApiBase();
-
-async function getNameAPIHeaders() {
-  const headersList = headers();
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  // You should store these securely in environment variables
-  const username = process.env.NAMECOM_USERNAME;
-  const token = process.env.NAMECOM_TOKEN;
-
-  if (!username || !token) {
-    throw new Error("Missing Name.com API credentials");
-  }
-
-  const auth = Buffer.from(`${username}:${token}`).toString("base64");
-  return {
-    Authorization: `Basic ${auth}`,
-    "Content-Type": "application/json",
-  };
-}
 
 // GET /api/domains/[domain]/dns/[id]
 export async function GET(

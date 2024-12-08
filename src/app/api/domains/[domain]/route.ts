@@ -77,11 +77,17 @@ export async function GET(
 
     const namecomPricesWithMarkup = {
       provider: "Name.com",
-      registration_price: pricingData.purchasePrice,
-      renewal_price: pricingData.renewalPrice,
-      transfer_price: pricingData.transferPrice,
+      registration_price: calculatePriceWithMarkup(pricingData.purchasePrice),
+      renewal_price: calculatePriceWithMarkup(pricingData.renewalPrice),
+      transfer_price: calculatePriceWithMarkup(pricingData.transferPrice),
       premium: pricingData.premium || false,
     };
+
+    function calculatePriceWithMarkup(basePrice: number): number {
+      const tenPercentMarkup = basePrice * 0.1;
+      const markup = Math.max(4, tenPercentMarkup);
+      return Number((basePrice + markup).toFixed(2));
+    }
 
     console.log({});
 

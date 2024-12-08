@@ -1,177 +1,103 @@
 import * as React from "react";
-import * as LabelPrimitive from "@radix-ui/react-label";
-import { Slot } from "@radix-ui/react-slot";
-import {
-  Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
-  FormProvider,
-  useFormContext,
-} from "react-hook-form";
-
-import { Label } from "./label";
 import { cn } from "@/lib/utils";
+import { Card } from "./card";
+import { Label } from "./label";
 
-const Form = FormProvider;
+interface FormSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string;
+  description?: string;
+}
 
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> = {
-  name: TName;
-};
-
-const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue
-);
-
-const FormField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->({
+export function FormSection({
+  title,
+  description,
+  children,
+  className,
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
+}: FormSectionProps) {
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
-    </FormFieldContext.Provider>
+    <Card className="bg-slate-900/50 border-slate-800">
+      <div className={cn("p-6 space-y-6", className)} {...props}>
+        {(title || description) && (
+          <div className="space-y-1">
+            {title && (
+              <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+            )}
+            {description && (
+              <p className="text-sm text-slate-400">{description}</p>
+            )}
+          </div>
+        )}
+        {children}
+      </div>
+    </Card>
   );
-};
+}
 
-const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext);
-  const itemContext = React.useContext(FormItemContext);
-  const { getFieldState, formState } = useFormContext();
+interface FormRowProps extends React.HTMLAttributes<HTMLDivElement> {
+  columns?: number;
+}
 
-  const fieldState = getFieldState(fieldContext.name, formState);
-
-  if (!fieldContext) {
-    throw new Error("useFormField should be used within <FormField>");
-  }
-
-  const { id } = itemContext;
-
-  return {
-    id,
-    name: fieldContext.name,
-    formItemId: `${id}-form-item`,
-    formDescriptionId: `${id}-form-item-description`,
-    formMessageId: `${id}-form-item-message`,
-    ...fieldState,
-  };
-};
-
-type FormItemContextValue = {
-  id: string;
-};
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-);
-
-const FormItem = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const id = React.useId();
-
+export function FormRow({
+  children,
+  columns = 1,
+  className,
+  ...props
+}: FormRowProps) {
   return (
-    <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn("space-y-2", className)} {...props} />
-    </FormItemContext.Provider>
-  );
-});
-FormItem.displayName = "FormItem";
-
-const FormLabel = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField();
-
-  return (
-    <Label
-      ref={ref}
-      className={cn(error && "text-destructive", className)}
-      htmlFor={formItemId}
-      {...props}
-    />
-  );
-});
-FormLabel.displayName = "FormLabel";
-
-const FormControl = React.forwardRef<
-  React.ElementRef<typeof Slot>,
-  React.ComponentPropsWithoutRef<typeof Slot>
->(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } =
-    useFormField();
-
-  return (
-    <Slot
-      ref={ref}
-      id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
-      aria-invalid={!!error}
-      {...props}
-    />
-  );
-});
-FormControl.displayName = "FormControl";
-
-const FormDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => {
-  const { formDescriptionId } = useFormField();
-
-  return (
-    <p
-      ref={ref}
-      id={formDescriptionId}
-      className={cn("text-[0.8rem] text-muted-foreground", className)}
-      {...props}
-    />
-  );
-});
-FormDescription.displayName = "FormDescription";
-
-const FormMessage = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
-  const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message) : children;
-
-  if (!body) {
-    return null;
-  }
-
-  return (
-    <p
-      ref={ref}
-      id={formMessageId}
-      className={cn("text-[0.8rem] font-medium text-destructive", className)}
+    <div
+      className={cn(
+        "grid gap-4",
+        {
+          "grid-cols-1": columns === 1,
+          "grid-cols-2": columns === 2,
+          "grid-cols-3": columns === 3,
+          "grid-cols-4": columns === 4,
+        },
+        className
+      )}
       {...props}
     >
-      {body}
-    </p>
+      {children}
+    </div>
   );
-});
-FormMessage.displayName = "FormMessage";
+}
 
-export {
-  useFormField,
-  Form,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-  FormField,
-};
+interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
+  label: string;
+  optional?: boolean;
+}
+
+export function FormField({
+  label,
+  optional,
+  children,
+  className,
+  ...props
+}: FormFieldProps) {
+  return (
+    <div className={cn("space-y-1.5", className)} {...props}>
+      <Label className="text-slate-200">
+        {label} {optional && <span className="text-slate-500">(Optional)</span>}
+      </Label>
+      {children}
+    </div>
+  );
+}
+
+interface FormActionsProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function FormActions({
+  children,
+  className,
+  ...props
+}: FormActionsProps) {
+  return (
+    <div
+      className={cn("flex items-center justify-end space-x-4", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}

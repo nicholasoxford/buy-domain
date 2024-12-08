@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { headers } from "next/headers";
 import { getNameApiBase } from "@/lib/stripe";
 
 const NAME_API_BASE = getNameApiBase();
 
 async function getNameAPIHeaders() {
-  const headersList = headers();
   const supabase = createClient();
   const {
     data: { user },

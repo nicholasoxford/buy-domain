@@ -2,8 +2,9 @@
 import { useContext } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Command, X, Home, Globe, PlusCircle, Settings } from "lucide-react";
+import { Command, X } from "lucide-react";
 import { MobileMenuContext } from "@/components/dashboard/DashboardLayout";
+import { dashboardNavItems } from "@/config/navigation";
 
 // Mobile Sidebar Component
 export default function MobileSidebar({
@@ -61,46 +62,18 @@ export default function MobileSidebar({
 
         <nav>
           <ul className="space-y-2">
-            <li>
-              <Link
-                href="/dashboard"
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <Home className="w-5 h-5" />
-                <span>Overview</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/domains"
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <Globe className="w-5 h-5" />
-                <span>Manage Domains</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/domains/add"
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <PlusCircle className="w-5 h-5" />
-                <span>Add Domain</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/settings"
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </Link>
-            </li>
+            {dashboardNavItems.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 

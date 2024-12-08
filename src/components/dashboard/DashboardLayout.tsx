@@ -49,7 +49,7 @@ export default function DashboardLayout({
             profile={profile}
             isSubscribed={isSubscribed}
           />
-          <main className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</main>
+          <main className="flex-1 p-2 overflow-y-auto">{children}</main>
         </div>
       </div>
     </MobileMenuContext.Provider>

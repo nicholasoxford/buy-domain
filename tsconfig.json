@@ -9,7 +9,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
-      "@/lib/*": ["./lib/*"]
+      "@/lib/*": ["./src/lib/*"]
     },
     "allowJs": true,
     "resolveJsonModule": true,

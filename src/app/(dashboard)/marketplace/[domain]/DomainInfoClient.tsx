@@ -7,8 +7,11 @@ import {
   DollarSignIcon,
   GlobeIcon,
   ShieldCheckIcon,
+  Crown,
 } from "lucide-react";
-import { DomainCheckoutDialog } from "@/components/DomainCheckoutDialog";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface DomainPrices {
   provider: string;
@@ -29,10 +32,10 @@ interface DomainInfoClientProps {
 }
 
 export function DomainInfoClient({ domain }: DomainInfoClientProps) {
+  const router = useRouter();
   const [prices, setPrices] = useState<DomainPrices | null>(null);
   const [availability, setAvailability] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,38 +80,45 @@ export function DomainInfoClient({ domain }: DomainInfoClientProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-slate-200 rounded w-1/4"></div>
-        <div className="h-32 bg-slate-200 rounded"></div>
-        <div className="h-64 bg-slate-200 rounded"></div>
+        <div className="h-8 bg-slate-800/50 rounded w-1/4"></div>
+        <div className="h-32 bg-slate-800/50 rounded"></div>
+        <div className="h-64 bg-slate-800/50 rounded"></div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+    return (
+      <div className="text-red-400 bg-red-500/10 p-4 rounded-lg">
+        Error: {error}
+      </div>
+    );
   }
 
   if (!prices) {
-    return <div>No pricing information available for {domain}</div>;
+    return (
+      <div className="text-slate-300 bg-slate-800/50 p-4 rounded-lg">
+        No pricing information available for {domain}
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Back button */}
-      <Link
-        href="/marketplace"
-        className="inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors"
-      >
-        <ArrowLeftIcon className="h-4 w-4 mr-2" />
-        Back to Marketplace
-      </Link>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 bg-gradient-to-br from-purple-900/50 to-slate-900/50 rounded-lg p-8">
+        <div className="flex items-center gap-2 text-slate-300 hover:text-slate-200 transition-colors">
+          <ArrowLeftIcon className="h-4 w-4" />
+          <Link href="/marketplace">Back to Marketplace</Link>
+        </div>
 
-      {/* Domain Header */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{domain}</h1>
-            <p className="text-slate-500 mt-1">
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              {domain}
+              {prices.premium && <Crown className="h-6 w-6 text-amber-400" />}
+            </h1>
+            <p className="text-slate-300 text-lg mt-2">
               {availability
                 ? "This domain is available for registration"
                 : "This domain is currently registered"}
@@ -116,16 +126,17 @@ export function DomainInfoClient({ domain }: DomainInfoClientProps) {
           </div>
           <div className="flex items-center space-x-2">
             {prices.premium && (
-              <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm font-medium">
                 Premium
               </span>
             )}
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
+              className={cn(
+                "px-3 py-1 rounded-full text-sm font-medium",
                 availability
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-red-500/20 text-red-400"
+              )}
             >
               {availability ? "Available" : "Taken"}
             </span>
@@ -143,7 +154,7 @@ export function DomainInfoClient({ domain }: DomainInfoClientProps) {
             description: "First year registration fee",
             action: "Register Now",
             primary: true,
-            onClick: () => setCheckoutOpen(true),
+            onClick: () => router.push(`/marketplace/${domain}/register`),
           },
           {
             title: "Transfer",
@@ -162,56 +173,49 @@ export function DomainInfoClient({ domain }: DomainInfoClientProps) {
             primary: false,
           },
         ].map((item) => (
-          <div
+          <Card
             key={item.title}
-            className={`bg-white rounded-xl shadow-sm p-6 border ${
-              item.primary
-                ? "border-sky-200 ring-1 ring-sky-200"
-                : "border-slate-200"
-            }`}
+            className={cn(
+              "bg-slate-900/50 border-slate-800",
+              item.primary && "ring-1 ring-purple-500/50"
+            )}
           >
-            <div className="flex items-center space-x-3">
-              <item.icon
-                className={`h-6 w-6 ${
-                  item.primary ? "text-sky-600" : "text-slate-600"
-                }`}
-              />
-              <h3 className="text-lg font-semibold text-slate-900">
-                {item.title}
-              </h3>
+            <div className="p-6">
+              <div className="flex items-center space-x-3">
+                <item.icon
+                  className={cn(
+                    "h-6 w-6",
+                    item.primary ? "text-purple-400" : "text-slate-400"
+                  )}
+                />
+                <h3 className="text-lg font-semibold text-slate-200">
+                  {item.title}
+                </h3>
+              </div>
+              <p className="mt-2 text-slate-400 text-sm">{item.description}</p>
+              <p className="mt-3 text-2xl font-bold text-slate-200">
+                ${item.price.toFixed(2)}
+              </p>
+              {item.info && (
+                <p className="mt-1 text-sm text-slate-400">{item.info}</p>
+              )}
+              {item.action && availability && (
+                <button
+                  onClick={item.onClick}
+                  className={cn(
+                    "mt-4 w-full py-2 px-4 rounded-lg font-medium transition-colors",
+                    item.primary
+                      ? "bg-purple-600 hover:bg-purple-500 text-white"
+                      : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  )}
+                >
+                  {item.action}
+                </button>
+              )}
             </div>
-            <p className="mt-2 text-slate-600 text-sm">{item.description}</p>
-            <p className="mt-3 text-2xl font-bold text-slate-900">
-              ${item.price.toFixed(2)}
-            </p>
-            {item.info && (
-              <p className="mt-1 text-sm text-slate-500">{item.info}</p>
-            )}
-            {item.action && availability && (
-              <button
-                onClick={item.onClick}
-                className={`mt-4 w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                  item.primary
-                    ? "bg-sky-500 hover:bg-sky-600 text-white"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                }`}
-              >
-                {item.action}
-              </button>
-            )}
-          </div>
+          </Card>
         ))}
       </div>
-
-      {/* Checkout Dialog */}
-      {prices && (
-        <DomainCheckoutDialog
-          isOpen={checkoutOpen}
-          onClose={() => setCheckoutOpen(false)}
-          domain={domain}
-          prices={prices}
-        />
-      )}
     </div>
   );
 }
