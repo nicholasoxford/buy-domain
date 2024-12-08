@@ -600,7 +600,7 @@ export function RegistrationForm({ initialDomain }: RegistrationFormProps) {
         <Button
           type="submit"
           disabled={loading || !prices}
-          className="bg-purple-600 hover:bg-purple-500 text-white px-8"
+          className="bg-purple-600 hover:bg-purple-500 text-white px-8 text-lg py-6"
         >
           {loading ? "Processing..." : `Pay $${calculateTotal().toFixed(2)}`}
         </Button>
