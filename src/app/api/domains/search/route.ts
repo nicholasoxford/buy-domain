@@ -6,6 +6,7 @@ export async function POST(request: Request) {
   try {
     const { keyword } = await request.json();
     const NAME_API_BASE = getNameApiBase();
+    console.log({ NAME_API_BASE });
     const SKIP_AUTH = true;
     const headers = await getNameAPIHeaders(SKIP_AUTH);
 
