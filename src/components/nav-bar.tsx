@@ -59,6 +59,7 @@ export function NavBar({
   const isActive = (path: string) => pathname === path;
 
   const navigationItems: NavigationItem[] = [
+    { href: "/marketplace", label: "Buy Domains", color: "purple" },
     { href: "/managed", label: "Managed Service", color: "blue" },
     { href: "/self-host", label: "Self-Host", color: "purple" },
     { href: "/demo", label: "Live Demo", color: "purple" },

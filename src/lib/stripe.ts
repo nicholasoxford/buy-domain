@@ -292,7 +292,7 @@ async function registerDomain(domainName: string, email: string) {
 
     const availabilityData = await availabilityResponse.json();
     const domainResult = availabilityData.results?.[0];
-
+    console.log("DOMAIN RESULT", domainResult);
     if (!domainResult?.purchasable) {
       throw new Error("Domain is no longer available for purchase");
     }
@@ -317,11 +317,12 @@ async function registerDomain(domainName: string, email: string) {
         purchasePrice: domainResult.purchasePrice,
       }),
     });
-
     if (!response.ok) {
+      console.log("RESPONSE: ", response);
       const error = await response.json();
       throw new Error(`Failed to register domain: ${error.message}`);
     }
+    console.log("DOMAIN REGISTERED");
 
     return await response.json();
   } catch (error) {
@@ -334,8 +335,10 @@ async function handleDomainPurchase(session: Stripe.Checkout.Session) {
   console.log("Processing domain purchase for session:", session.id);
   const supabase = await createClient();
 
-  const { domainName, userId } = session.metadata || {};
+  const { domainName } = session.metadata || {};
   const email = session.customer_details?.email;
+
+  console.log("Domain purchase details:", { domainName, email });
 
   if (!domainName || !email) {
     throw new Error("Missing required domain purchase information");
@@ -345,7 +348,7 @@ async function handleDomainPurchase(session: Stripe.Checkout.Session) {
   const { data: existingPurchase, error: lookupError } = await supabase
     .from("purchases")
     .select("*")
-    .eq("metadata->stripeSessionId", `"${session.id}"`)
+    .eq("metadata->>stripeSessionId", session.id)
     .single();
 
   if (lookupError) {
@@ -356,6 +359,22 @@ async function handleDomainPurchase(session: Stripe.Checkout.Session) {
   if (!existingPurchase) {
     throw new Error("No purchase record found for session: " + session.id);
   }
+
+  // Look up user by email
+  const { data: users, error: userError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("email", email);
+
+  if (userError) {
+    console.error("Error looking up user:", userError);
+    throw userError;
+  }
+
+  const userId = users?.[0]?.id;
+  console.log("Found user ID:", userId);
+
+  let registrationError = null;
 
   try {
     console.log("BEFORE REGISTER");
@@ -369,28 +388,16 @@ async function handleDomainPurchase(session: Stripe.Checkout.Session) {
         status: "completed",
         updated_at: new Date().toISOString(),
       })
-      .eq("metadata->stripeSessionId", `"${session.id}"`);
+      .eq("metadata->>stripeSessionId", session.id);
 
     if (purchaseError) {
       console.error("Error updating purchase:", purchaseError);
       throw purchaseError;
     }
-
-    // Add domain to domains table if user exists
-    if (userId) {
-      const { error: domainError } = await supabase.from("domains").upsert({
-        domain: domainName,
-        user_id: userId,
-        created_at: new Date().toISOString(),
-        verified: false,
-      });
-
-      if (domainError) {
-        console.error("Error saving domain:", domainError);
-      }
-    }
   } catch (error) {
-    // Update the existing purchase record with error status
+    console.error("Error in domain registration or purchase update:", error);
+    registrationError = error;
+    // Update the purchase record with error status
     await supabase
       .from("purchases")
       .update({
@@ -401,9 +408,43 @@ async function handleDomainPurchase(session: Stripe.Checkout.Session) {
           error: error instanceof Error ? error.message : "Unknown error",
         },
       })
-      .eq("metadata->stripeSessionId", `"${session.id}"`);
+      .eq("metadata->>stripeSessionId", session.id);
+  }
 
-    throw error;
+  // Always try to add domain to domains table if we found a user
+  if (userId) {
+    console.log("Adding domain to domains table for user:", userId);
+    try {
+      const { data: domainData, error: domainError } = await supabase
+        .from("domains")
+        .upsert({
+          domain: domainName,
+          user_id: userId,
+          hosted: true,
+          created_at: new Date().toISOString(),
+          verified: false,
+          status: registrationError ? "registration_failed" : "pending",
+          registration_error: registrationError
+            ? registrationError instanceof Error
+              ? registrationError.message
+              : "Unknown error"
+            : null,
+        });
+
+      if (domainError) {
+        console.error("Error saving domain:", domainError);
+        throw domainError;
+      }
+      console.log("Successfully added domain to domains table");
+    } catch (error) {
+      console.error("Error adding domain to domains table:", error);
+      throw error;
+    }
+  }
+
+  // If there was a registration error, throw it after adding the domain record
+  if (registrationError) {
+    throw registrationError;
   }
 }
 

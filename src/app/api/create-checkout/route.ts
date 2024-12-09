@@ -20,31 +20,31 @@ export async function POST(request: Request) {
       email?: string;
       userId?: string;
     } = await request.json();
-    console.log("PAST JSON");
-    // Validate required email
+
+    console.log("Request data:", {
+      domainName,
+      price,
+      currency,
+      email,
+      userId,
+    });
+
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
-    console.log("PAST EMAIL");
 
     // Create a new product for this domain
     const product = await stripe.products.create({
-      name: domainName,
-      metadata: {
-        domainName,
-        type: "domain_purchase",
-      },
+      name: `Domain Registration - ${domainName}`,
+      description: `Registration for domain ${domainName}`,
     });
-    console.log("PAST PRODUCT... price: ", price);
-    // Convert price to cents and ensure it's a clean integer
-    const priceInCents = Math.round(price * 100);
-    // Create a one-time price for this product
+
     const stripePrice = await stripe.prices.create({
       product: product.id,
-      unit_amount: priceInCents,
-      currency: "usd",
+      unit_amount: Math.round(price * 100),
+      currency: currency,
     });
-    console.log("PAST PRICE");
+
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -58,12 +58,14 @@ export async function POST(request: Request) {
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
       metadata: {
         domainName,
-        userId: userId || "",
+        userId: userId || null,
         type: "domain_purchase",
       },
       customer_email: email,
     } as Stripe.Checkout.SessionCreateParams);
-    console.log("PAST EVERYTHING STRIPE");
+
+    console.log("Created checkout session with metadata:", session.metadata);
+
     // Save initial purchase record
     const { error: purchaseError } = await supabase.from("purchases").insert({
       email,
