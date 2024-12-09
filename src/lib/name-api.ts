@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { getNameAuth } from "@/lib/name";
-export async function getNameAPIHeaders() {
+export async function getNameAPIHeaders(skipAuth: boolean = false) {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user && !skipAuth) {
     throw new Error("Unauthorized");
   }
 

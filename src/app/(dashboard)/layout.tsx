@@ -13,7 +13,16 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    redirect("/login");
+    return (
+      <DashboardLayout
+        user={undefined}
+        profile={undefined}
+        isSubscribed={false}
+        stripeUrl={""}
+      >
+        {children}
+      </DashboardLayout>
+    );
   }
 
   const { data: profiles } = await supabase

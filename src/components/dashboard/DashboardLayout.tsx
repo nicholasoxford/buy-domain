@@ -13,7 +13,7 @@ export const MobileMenuContext = createContext({
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  user: User;
+  user?: User;
   profile: any; // Type this properly based on your profile structure
   isSubscribed: boolean;
   stripeUrl: string;

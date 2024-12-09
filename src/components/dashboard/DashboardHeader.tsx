@@ -6,7 +6,7 @@ import MobileMenuButton from "../MobileMenuButton";
 import { UserDropdown } from "./UserDropdown";
 
 interface DashboardHeaderProps {
-  user: User;
+  user?: User;
   profile: any;
   isSubscribed: boolean;
 }
