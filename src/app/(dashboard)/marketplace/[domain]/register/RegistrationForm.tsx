@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,8 @@ import {
   FormActions,
 } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Shield, Lock, RefreshCw } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { LoginModal } from "./LoginModal";
 
 interface Contact {
   firstName: string;
@@ -44,10 +46,13 @@ interface RegistrationFormProps {
 
 export function RegistrationForm({ initialDomain }: RegistrationFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showPrivacyDetails, setShowPrivacyDetails] = useState(false);
   const [showDomainLockDetails, setShowDomainLockDetails] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [prices, setPrices] = useState<{
     registration_price: number;
     renewal_price: number;
@@ -92,6 +97,17 @@ export function RegistrationForm({ initialDomain }: RegistrationFormProps) {
     fetchPricing();
   }, [initialDomain]);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+  }, []);
+
   const handleContactChange = (field: keyof Contact, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -133,6 +149,12 @@ export function RegistrationForm({ initialDomain }: RegistrationFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -169,442 +191,457 @@ export function RegistrationForm({ initialDomain }: RegistrationFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid lg:grid-cols-2 gap-6">
-        <FormSection
-          title="Contact Information"
-          description="Enter the domain registrant's details"
-        >
-          <div className="space-y-4">
-            <FormRow columns={2}>
-              <FormField label="First Name">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid lg:grid-cols-2 gap-6">
+          <FormSection
+            title="Contact Information"
+            description="Enter the domain registrant's details"
+          >
+            <div className="space-y-4">
+              <FormRow columns={2}>
+                <FormField label="First Name">
+                  <Input
+                    required
+                    value={formData.registrant.firstName}
+                    onChange={(e) =>
+                      handleContactChange("firstName", e.target.value)
+                    }
+                    className="bg-slate-800/50 border-slate-700 text-slate-300"
+                  />
+                </FormField>
+                <FormField label="Last Name">
+                  <Input
+                    required
+                    value={formData.registrant.lastName}
+                    onChange={(e) =>
+                      handleContactChange("lastName", e.target.value)
+                    }
+                    className="bg-slate-800/50 border-slate-700 text-slate-300"
+                  />
+                </FormField>
+              </FormRow>
+
+              <FormField label="Email Address">
+                <Input
+                  type="email"
+                  required
+                  value={formData.registrant.email}
+                  onChange={(e) => handleContactChange("email", e.target.value)}
+                  className="bg-slate-800/50 border-slate-700 text-slate-300"
+                />
+              </FormField>
+
+              <FormField label="Phone Number">
                 <Input
                   required
-                  value={formData.registrant.firstName}
+                  value={formData.registrant.phone}
+                  onChange={(e) => handleContactChange("phone", e.target.value)}
+                  placeholder="+1.1234567890"
+                  className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
+                />
+              </FormField>
+
+              <FormField label="Company Name" optional>
+                <Input
+                  value={formData.registrant.companyName || ""}
                   onChange={(e) =>
-                    handleContactChange("firstName", e.target.value)
+                    handleContactChange("companyName", e.target.value)
                   }
                   className="bg-slate-800/50 border-slate-700 text-slate-300"
                 />
               </FormField>
-              <FormField label="Last Name">
+
+              <FormField label="Address Line 1">
                 <Input
                   required
-                  value={formData.registrant.lastName}
+                  value={formData.registrant.address1}
                   onChange={(e) =>
-                    handleContactChange("lastName", e.target.value)
+                    handleContactChange("address1", e.target.value)
                   }
                   className="bg-slate-800/50 border-slate-700 text-slate-300"
                 />
               </FormField>
-            </FormRow>
 
-            <FormField label="Email Address">
-              <Input
-                type="email"
-                required
-                value={formData.registrant.email}
-                onChange={(e) => handleContactChange("email", e.target.value)}
-                className="bg-slate-800/50 border-slate-700 text-slate-300"
-              />
-            </FormField>
-
-            <FormField label="Phone Number">
-              <Input
-                required
-                value={formData.registrant.phone}
-                onChange={(e) => handleContactChange("phone", e.target.value)}
-                placeholder="+1.1234567890"
-                className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
-              />
-            </FormField>
-
-            <FormField label="Company Name" optional>
-              <Input
-                value={formData.registrant.companyName || ""}
-                onChange={(e) =>
-                  handleContactChange("companyName", e.target.value)
-                }
-                className="bg-slate-800/50 border-slate-700 text-slate-300"
-              />
-            </FormField>
-
-            <FormField label="Address Line 1">
-              <Input
-                required
-                value={formData.registrant.address1}
-                onChange={(e) =>
-                  handleContactChange("address1", e.target.value)
-                }
-                className="bg-slate-800/50 border-slate-700 text-slate-300"
-              />
-            </FormField>
-
-            <FormField label="Address Line 2" optional>
-              <Input
-                value={formData.registrant.address2 || ""}
-                onChange={(e) =>
-                  handleContactChange("address2", e.target.value)
-                }
-                className="bg-slate-800/50 border-slate-700 text-slate-300"
-              />
-            </FormField>
-
-            <FormRow columns={3}>
-              <FormField label="City">
+              <FormField label="Address Line 2" optional>
                 <Input
-                  required
-                  value={formData.registrant.city}
-                  onChange={(e) => handleContactChange("city", e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 text-slate-300"
-                />
-              </FormField>
-              <FormField label="State/Province">
-                <Input
-                  required
-                  value={formData.registrant.state}
-                  onChange={(e) => handleContactChange("state", e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 text-slate-300"
-                />
-              </FormField>
-              <FormField label="Postal Code">
-                <Input
-                  required
-                  value={formData.registrant.zip}
-                  onChange={(e) => handleContactChange("zip", e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 text-slate-300"
-                />
-              </FormField>
-            </FormRow>
-
-            <FormField label="Country Code">
-              <Input
-                required
-                value={formData.registrant.country}
-                onChange={(e) => handleContactChange("country", e.target.value)}
-                placeholder="US"
-                className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
-              />
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection
-          title="Domain Settings"
-          description="Configure privacy and security settings"
-        >
-          <div className="space-y-3">
-            <FormField label="Advanced Security">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <ul className="space-y-1.5">
-                    <li className="flex items-center gap-2 text-sm text-slate-400">
-                      <Shield className="h-4 w-4 text-purple-500 shrink-0" />
-                      Shield your personal information online with WHOIS Privacy
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-400">
-                      <Lock className="h-4 w-4 text-purple-500 shrink-0" />
-                      Domain Lock Plus for an added layer of protection
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-400">
-                      <svg
-                        className="h-4 w-4 text-purple-500 shrink-0"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                      Included SSL Certificate for every domain
-                    </li>
-                  </ul>
-                  <p className="text-sm font-medium text-purple-400 pl-4">
-                    Only $4.99/year
-                  </p>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal"
-                  onClick={() => setShowPrivacyDetails(!showPrivacyDetails)}
-                >
-                  {showPrivacyDetails ? (
-                    <ChevronUp className="h-4 w-4 mr-1" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 mr-1" />
-                  )}
-                  {showPrivacyDetails
-                    ? "Show less"
-                    : "Learn more about Advanced Security"}
-                </Button>
-
-                {showPrivacyDetails && (
-                  <div className="rounded-lg border border-slate-800">
-                    <div className="grid grid-cols-2 divide-x divide-slate-800">
-                      <div className="p-3">
-                        <div className="text-sm font-medium text-slate-300 mb-2">
-                          Unprotected
-                        </div>
-                        <div className="space-y-1 text-sm text-slate-400">
-                          <p>example.com</p>
-                          <p>John Smith</p>
-                          <p>123 Main Street</p>
-                          <p>Apt 4B</p>
-                          <p>New York, NY 10001</p>
-                          <p>+1.2125555555</p>
-                          <p>john.smith@example.com</p>
-                        </div>
-                      </div>
-                      <div className="p-3">
-                        <div className="text-sm font-medium text-slate-300 mb-2">
-                          With Advanced Security
-                        </div>
-                        <div className="space-y-1 text-sm text-slate-400">
-                          <p>{formData.domainName}</p>
-                          <p>Redacted For Privacy</p>
-                          <p>Domain Protection Services, Inc.</p>
-                          <p>PO Box 1769</p>
-                          <p>Denver, CO 80201</p>
-                          <p>Registrant Country: US</p>
-                          <p>+1.7208009072</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="border-t border-slate-800 p-3">
-                      <p className="text-sm font-medium text-slate-300 mb-1.5">
-                        What&apos;s included:
-                      </p>
-                      <ul className="space-y-1 text-sm text-slate-400">
-                        <li>
-                          • Complete WHOIS privacy protection to shield your
-                          personal information
-                        </li>
-                        <li>
-                          • Domain Lock Plus to prevent unauthorized transfers
-                          and changes
-                        </li>
-                        <li>
-                          • SSL Certificate included to secure your website
-                        </li>
-                        <li>
-                          • Protection against spam and unwanted solicitation
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                <RadioGroup
-                  defaultValue={
-                    formData.privacyEnabled ? "enabled" : "disabled"
+                  value={formData.registrant.address2 || ""}
+                  onChange={(e) =>
+                    handleContactChange("address2", e.target.value)
                   }
-                  onValueChange={(value: string) => {
-                    handleToggleChange("privacyEnabled", value === "enabled");
-                    setAdvancedSecurity(value === "enabled");
-                  }}
-                  className="grid grid-cols-2 gap-2"
-                >
-                  <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                    <RadioGroupItem value="enabled" id="privacy-enabled" />
-                    <div className="flex flex-1 items-center justify-between">
-                      <div>
-                        <label
-                          htmlFor="privacy-enabled"
-                          className="text-sm font-medium leading-none text-slate-200"
+                  className="bg-slate-800/50 border-slate-700 text-slate-300"
+                />
+              </FormField>
+
+              <FormRow columns={3}>
+                <FormField label="City">
+                  <Input
+                    required
+                    value={formData.registrant.city}
+                    onChange={(e) =>
+                      handleContactChange("city", e.target.value)
+                    }
+                    className="bg-slate-800/50 border-slate-700 text-slate-300"
+                  />
+                </FormField>
+                <FormField label="State/Province">
+                  <Input
+                    required
+                    value={formData.registrant.state}
+                    onChange={(e) =>
+                      handleContactChange("state", e.target.value)
+                    }
+                    className="bg-slate-800/50 border-slate-700 text-slate-300"
+                  />
+                </FormField>
+                <FormField label="Postal Code">
+                  <Input
+                    required
+                    value={formData.registrant.zip}
+                    onChange={(e) => handleContactChange("zip", e.target.value)}
+                    className="bg-slate-800/50 border-slate-700 text-slate-300"
+                  />
+                </FormField>
+              </FormRow>
+
+              <FormField label="Country Code">
+                <Input
+                  required
+                  value={formData.registrant.country}
+                  onChange={(e) =>
+                    handleContactChange("country", e.target.value)
+                  }
+                  placeholder="US"
+                  className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
+                />
+              </FormField>
+            </div>
+          </FormSection>
+
+          <FormSection
+            title="Domain Settings"
+            description="Configure privacy and security settings"
+          >
+            <div className="space-y-3">
+              <FormField label="Advanced Security">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <ul className="space-y-1.5">
+                      <li className="flex items-center gap-2 text-sm text-slate-400">
+                        <Shield className="h-4 w-4 text-purple-500 shrink-0" />
+                        Shield your personal information online with WHOIS
+                        Privacy
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-slate-400">
+                        <Lock className="h-4 w-4 text-purple-500 shrink-0" />
+                        Domain Lock Plus for an added layer of protection
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-slate-400">
+                        <svg
+                          className="h-4 w-4 text-purple-500 shrink-0"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
                         >
-                          Advanced Security
-                        </label>
-                      </div>
-                      <Shield className="h-4 w-4 text-purple-500" />
-                    </div>
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        Included SSL Certificate for every domain
+                      </li>
+                    </ul>
+                    <p className="text-sm font-medium text-purple-400 pl-4">
+                      Only $4.99/year
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                    <RadioGroupItem value="disabled" id="privacy-disabled" />
-                    <label
-                      htmlFor="privacy-disabled"
-                      className="text-sm font-medium leading-none text-slate-200"
-                    >
-                      Unprotected
-                    </label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </FormField>
 
-            <FormField label="Domain Lock">
-              <div className="space-y-2">
-                <div className="flex flex-col justify-start items-start">
-                  <p className="text-sm text-slate-400">
-                    Domain Lock adds enhanced security by preventing
-                    unauthorized transfers and changes
-                  </p>
                   <Button
                     type="button"
                     variant="ghost"
-                    className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal "
-                    onClick={() =>
-                      setShowDomainLockDetails(!showDomainLockDetails)
-                    }
+                    className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal"
+                    onClick={() => setShowPrivacyDetails(!showPrivacyDetails)}
                   >
-                    {showDomainLockDetails ? (
+                    {showPrivacyDetails ? (
                       <ChevronUp className="h-4 w-4 mr-1" />
                     ) : (
                       <ChevronDown className="h-4 w-4 mr-1" />
                     )}
-                    {showDomainLockDetails ? "Show less" : "Learn more"}
+                    {showPrivacyDetails
+                      ? "Show less"
+                      : "Learn more about Advanced Security"}
                   </Button>
+
+                  {showPrivacyDetails && (
+                    <div className="rounded-lg border border-slate-800">
+                      <div className="grid grid-cols-2 divide-x divide-slate-800">
+                        <div className="p-3">
+                          <div className="text-sm font-medium text-slate-300 mb-2">
+                            Unprotected
+                          </div>
+                          <div className="space-y-1 text-sm text-slate-400">
+                            <p>example.com</p>
+                            <p>John Smith</p>
+                            <p>123 Main Street</p>
+                            <p>Apt 4B</p>
+                            <p>New York, NY 10001</p>
+                            <p>+1.2125555555</p>
+                            <p>john.smith@example.com</p>
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <div className="text-sm font-medium text-slate-300 mb-2">
+                            With Advanced Security
+                          </div>
+                          <div className="space-y-1 text-sm text-slate-400">
+                            <p>{formData.domainName}</p>
+                            <p>Redacted For Privacy</p>
+                            <p>Domain Protection Services, Inc.</p>
+                            <p>PO Box 1769</p>
+                            <p>Denver, CO 80201</p>
+                            <p>Registrant Country: US</p>
+                            <p>+1.7208009072</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border-t border-slate-800 p-3">
+                        <p className="text-sm font-medium text-slate-300 mb-1.5">
+                          What&apos;s included:
+                        </p>
+                        <ul className="space-y-1 text-sm text-slate-400">
+                          <li>
+                            • Complete WHOIS privacy protection to shield your
+                            personal information
+                          </li>
+                          <li>
+                            • Domain Lock Plus to prevent unauthorized transfers
+                            and changes
+                          </li>
+                          <li>
+                            • SSL Certificate included to secure your website
+                          </li>
+                          <li>
+                            • Protection against spam and unwanted solicitation
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  <RadioGroup
+                    defaultValue={
+                      formData.privacyEnabled ? "enabled" : "disabled"
+                    }
+                    onValueChange={(value: string) => {
+                      handleToggleChange("privacyEnabled", value === "enabled");
+                      setAdvancedSecurity(value === "enabled");
+                    }}
+                    className="grid grid-cols-2 gap-2"
+                  >
+                    <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
+                      <RadioGroupItem value="enabled" id="privacy-enabled" />
+                      <div className="flex flex-1 items-center justify-between">
+                        <div>
+                          <label
+                            htmlFor="privacy-enabled"
+                            className="text-sm font-medium leading-none text-slate-200"
+                          >
+                            Advanced Security
+                          </label>
+                        </div>
+                        <Shield className="h-4 w-4 text-purple-500" />
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
+                      <RadioGroupItem value="disabled" id="privacy-disabled" />
+                      <label
+                        htmlFor="privacy-disabled"
+                        className="text-sm font-medium leading-none text-slate-200"
+                      >
+                        Unprotected
+                      </label>
+                    </div>
+                  </RadioGroup>
                 </div>
+              </FormField>
 
-                {showDomainLockDetails && (
-                  <div className="rounded-lg border border-slate-800 p-3 space-y-2">
-                    <p className="text-sm font-medium text-slate-300">
-                      When locked, this prevents:
+              <FormField label="Domain Lock">
+                <div className="space-y-2">
+                  <div className="flex flex-col justify-start items-start">
+                    <p className="text-sm text-slate-400">
+                      Domain Lock adds enhanced security by preventing
+                      unauthorized transfers and changes
                     </p>
-                    <ul className="space-y-1 text-sm text-slate-400">
-                      <li>• Domain transfers between accounts</li>
-                      <li>• Changes to contact information</li>
-                      <li>• Changes to nameservers</li>
-                      <li>• Changes to WHOIS privacy settings</li>
-                    </ul>
-                    <p className="text-sm text-slate-400 mt-2">
-                      Note: Select Standard Security if you plan to transfer or
-                      modify the domain soon
-                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal "
+                      onClick={() =>
+                        setShowDomainLockDetails(!showDomainLockDetails)
+                      }
+                    >
+                      {showDomainLockDetails ? (
+                        <ChevronUp className="h-4 w-4 mr-1" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 mr-1" />
+                      )}
+                      {showDomainLockDetails ? "Show less" : "Learn more"}
+                    </Button>
                   </div>
-                )}
 
+                  {showDomainLockDetails && (
+                    <div className="rounded-lg border border-slate-800 p-3 space-y-2">
+                      <p className="text-sm font-medium text-slate-300">
+                        When locked, this prevents:
+                      </p>
+                      <ul className="space-y-1 text-sm text-slate-400">
+                        <li>• Domain transfers between accounts</li>
+                        <li>• Changes to contact information</li>
+                        <li>• Changes to nameservers</li>
+                        <li>• Changes to WHOIS privacy settings</li>
+                      </ul>
+                      <p className="text-sm text-slate-400 mt-2">
+                        Note: Select Standard Security if you plan to transfer
+                        or modify the domain soon
+                      </p>
+                    </div>
+                  )}
+
+                  <RadioGroup
+                    defaultValue={formData.locked ? "locked" : "unlocked"}
+                    onValueChange={(value: string) =>
+                      handleToggleChange("locked", value === "locked")
+                    }
+                    className="grid grid-cols-2 gap-2"
+                  >
+                    <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
+                      <RadioGroupItem value="locked" id="security-locked" />
+                      <div className="flex flex-1 items-center justify-between">
+                        <div>
+                          <label
+                            htmlFor="security-locked"
+                            className="text-sm font-medium leading-none text-slate-200"
+                          >
+                            Lock Domain
+                          </label>
+                        </div>
+                        <Lock className="h-4 w-4 text-purple-500" />
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
+                      <RadioGroupItem value="unlocked" id="security-unlocked" />
+                      <label
+                        htmlFor="security-unlocked"
+                        className="text-sm font-medium leading-none text-slate-200"
+                      >
+                        Standard Security
+                      </label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </FormField>
+
+              <FormField label="Auto-Renewal">
                 <RadioGroup
-                  defaultValue={formData.locked ? "locked" : "unlocked"}
+                  defaultValue={
+                    formData.autorenewEnabled ? "enabled" : "disabled"
+                  }
                   onValueChange={(value: string) =>
-                    handleToggleChange("locked", value === "locked")
+                    handleToggleChange("autorenewEnabled", value === "enabled")
                   }
                   className="grid grid-cols-2 gap-2"
                 >
                   <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                    <RadioGroupItem value="locked" id="security-locked" />
+                    <RadioGroupItem value="enabled" id="renewal-enabled" />
                     <div className="flex flex-1 items-center justify-between">
                       <div>
                         <label
-                          htmlFor="security-locked"
+                          htmlFor="renewal-enabled"
                           className="text-sm font-medium leading-none text-slate-200"
                         >
-                          Lock Domain
+                          Auto-Renew
                         </label>
                       </div>
-                      <Lock className="h-4 w-4 text-purple-500" />
+                      <RefreshCw className="h-4 w-4 text-purple-500" />
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                    <RadioGroupItem value="unlocked" id="security-unlocked" />
+                    <RadioGroupItem value="disabled" id="renewal-disabled" />
                     <label
-                      htmlFor="security-unlocked"
+                      htmlFor="renewal-disabled"
                       className="text-sm font-medium leading-none text-slate-200"
                     >
-                      Standard Security
+                      Manual Renewal
                     </label>
                   </div>
                 </RadioGroup>
-              </div>
-            </FormField>
+              </FormField>
 
-            <FormField label="Auto-Renewal">
-              <RadioGroup
-                defaultValue={
-                  formData.autorenewEnabled ? "enabled" : "disabled"
-                }
-                onValueChange={(value: string) =>
-                  handleToggleChange("autorenewEnabled", value === "enabled")
-                }
-                className="grid grid-cols-2 gap-2"
-              >
-                <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                  <RadioGroupItem value="enabled" id="renewal-enabled" />
-                  <div className="flex flex-1 items-center justify-between">
-                    <div>
-                      <label
-                        htmlFor="renewal-enabled"
-                        className="text-sm font-medium leading-none text-slate-200"
-                      >
-                        Auto-Renew
-                      </label>
-                    </div>
-                    <RefreshCw className="h-4 w-4 text-purple-500" />
+              <div className="pt-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal w-full text-left flex items-center"
+                >
+                  {showAdvanced ? (
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                  )}
+                  Advanced Options
+                </Button>
+
+                {showAdvanced && (
+                  <div className="pt-3">
+                    <FormField label="Custom Nameservers" optional>
+                      <p className="text-sm text-slate-400 mb-2">
+                        Leave empty to use our default nameservers
+                      </p>
+                      <FormRow columns={2}>
+                        {formData.nameservers.map((ns, index) => (
+                          <Input
+                            key={index}
+                            value={ns}
+                            onChange={(e) =>
+                              handleNameserverChange(index, e.target.value)
+                            }
+                            placeholder={`Nameserver ${index + 1}`}
+                            className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
+                          />
+                        ))}
+                      </FormRow>
+                    </FormField>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2 rounded-md border border-slate-800 p-2">
-                  <RadioGroupItem value="disabled" id="renewal-disabled" />
-                  <label
-                    htmlFor="renewal-disabled"
-                    className="text-sm font-medium leading-none text-slate-200"
-                  >
-                    Manual Renewal
-                  </label>
-                </div>
-              </RadioGroup>
-            </FormField>
-
-            <div className="pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-sm text-slate-400 hover:text-slate-300 p-0 h-auto font-normal w-full text-left flex items-center"
-              >
-                {showAdvanced ? (
-                  <ChevronUp className="h-4 w-4 mr-1" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 mr-1" />
                 )}
-                Advanced Options
-              </Button>
-
-              {showAdvanced && (
-                <div className="pt-3">
-                  <FormField label="Custom Nameservers" optional>
-                    <p className="text-sm text-slate-400 mb-2">
-                      Leave empty to use our default nameservers
-                    </p>
-                    <FormRow columns={2}>
-                      {formData.nameservers.map((ns, index) => (
-                        <Input
-                          key={index}
-                          value={ns}
-                          onChange={(e) =>
-                            handleNameserverChange(index, e.target.value)
-                          }
-                          placeholder={`Nameserver ${index + 1}`}
-                          className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500"
-                        />
-                      ))}
-                    </FormRow>
-                  </FormField>
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        </FormSection>
-      </div>
+          </FormSection>
+        </div>
 
-      <FormActions>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          disabled={loading}
-          className="border-slate-700 hover:bg-slate-800 text-slate-300"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={loading || !prices}
-          className="bg-purple-600 hover:bg-purple-500 text-white px-8 text-lg py-6"
-        >
-          {loading ? "Processing..." : `Pay $${calculateTotal().toFixed(2)}`}
-        </Button>
-      </FormActions>
-    </form>
+        <FormActions>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={loading}
+            className="border-slate-700 hover:bg-slate-800 text-slate-300"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={loading || !prices}
+            className="bg-purple-600 hover:bg-purple-500 text-white px-8 text-lg py-6"
+          >
+            {loading ? "Processing..." : `Pay $${calculateTotal().toFixed(2)}`}
+          </Button>
+        </FormActions>
+      </form>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        redirectTo={pathname}
+      />
+    </>
   );
 }
