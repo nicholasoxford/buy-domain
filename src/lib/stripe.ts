@@ -263,10 +263,10 @@ export async function handleTemplatePayment(session: Stripe.Checkout.Session) {
 }
 
 export function getNameApiBase() {
-  // return process.env.NODE_ENV === "development"
-  //   ? "https://api.dev.name.com/v4"
-  //   : "https://api.name.com/v4";
-  return "https://api.dev.name.com/v4";
+  return process.env.NODE_ENV === "development"
+    ? "https://api.dev.name.com/v4"
+    : "https://api.name.com/v4";
+  // return "https://api.dev.name.com/v4";
 }
 
 async function registerDomain(domainName: string, email: string) {
