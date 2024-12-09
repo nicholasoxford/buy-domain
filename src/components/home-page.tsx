@@ -44,7 +44,7 @@ export function HomePage({ user }: { user: User | null }) {
           <DomainInquiriesSection />
         </div>
 
-        <div className="text-center bg-gradient-to-b from-slate-800/50 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20">
+        <div className="text-center bg-gradient-to-b from-slate-800/50 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-white/10 mb-20 max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text mb-6">
             Streamlined Domain Inquiries
           </h2>
