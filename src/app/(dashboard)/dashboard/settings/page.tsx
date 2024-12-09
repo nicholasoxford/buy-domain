@@ -62,9 +62,7 @@ export default function SettingsPage() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select(
-        "notification_email, notification_frequencies, notification_threshold"
-      )
+      .select("*")
       .eq("id", user.id)
       .single();
 
@@ -72,10 +70,10 @@ export default function SettingsPage() {
       setSettings((currentSettings) => ({
         ...currentSettings,
         notificationEmail: profile.notification_email || "",
-        notificationFrequencies: profile.notification_frequencies || [
+        notificationFrequencies: (profile.notification_frequency || [
           "on_demand",
-        ],
-        notificationThreshold: profile.notification_threshold || 0,
+        ]) as NotificationFrequency[],
+        notificationThreshold: profile.notification_minimum_amount || 0,
       }));
     }
   }
