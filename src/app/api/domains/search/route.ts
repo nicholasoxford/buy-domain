@@ -6,7 +6,8 @@ export async function POST(request: Request) {
   try {
     const { keyword } = await request.json();
     const NAME_API_BASE = getNameApiBase();
-    const headers = await getNameAPIHeaders();
+    const SKIP_AUTH = true;
+    const headers = await getNameAPIHeaders(SKIP_AUTH);
 
     const response = await fetch(`${NAME_API_BASE}/domains:searchStream`, {
       method: "POST",
