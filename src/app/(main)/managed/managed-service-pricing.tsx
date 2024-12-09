@@ -21,7 +21,7 @@ export function ManagedServicePricing() {
 
         <ul className="space-y-2 mb-6 flex-1">
           {[
-            "Up to 10 domains",
+            "Up to 20 domains",
             "Instant notifications",
             "Basic analytics",
             "SSL certificates included",

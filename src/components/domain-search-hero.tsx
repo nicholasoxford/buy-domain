@@ -1,51 +1,42 @@
 "use client";
 
 import WaterWaveAnimation from "@/app/(main)/new/water-wave-animation";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { testimonials } from "@/components/testimonials";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function DomainSearchHero() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = () => {
+    if (searchQuery) {
+      router.push(`/marketplace?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
   return (
     <div className="relative w-full min-h-[80vh] flex ">
       {/* Left side with dark theme */}
       <div className="w-1/2 flex items-center justify-center p-12">
         <div className="max-w-xl space-y-8">
-          {/* Add testimonials banner at the top */}
-          <div className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
-              <div className="flex -space-x-2">
-                {testimonials.map((person) => (
-                  <div
-                    key={person.name}
-                    className="relative w-6 h-6 rounded-full shadow-sm"
-                  >
-                    <Image
-                      src={person.image}
-                      alt={person.name}
-                      fill
-                      className="rounded-full object-cover"
-                      sizes="24px"
-                    />
-                  </div>
-                ))}
-              </div>
-              <span className="text-sm font-semibold text-purple-200">
-                Join 500+ Domain Owners
-              </span>
-            </div>
-          </div>
-
           <div className="space-y-4">
             <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white">
-              Domain Bobber
+              Flip Domains Fast: Buy Low, Sell High with Domain Bobber
             </h1>
             <p className="text-xl md:text-2xl text-slate-400">
-              Your Domain, Your Profit. Flip Fast, Sell Smart.
+              Turn Unused Domains into Cash. Our Marketplace Connects You with
+              Buyers & Makes Selling Easy.
             </p>
           </div>
 
           <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">
+              Why Choose Domain Bobber?
+            </h2>
             {[
               {
                 title: "Flip Domains for Profit",
@@ -99,36 +90,34 @@ export function DomainSearchHero() {
             <div className="relative group">
               <input
                 type="text"
-                placeholder="Find a domain to flip..."
+                placeholder="Enter a keyword or niche (e.g., 'crypto', 'fitness')"
                 className="w-full px-6 py-4 text-lg rounded-full border-2 border-sky-100/80 
                          focus:border-sky-400 focus:outline-none shadow-lg
                          placeholder:text-slate-400 bg-white/95 backdrop-blur-sm
-                         transition-all duration-200 group-hover:shadow-xl"
+                         transition-all duration-200 group-hover:shadow-xl text-black"
+                value={searchQuery}
+                onChange={handleInputChange}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
               <button
                 className="absolute right-2 top-1/2 transform -translate-y-1/2
-                         bg-sky-500 hover:bg-sky-600 text-white px-8 py-3 rounded-full
+                         bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full
                          transition-all duration-200 text-base font-medium
-                         shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                         shadow-md active:shadow-lg active:-translate-y-0.5"
+                onClick={handleSearch}
               >
-                Search
+                Start Flipping
               </button>
             </div>
           </div>
 
-          {/* Popular TLDs */}
-          <div className="flex gap-3 justify-center mt-4 px-6">
-            {[".com", ".io", ".dev", ".app"].map((tld) => (
-              <button
-                key={tld}
-                className="px-6 py-2 rounded-full bg-white/90 hover:bg-white 
-                         text-slate-700 text-sm font-medium transition-all duration-200
-                         shadow-md hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-sm
-                         border border-sky-100/50 hover:border-sky-200"
-              >
-                {tld}
-              </button>
-            ))}
+          {/* Trust Signals */}
+          <div className="mt-4 px-6">
+            <div className="flex items-center justify-center gap-4 text-sm text-slate-300">
+              <span>5,000+ Domains Flipped</span>
+              <span className="w-1 h-1 rounded-full bg-slate-500"></span>
+              <span>Trusted by 1,000+ Users</span>
+            </div>
           </div>
         </div>
 

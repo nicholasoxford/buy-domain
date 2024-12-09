@@ -152,7 +152,7 @@ export function Pricing({ user }: { user: User | null }) {
 
             <ul className="space-y-2 mb-6">
               {[
-                "Up to 10 domains",
+                "Up to 20 domains",
                 "Instant notifications",
                 "Basic analytics",
                 "SSL certificates included",
