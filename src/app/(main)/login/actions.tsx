@@ -93,6 +93,7 @@ export async function signInWithGoogle(redirectTo?: string) {
   console.log({ redirectToUrl });
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
+
     options: {
       redirectTo: redirectToUrl,
     },
@@ -103,7 +104,8 @@ export async function signInWithGoogle(redirectTo?: string) {
 }
 
 const getRedirectUrl = (redirectTo?: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dash.domains";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://domainbobber.com";
   return (
     `${baseUrl}/auth/callback` + (redirectTo ? `?redirect=${redirectTo}` : "")
   );

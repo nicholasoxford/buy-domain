@@ -33,6 +33,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(finalRedirect);
   }
 
+  console.log({ finalRedirect });
+
   // For internal routes, use the origin + path
   return NextResponse.redirect(`${requestUrl.origin}${finalRedirect}`);
 }
